@@ -35,16 +35,7 @@ export function ToastItem({ toast }: ToastItemProps) {
       role="alert"
     >
       <div className={styles.message}>{toast.message}</div>
-      <Button
-        variant="ghost"
-        size="small"
-        iconOnly
-        onClick={handleClose}
-        aria-label="Close notification"
-        className={styles.closeButton}
-      >
-        ✕
-      </Button>
+      <Button iconOnly icon="✕" size="small" onClick={handleClose} variant="ghost" aria-label="Close" />
     </div>
   );
 }
