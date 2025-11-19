@@ -192,14 +192,14 @@
 /* Danger Button */
 .danger {
   --background-color: var(--color-error);
-  --border-color: var(--color-error-dark);
+  --border-color: var(--color-text-primary);
   color: var(--color-text-primary);
   box-shadow: var(--shadow-sm);
 }
 
 .danger:hover:not(:disabled) {
   --background-color: var(--color-error-light);
-  --border-color: var(--color-error);
+  --border-color: var(--color-text-primary);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
