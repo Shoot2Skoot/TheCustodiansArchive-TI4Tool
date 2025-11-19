@@ -1,8 +1,8 @@
 # Feature Roadmap
 
-**Current Status**: 🎉 **Phase 0 Complete** - Ready to begin Phase 1: MVP - Core Game Flow
+**Current Status**: 🎉 **Phase 1.1 Complete** - Game setup flow with enhanced visual interface
 
-**Last Updated**: November 18, 2024
+**Last Updated**: November 19, 2024
 
 ## Table of Contents
 - [Development Phases Overview](#development-phases-overview)
@@ -102,38 +102,38 @@ Ongoing: Maintenance & New Features
 
 **Duration**: 4-6 weeks
 
-### 1.1 Game Setup Flow (Week 1-2)
+### 1.1 Game Setup Flow ✅ (Week 1-2)
 
 #### Features
-- [ ] Home page with "Create Game" button
-- [ ] Player count selection (3-8)
-- [ ] Galaxy map preview (changes based on player count)
-- [ ] Player configuration modal:
-  - [ ] Color selection (8 colors)
-  - [ ] Faction selection (all base + PoK + Keleres)
-  - [ ] Random faction button
-  - [ ] Unique color/faction validation
-- [ ] Game options configuration screen:
-  - [ ] All settings from requirements
-  - [ ] Save configuration
-- [ ] Round 0 setup screen
-- [ ] Speaker selection modal
+- [x] Home page with "Create Game" button
+- [x] Player count selection (3-8)
+- [x] Galaxy map preview (changes based on player count)
+- [x] Player configuration modal:
+  - [x] Color selection (8 colors)
+  - [x] Faction selection (all base + PoK + Keleres)
+  - [x] Random faction button
+  - [x] Unique color/faction validation
+- [x] Game options configuration screen:
+  - [x] All settings from requirements
+  - [x] Save configuration
+- [x] Round 0 setup screen
+- [x] Speaker selection modal
 
 #### Database Integration
-- [ ] Create game record
-- [ ] Insert players
-- [ ] Initialize game_state
-- [ ] Store configuration in games.config
+- [x] Create game record
+- [x] Insert players
+- [x] Initialize game_state
+- [x] Store configuration in games.config
 
 #### UI Components
-- [ ] GameSetupPage
-- [ ] PlayerCountSelector
-- [ ] GalaxyMapPreview
-- [ ] PlayerConfigModal
-- [ ] GameOptionsForm
-- [ ] SpeakerSelectionModal
+- [x] GameSetupPage (HomePage + GameSetupWizard)
+- [x] PlayerCountSelector (with enhanced slider UI)
+- [x] GalaxyMapPreview (MapPlayerConfiguration with visual map)
+- [x] PlayerConfigModal (unified modal for name/color/faction)
+- [x] GameOptionsForm
+- [x] SpeakerSelectionModal
 
-**Milestone 1.1**: Can set up a complete game configuration
+**Milestone 1.1**: ✅ **COMPLETE** - Can set up a complete game configuration with enhanced visual interface
 
 ---
 
@@ -728,7 +728,7 @@ Ongoing: Maintenance & New Features
 | Phase | Milestone | Expected Completion |
 |-------|-----------|---------------------|
 | 0 | **Foundation complete** ✅ | **Week 3** ✅ |
-| 1.1 | Game setup working | Week 2 |
+| 1.1 | **Game setup working** ✅ | **Week 2** ✅ |
 | 1.2 | Strategy phase working | Week 3 |
 | 1.3 | Action phase working | Week 4 |
 | 1.4 | Status phase working | Week 4 |
