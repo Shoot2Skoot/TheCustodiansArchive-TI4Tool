@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider, ToastContainer } from '@/components/common';
 import { DatabaseTest } from '@/features/test/DatabaseTest';
+import { StateManagementTest } from '@/features/test/StateManagementTest';
+import { RealtimeTest } from '@/features/test/RealtimeTest';
 import { ComponentShowcase } from '@/features/test/ComponentShowcase';
 import './App.css';
 
@@ -18,6 +20,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/components" element={<ComponentsPage />} />
+              <Route path="/tests" element={<TestsPage />} />
             </Routes>
           </main>
         </div>
@@ -44,11 +47,14 @@ function HomePage() {
         <li>✓ Component library built</li>
       </ul>
 
-      <p style={{ marginTop: 'var(--space-6)' }}>
+      <div style={{ marginTop: 'var(--space-6)', display: 'flex', gap: 'var(--space-4)' }}>
         <a href="/components" style={{ color: 'var(--color-accent-primary)' }}>
           → View Component Showcase
         </a>
-      </p>
+        <a href="/tests" style={{ color: 'var(--color-accent-secondary)' }}>
+          → View Test Suites
+        </a>
+      </div>
 
       <DatabaseTest />
     </div>
@@ -67,6 +73,30 @@ function ComponentsPage() {
         Component Library Showcase
       </h2>
       <ComponentShowcase />
+    </div>
+  );
+}
+
+function TestsPage() {
+  return (
+    <div>
+      <div style={{ marginBottom: 'var(--space-6)' }}>
+        <a href="/" style={{ color: 'var(--color-accent-secondary)' }}>
+          ← Back to Home
+        </a>
+      </div>
+      <h2 style={{ color: 'var(--color-accent-primary)', marginBottom: 'var(--space-6)' }}>
+        State Management Test Suites
+      </h2>
+      <p style={{ marginBottom: 'var(--space-6)', color: 'var(--color-text-secondary)' }}>
+        Test the state management infrastructure including database operations, Zustand store, and real-time synchronization.
+      </p>
+
+      <StateManagementTest />
+
+      <div style={{ marginTop: 'var(--space-8)' }}>
+        <RealtimeTest />
+      </div>
     </div>
   );
 }

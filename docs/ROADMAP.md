@@ -46,35 +46,35 @@ Ongoing: Maintenance & New Features
 
 #### 0.1 Project Setup
 - [x] Initialize Git repository
-- [ ] Set up Vite + React + TypeScript project
-- [ ] Configure ESLint and Prettier
-- [ ] Set up folder structure per architecture doc
-- [ ] Install core dependencies (React Router, etc.)
+- [x] Set up Vite + React + TypeScript project
+- [x] Configure ESLint and Prettier
+- [x] Set up folder structure per architecture doc
+- [x] Install core dependencies (React Router, etc.)
 
 #### 0.2 Supabase Setup
-- [ ] Create Supabase project
-- [ ] Set up authentication (email/password + anonymous)
-- [ ] Create database schema (all tables from DATA_MODELS.md)
-- [ ] Configure Row Level Security policies
-- [ ] Set up Realtime subscriptions
-- [ ] Test database connections
+- [x] Create Supabase project
+- [x] Set up authentication (email/password + anonymous)
+- [x] Create database schema (all tables from DATA_MODELS.md)
+- [x] Configure Row Level Security policies
+- [x] Set up Realtime subscriptions
+- [x] Test database connections
 
 #### 0.3 Design System Implementation
-- [ ] Create CSS variables / theme file
-- [ ] Build component library foundation:
-  - [ ] Button variants
-  - [ ] Input / Form elements
-  - [ ] Panel / Card components
-  - [ ] Modal / Dialog
-  - [ ] Toast notifications
-- [ ] Set up typography
-- [ ] Implement responsive utilities
+- [x] Create CSS variables / theme file
+- [x] Build component library foundation:
+  - [x] Button variants
+  - [x] Input / Form elements
+  - [x] Panel / Card components
+  - [x] Modal / Dialog
+  - [x] Toast notifications
+- [x] Set up typography
+- [x] Implement responsive utilities
 
 #### 0.4 State Management
-- [ ] Set up Zustand store
-- [ ] Define core state interfaces
-- [ ] Create Supabase client wrapper
-- [ ] Implement basic state sync logic
+- [x] Set up Zustand store
+- [x] Define core state interfaces
+- [x] Create Supabase client wrapper
+- [x] Implement basic state sync logic
 
 #### 0.5 Asset Preparation
 - [ ] Gather faction icons/images
