@@ -48,8 +48,8 @@
 
 /* Size Variants with scaled chamfers */
 .small {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
+  padding: calc(var(--space-2) / 2) calc(var(--space-4) / 2);
+  font-size: calc(var(--text-sm) * 1.2);
 
   /* Chamfer: 6px */
   clip-path: polygon(
@@ -71,8 +71,8 @@
 }
 
 .medium {
-  padding: var(--space-3) var(--space-6);
-  font-size: var(--text-base);
+  padding: calc(var(--space-3) / 2) calc(var(--space-6) / 2);
+  font-size: calc(var(--text-base) * 1.2);
 
   /* Chamfer: 8px (2x original 4px) */
   clip-path: polygon(
@@ -94,8 +94,8 @@
 }
 
 .large {
-  padding: var(--space-4) var(--space-8);
-  font-size: var(--text-lg);
+  padding: calc(var(--space-4) / 2) calc(var(--space-8) / 2);
+  font-size: calc(var(--text-lg) * 1.2);
 
   /* Chamfer: 10px */
   clip-path: polygon(
