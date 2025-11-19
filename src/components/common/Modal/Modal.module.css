@@ -113,6 +113,8 @@
 .closeButton {
   font-size: var(--text-xl);
   line-height: 1;
+  --background-color: var(--color-bg-elevated);
+  --border-color: var(--color-bg-elevated);
 }
 
 /* Content */

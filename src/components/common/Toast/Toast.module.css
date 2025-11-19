@@ -60,6 +60,8 @@
   font-size: var(--text-base);
   line-height: 1;
   flex-shrink: 0;
+  --background-color: var(--color-bg-elevated);
+  --border-color: var(--color-bg-elevated);
 }
 
 /* Toast type variants */
