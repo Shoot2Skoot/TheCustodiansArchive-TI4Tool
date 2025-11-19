@@ -173,7 +173,7 @@
 
 /* Secondary Button */
 .secondary {
-  --background-color: transparent;
+  --background-color: var(--color-bg-primary);
   --border-color: var(--color-accent-primary);
   color: var(--color-accent-primary);
 }
@@ -211,7 +211,7 @@
 
 /* Ghost Button */
 .ghost {
-  --background-color: transparent;
+  --background-color: var(--color-bg-primary);
   --border-color: transparent;
   color: var(--color-text-secondary);
 }
