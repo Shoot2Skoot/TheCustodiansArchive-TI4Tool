@@ -38,6 +38,28 @@ export async function createGameState(gameId: string) {
   return toCamelCase(data);
 }
 
+// Initialize game state with speaker
+export async function initializeGameState(gameId: string, speakerPlayerId: string) {
+  const { data, error } = await supabase
+    .from('game_state')
+    .insert({
+      game_id: gameId,
+      current_round: 0,
+      current_phase: 'setup',
+      speaker_player_id: speakerPlayerId,
+      mecatol_claimed: false,
+      last_activity_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to initialize game state: ${error.message}`);
+  }
+
+  return toCamelCase(data);
+}
+
 // Get game state
 export async function getGameState(gameId: string) {
   const { data, error } = await supabase.from('game_state').select('*').eq('game_id', gameId).single();

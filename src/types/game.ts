@@ -3,14 +3,13 @@ import type { GameStatus, GamePhase } from './enums';
 // Game Configuration
 export interface GameConfig {
   playerCount: number;
-  vpLimit: number;
-  showVPMeter: boolean;
-  fullscreen: boolean;
-  inactivityTimerMinutes: number;
+  victoryPointLimit: number;
+  timerEnabled: boolean;
   timerMode: 'per-turn' | 'cumulative';
-  decisionBarEnabled: boolean;
-  decisionBarSeconds: number;
-  detailedAgendaMode: boolean;
+  timerDurationMinutes: number;
+  showObjectives: boolean;
+  showTechnologies: boolean;
+  showStrategyCards: boolean;
 }
 
 // Database Model - Game

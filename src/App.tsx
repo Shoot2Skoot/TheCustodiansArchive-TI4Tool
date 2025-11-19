@@ -1,12 +1,17 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider, ToastContainer } from '@/components/common';
-import { DatabaseTest } from '@/features/test/DatabaseTest';
+import { HomePage } from '@/features/game-setup/HomePage';
+import { GameSetupWizard } from '@/features/game-setup/GameSetupWizard';
 import { StateManagementTest } from '@/features/test/StateManagementTest';
 import { RealtimeTest } from '@/features/test/RealtimeTest';
 import { ComponentShowcase } from '@/features/test/ComponentShowcase';
+import { useEnsureSession } from '@/hooks';
 import './App.css';
 
 function App() {
+  // Ensure anonymous session on app load
+  useEnsureSession();
+
   return (
     <ToastProvider>
       <BrowserRouter>
@@ -19,6 +24,7 @@ function App() {
           <main className="app-main">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/setup" element={<GameSetupWizard />} />
               <Route path="/components" element={<ComponentsPage />} />
               <Route path="/tests" element={<TestsPage />} />
             </Routes>
@@ -27,37 +33,6 @@ function App() {
         <ToastContainer />
       </BrowserRouter>
     </ToastProvider>
-  );
-}
-
-function HomePage() {
-  return (
-    <div className="home-page">
-      <h2>Welcome to The Custodians Archive</h2>
-      <p>Project initialized successfully!</p>
-      <ul>
-        <li>✓ React + TypeScript</li>
-        <li>✓ Vite</li>
-        <li>✓ React Router</li>
-        <li>✓ Zustand (state management)</li>
-        <li>✓ Supabase client</li>
-        <li>✓ ESLint + Prettier</li>
-        <li>✓ Database schema deployed</li>
-        <li>✓ Row Level Security configured</li>
-        <li>✓ Component library built</li>
-      </ul>
-
-      <div style={{ marginTop: 'var(--space-6)', display: 'flex', gap: 'var(--space-4)' }}>
-        <a href="/components" style={{ color: 'var(--color-accent-primary)' }}>
-          → View Component Showcase
-        </a>
-        <a href="/tests" style={{ color: 'var(--color-accent-secondary)' }}>
-          → View Test Suites
-        </a>
-      </div>
-
-      <DatabaseTest />
-    </div>
   );
 }
 

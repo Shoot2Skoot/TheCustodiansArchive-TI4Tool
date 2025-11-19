@@ -21,6 +21,7 @@
   --color-accent-primary: #2e7dd6;
   --color-accent-primary-dark: #1a5eb8;
   --color-accent-primary-light: #4a9eff;
+  --color-accent-primary-rgb: 46, 125, 214;
 
   --color-accent-secondary: #3dd9d9;
   --color-accent-secondary-dark: #2aafaf;
@@ -34,25 +35,51 @@
   --color-error-light: #ef5350;
   --color-info: #29b6f6;
 
+  /* Player Colors */
+  --color-player-red: #e53935;
+  --color-player-blue: #1e88e5;
+  --color-player-green: #43a047;
+  --color-player-yellow: #fdd835;
+  --color-player-purple: #8e24aa;
+  --color-player-black: #424242;
+  --color-player-orange: #fb8c00;
+  --color-player-pink: #ec407a;
+
   /* Typography */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Roboto Mono', 'Courier New', monospace;
 
   /* Font Sizes */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  /* Legacy font size aliases (deprecated) */
+  --text-xs: var(--font-size-xs);
+  --text-sm: var(--font-size-sm);
+  --text-base: var(--font-size-base);
+  --text-lg: var(--font-size-lg);
+  --text-xl: var(--font-size-xl);
+  --text-2xl: var(--font-size-2xl);
+  --text-3xl: var(--font-size-3xl);
+  --text-4xl: var(--font-size-4xl);
 
   /* Font Weights */
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
 
   /* Spacing */
   --space-1: 0.25rem;
