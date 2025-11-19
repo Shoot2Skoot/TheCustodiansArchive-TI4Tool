@@ -216,37 +216,37 @@
   color: var(--color-text-secondary);
 }
 
-/* Ghost button: no border by default - ::after extends slightly to cover ::before */
+/* Ghost button: no border by default - ::after extends to cover ::before */
 .ghost.small::after {
   clip-path: polygon(
-    calc(6px - 0.5px) -0.5px,
-    calc(100% + 0.5px) -0.5px,
-    calc(100% + 0.5px) calc(100% - 6px + 0.5px),
-    calc(100% - 6px + 0.5px) calc(100% + 0.5px),
-    -0.5px calc(100% + 0.5px),
-    -0.5px calc(6px - 0.5px)
+    calc(6px - 1px) -1px,
+    calc(100% + 1px) -1px,
+    calc(100% + 1px) calc(100% - 6px + 1px),
+    calc(100% - 6px + 1px) calc(100% + 1px),
+    -1px calc(100% + 1px),
+    -1px calc(6px - 1px)
   );
 }
 
 .ghost.medium::after {
   clip-path: polygon(
-    calc(8px - 0.5px) -0.5px,
-    calc(100% + 0.5px) -0.5px,
-    calc(100% + 0.5px) calc(100% - 8px + 0.5px),
-    calc(100% - 8px + 0.5px) calc(100% + 0.5px),
-    -0.5px calc(100% + 0.5px),
-    -0.5px calc(8px - 0.5px)
+    calc(8px - 1px) -1px,
+    calc(100% + 1px) -1px,
+    calc(100% + 1px) calc(100% - 8px + 1px),
+    calc(100% - 8px + 1px) calc(100% + 1px),
+    -1px calc(100% + 1px),
+    -1px calc(8px - 1px)
   );
 }
 
 .ghost.large::after {
   clip-path: polygon(
-    calc(10px - 0.5px) -0.5px,
-    calc(100% + 0.5px) -0.5px,
-    calc(100% + 0.5px) calc(100% - 10px + 0.5px),
-    calc(100% - 10px + 0.5px) calc(100% + 0.5px),
-    -0.5px calc(100% + 0.5px),
-    -0.5px calc(10px - 0.5px)
+    calc(10px - 1px) -1px,
+    calc(100% + 1px) -1px,
+    calc(100% + 1px) calc(100% - 10px + 1px),
+    calc(100% - 10px + 1px) calc(100% + 1px),
+    -1px calc(100% + 1px),
+    -1px calc(10px - 1px)
   );
 }
 
