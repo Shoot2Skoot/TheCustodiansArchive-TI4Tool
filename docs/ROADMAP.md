@@ -87,10 +87,10 @@ Ongoing: Maintenance & New Features
 **See**: [PHASE_0.4_SUMMARY.md](PHASE_0.4_SUMMARY.md) and [TESTING_GUIDE.md](TESTING_GUIDE.md)
 
 #### 0.5 Asset Preparation
-- [ ] Gather faction icons/images
-- [ ] Gather strategy card images
-- [ ] Gather galaxy map images (3-8 players)
-- [ ] Optimize and organize all SVG assets
+- [x] Gather faction icons/images
+- [n/a] Gather strategy card images
+- [x] Gather galaxy map images (3-8 players)
+- [deferred] Optimize and organize all SVG assets
 
 **Deliverable**: ✅ **COMPLETE** - Fully configured development environment with design system, database, and state management ready for Phase 1
 
