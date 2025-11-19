@@ -68,19 +68,7 @@ export function Modal({
           <div className={styles.header}>
             {title && <h2 className={styles.title}>{title}</h2>}
             {showCloseButton && (
-              <Button
-                iconOnly
-                icon="✕"
-                variant="ghost"
-                onClick={onClose}
-                aria-label="Close"
-                style={
-                  {
-                    '--background-color': 'var(--color-bg-elevated)',
-                    '--border-color': 'var(--color-bg-elevated)',
-                  } as React.CSSProperties
-                }
-              />
+              <Button iconOnly icon="✕" variant="ghost" onClick={onClose} aria-label="Close" />
             )}
           </div>
         )}
