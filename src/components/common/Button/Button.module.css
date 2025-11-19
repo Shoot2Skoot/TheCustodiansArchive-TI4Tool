@@ -216,25 +216,37 @@
   color: var(--color-text-secondary);
 }
 
-/* Ghost button: no border by default - ::after matches outer shape */
+/* Ghost button: no border by default - ::after extends slightly to cover ::before */
 .ghost.small::after {
   clip-path: polygon(
-    6px 0, 100% 0, 100% calc(100% - 6px),
-    calc(100% - 6px) 100%, 0 100%, 0 6px
+    calc(6px - 0.5px) -0.5px,
+    calc(100% + 0.5px) -0.5px,
+    calc(100% + 0.5px) calc(100% - 6px + 0.5px),
+    calc(100% - 6px + 0.5px) calc(100% + 0.5px),
+    -0.5px calc(100% + 0.5px),
+    -0.5px calc(6px - 0.5px)
   );
 }
 
 .ghost.medium::after {
   clip-path: polygon(
-    8px 0, 100% 0, 100% calc(100% - 8px),
-    calc(100% - 8px) 100%, 0 100%, 0 8px
+    calc(8px - 0.5px) -0.5px,
+    calc(100% + 0.5px) -0.5px,
+    calc(100% + 0.5px) calc(100% - 8px + 0.5px),
+    calc(100% - 8px + 0.5px) calc(100% + 0.5px),
+    -0.5px calc(100% + 0.5px),
+    -0.5px calc(8px - 0.5px)
   );
 }
 
 .ghost.large::after {
   clip-path: polygon(
-    10px 0, 100% 0, 100% calc(100% - 10px),
-    calc(100% - 10px) 100%, 0 100%, 0 10px
+    calc(10px - 0.5px) -0.5px,
+    calc(100% + 0.5px) -0.5px,
+    calc(100% + 0.5px) calc(100% - 10px + 0.5px),
+    calc(100% - 10px + 0.5px) calc(100% + 0.5px),
+    -0.5px calc(100% + 0.5px),
+    -0.5px calc(10px - 0.5px)
   );
 }
 
