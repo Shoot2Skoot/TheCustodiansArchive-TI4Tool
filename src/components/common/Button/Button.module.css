@@ -9,16 +9,30 @@
   font-weight: var(--font-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
-  border: 1px solid;
+  border: 0;
   cursor: pointer;
   transition: all var(--transition-normal) ease;
   white-space: nowrap;
+  isolation: isolate;
+}
 
-  /* Beveled corners using clip-path */
-  clip-path: polygon(
-    4px 0, 100% 0, 100% calc(100% - 4px),
-    calc(100% - 4px) 100%, 0 100%, 0 4px
-  );
+/* Border layer - sits behind everything */
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--border-color, transparent);
+  z-index: -2;
+}
+
+/* Background layer - creates the border effect by being inset */
+.button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--background-color, transparent);
+  z-index: -1;
+  transition: all var(--transition-normal) ease;
 }
 
 .button:disabled {
@@ -32,20 +46,74 @@
   outline-offset: 2px;
 }
 
-/* Size Variants */
+/* Size Variants with scaled chamfers */
 .small {
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);
+
+  /* Chamfer: 6px */
+  clip-path: polygon(
+    6px 0, 100% 0, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 0 100%, 0 6px
+  );
+}
+
+.small::after {
+  /* Inset clip-path to create 1px border effect */
+  clip-path: polygon(
+    1px calc(6px + 0.5px),
+    calc(6px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(6px + 0.5px)),
+    calc(100% - calc(6px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
+  );
 }
 
 .medium {
   padding: var(--space-3) var(--space-6);
   font-size: var(--text-base);
+
+  /* Chamfer: 8px (2x original 4px) */
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.medium::after {
+  /* Inset clip-path to create 1px border effect */
+  clip-path: polygon(
+    1px calc(8px + 0.5px),
+    calc(8px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(8px + 0.5px)),
+    calc(100% - calc(8px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
+  );
 }
 
 .large {
   padding: var(--space-4) var(--space-8);
   font-size: var(--text-lg);
+
+  /* Chamfer: 10px */
+  clip-path: polygon(
+    10px 0, 100% 0, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 0 100%, 0 10px
+  );
+}
+
+.large::after {
+  /* Inset clip-path to create 1px border effect */
+  clip-path: polygon(
+    1px calc(10px + 0.5px),
+    calc(10px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(10px + 0.5px)),
+    calc(100% - calc(10px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
+  );
 }
 
 /* Icon Only */
@@ -85,15 +153,15 @@
 
 /* Primary Button */
 .primary {
-  background: var(--color-accent-primary);
+  --background-color: var(--color-accent-primary);
+  --border-color: var(--color-accent-primary-dark);
   color: var(--color-text-primary);
-  border-color: var(--color-accent-primary-dark);
   box-shadow: var(--shadow-sm);
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--color-accent-primary-light);
-  border-color: var(--color-accent-primary);
+  --background-color: var(--color-accent-primary-light);
+  --border-color: var(--color-accent-primary);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -105,14 +173,14 @@
 
 /* Secondary Button */
 .secondary {
-  background: transparent;
+  --background-color: transparent;
+  --border-color: var(--color-accent-primary);
   color: var(--color-accent-primary);
-  border-color: var(--color-accent-primary);
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--color-bg-tertiary);
-  border-color: var(--color-accent-primary-light);
+  --background-color: var(--color-bg-tertiary);
+  --border-color: var(--color-accent-primary-light);
   color: var(--color-accent-primary-light);
   transform: translateY(-1px);
 }
@@ -123,15 +191,15 @@
 
 /* Danger Button */
 .danger {
-  background: var(--color-error);
+  --background-color: var(--color-error);
+  --border-color: var(--color-error-dark);
   color: var(--color-text-primary);
-  border-color: var(--color-error-dark);
   box-shadow: var(--shadow-sm);
 }
 
 .danger:hover:not(:disabled) {
-  background: var(--color-error-light);
-  border-color: var(--color-error);
+  --background-color: var(--color-error-light);
+  --border-color: var(--color-error);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -143,17 +211,17 @@
 
 /* Ghost Button */
 .ghost {
-  background: transparent;
+  --background-color: transparent;
+  --border-color: transparent;
   color: var(--color-text-secondary);
-  border-color: transparent;
 }
 
 .ghost:hover:not(:disabled) {
-  background: var(--color-bg-tertiary);
+  --background-color: var(--color-bg-tertiary);
+  --border-color: var(--color-border-primary);
   color: var(--color-text-primary);
-  border-color: var(--color-border-primary);
 }
 
 .ghost:active:not(:disabled) {
-  background: var(--color-bg-secondary);
+  --background-color: var(--color-bg-secondary);
 }

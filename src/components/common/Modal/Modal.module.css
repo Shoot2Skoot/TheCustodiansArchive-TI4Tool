@@ -21,8 +21,9 @@
 }
 
 .modal {
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border-accent);
+  position: relative;
+  border: 0;
+  isolation: isolate;
   box-shadow: var(--shadow-xl);
   max-height: 90vh;
   display: flex;
@@ -31,8 +32,35 @@
 
   /* Beveled corners */
   clip-path: polygon(
-    12px 0, 100% 0, 100% calc(100% - 12px),
-    calc(100% - 12px) 100%, 0 100%, 0 12px
+    24px 0, 100% 0, 100% calc(100% - 24px),
+    calc(100% - 24px) 100%, 0 100%, 0 24px
+  );
+}
+
+/* Border layer - sits behind everything */
+.modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-border-accent);
+  z-index: -2;
+}
+
+/* Background layer - creates the border effect by being inset */
+.modal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-elevated);
+  z-index: -1;
+  /* Inset clip-path to create 1px border effect with 24px chamfer */
+  clip-path: polygon(
+    1px calc(24px + 0.5px),
+    calc(24px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(24px + 0.5px)),
+    calc(100% - calc(24px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
   );
 }
 
