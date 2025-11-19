@@ -293,3 +293,13 @@
 .ghost:active:not(:disabled) {
   --background-color: var(--color-bg-secondary);
 }
+
+/* Ghost button on elevated backgrounds (modals, toasts) */
+.ghostElevated {
+  --background-color: var(--color-bg-elevated);
+  --border-color: var(--color-bg-elevated);
+}
+
+.ghostElevated:active:not(:disabled) {
+  --background-color: var(--color-bg-elevated);
+}

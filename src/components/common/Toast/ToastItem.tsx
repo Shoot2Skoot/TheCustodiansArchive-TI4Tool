@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Toast, useToast } from './ToastContext';
 import { Button } from '../Button';
 import styles from './Toast.module.css';
+import buttonStyles from '../Button/Button.module.css';
 
 interface ToastItemProps {
   toast: Toast;
@@ -35,7 +36,15 @@ export function ToastItem({ toast }: ToastItemProps) {
       role="alert"
     >
       <div className={styles.message}>{toast.message}</div>
-      <Button iconOnly icon="✕" size="small" onClick={handleClose} variant="ghost" aria-label="Close" />
+      <Button
+        iconOnly
+        icon="✕"
+        size="small"
+        onClick={handleClose}
+        variant="ghost"
+        aria-label="Close"
+        className={buttonStyles.ghostElevated}
+      />
     </div>
   );
 }

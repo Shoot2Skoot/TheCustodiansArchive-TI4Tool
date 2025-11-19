@@ -2,6 +2,7 @@ import { ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '../Button';
 import styles from './Modal.module.css';
+import buttonStyles from '../Button/Button.module.css';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -68,7 +69,14 @@ export function Modal({
           <div className={styles.header}>
             {title && <h2 className={styles.title}>{title}</h2>}
             {showCloseButton && (
-              <Button iconOnly icon="✕" variant="ghost" onClick={onClose} aria-label="Close" />
+              <Button
+                iconOnly
+                icon="✕"
+                variant="ghost"
+                onClick={onClose}
+                aria-label="Close"
+                className={buttonStyles.ghostElevated}
+              />
             )}
           </div>
         )}
