@@ -35,7 +35,20 @@ export function ToastItem({ toast }: ToastItemProps) {
       role="alert"
     >
       <div className={styles.message}>{toast.message}</div>
-      <Button iconOnly icon="✕" size="small" onClick={handleClose} variant="ghost" aria-label="Close" />
+      <Button
+        iconOnly
+        icon="✕"
+        size="small"
+        onClick={handleClose}
+        variant="ghost"
+        aria-label="Close"
+        style={
+          {
+            '--background-color': 'var(--color-bg-elevated)',
+            '--border-color': 'var(--color-bg-elevated)',
+          } as React.CSSProperties
+        }
+      />
     </div>
   );
 }
