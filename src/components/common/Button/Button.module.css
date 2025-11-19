@@ -211,7 +211,7 @@
 
 /* Ghost Button */
 .ghost {
-  --background-color: var(--color-bg-primary);
+  --background-color: var(--color-bg-secondary);
   --border-color: transparent;
   color: var(--color-text-secondary);
 }
