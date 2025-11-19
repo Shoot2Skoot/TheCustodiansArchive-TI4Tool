@@ -216,10 +216,66 @@
   color: var(--color-text-secondary);
 }
 
+/* Ghost button: no border by default - ::after matches outer shape */
+.ghost.small::after {
+  clip-path: polygon(
+    6px 0, 100% 0, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 0 100%, 0 6px
+  );
+}
+
+.ghost.medium::after {
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.ghost.large::after {
+  clip-path: polygon(
+    10px 0, 100% 0, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 0 100%, 0 10px
+  );
+}
+
 .ghost:hover:not(:disabled) {
   --background-color: var(--color-bg-tertiary);
   --border-color: var(--color-border-primary);
   color: var(--color-text-primary);
+}
+
+/* Ghost button: show border on hover with inset ::after */
+.ghost:hover.small::after {
+  clip-path: polygon(
+    1px calc(6px + 0.5px),
+    calc(6px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(6px + 0.5px)),
+    calc(100% - calc(6px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
+  );
+}
+
+.ghost:hover.medium::after {
+  clip-path: polygon(
+    1px calc(8px + 0.5px),
+    calc(8px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(8px + 0.5px)),
+    calc(100% - calc(8px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
+  );
+}
+
+.ghost:hover.large::after {
+  clip-path: polygon(
+    1px calc(10px + 0.5px),
+    calc(10px + 0.5px) 1px,
+    calc(100% - 1px) 1px,
+    calc(100% - 1px) calc(100% - calc(10px + 0.5px)),
+    calc(100% - calc(10px + 0.5px)) calc(100% - 1px),
+    1px calc(100% - 1px)
+  );
 }
 
 .ghost:active:not(:disabled) {
