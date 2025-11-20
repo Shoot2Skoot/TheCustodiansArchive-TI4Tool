@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider, ToastContainer } from '@/components/common';
 import { HomePage } from '@/features/game-setup/HomePage';
 import { GameSetupWizard } from '@/features/game-setup/GameSetupWizard';
+import { GamePage } from '@/features/game';
 import { StateManagementTest } from '@/features/test/StateManagementTest';
 import { RealtimeTest } from '@/features/test/RealtimeTest';
 import { ComponentShowcase } from '@/features/test/ComponentShowcase';
@@ -15,21 +16,32 @@ function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
-        <div className="app">
-          <header className="app-header">
-            <h1>The Custodians Archive</h1>
-            <p>Twilight Imperium 4 Dashboard</p>
-          </header>
+        <Routes>
+          {/* Full-screen game page without header */}
+          <Route path="/game/:gameId" element={<GamePage />} />
 
-          <main className="app-main">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/setup" element={<GameSetupWizard />} />
-              <Route path="/components" element={<ComponentsPage />} />
-              <Route path="/tests" element={<TestsPage />} />
-            </Routes>
-          </main>
-        </div>
+          {/* Routes with app layout */}
+          <Route
+            path="*"
+            element={
+              <div className="app">
+                <header className="app-header">
+                  <h1>The Custodians Archive</h1>
+                  <p>Twilight Imperium 4 Dashboard</p>
+                </header>
+
+                <main className="app-main">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/setup" element={<GameSetupWizard />} />
+                    <Route path="/components" element={<ComponentsPage />} />
+                    <Route path="/tests" element={<TestsPage />} />
+                  </Routes>
+                </main>
+              </div>
+            }
+          />
+        </Routes>
         <ToastContainer />
       </BrowserRouter>
     </ToastProvider>

@@ -44,11 +44,12 @@ export async function initializeGameState(gameId: string, speakerPlayerId: strin
     .from('game_state')
     .insert({
       game_id: gameId,
-      current_round: 0,
-      current_phase: 'setup',
+      current_round: 1,
+      current_phase: 'strategy',
       speaker_player_id: speakerPlayerId,
       mecatol_claimed: false,
       last_activity_at: new Date().toISOString(),
+      phase_started_at: new Date().toISOString(),
     })
     .select()
     .single();

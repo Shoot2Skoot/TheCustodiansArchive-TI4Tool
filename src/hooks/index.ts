@@ -2,3 +2,4 @@
 export * from './useGame';
 export * from './useGameActions';
 export * from './useEnsureSession';
+export * from './useLoadGame';
