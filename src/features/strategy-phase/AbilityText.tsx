@@ -26,21 +26,45 @@ export function AbilityText({ text }: AbilityTextProps) {
     let match;
 
     while ((match = regex.exec(text)) !== null) {
-      // Add text before the icon
-      if (match.index > currentIndex) {
-        parts.push(text.substring(currentIndex, match.index));
-      }
+      // Check if there's a number before the icon (with optional space)
+      const beforeText = text.substring(currentIndex, match.index);
+      const numberMatch = beforeText.match(/^(.*?)(\d+)\s*$/);
 
-      // Add the icon
-      const iconSrc = icons[match[0]];
-      parts.push(
-        <img
-          key={`icon-${key++}`}
-          src={iconSrc}
-          alt={match[0].replace(/[\[\]]/g, '')}
-          className={styles.inlineIcon}
-        />
-      );
+      if (numberMatch) {
+        // Add text before the number
+        if (numberMatch[1]) {
+          parts.push(numberMatch[1]);
+        }
+
+        // Wrap number + icon together in a non-breaking span
+        const iconSrc = icons[match[0]];
+        parts.push(
+          <span key={`number-icon-${key++}`} className={styles.noWrap}>
+            {numberMatch[2]}{' '}
+            <img
+              src={iconSrc}
+              alt={match[0].replace(/[\[\]]/g, '')}
+              className={styles.inlineIcon}
+            />
+          </span>
+        );
+      } else {
+        // Add text before the icon
+        if (beforeText) {
+          parts.push(beforeText);
+        }
+
+        // Add the icon
+        const iconSrc = icons[match[0]];
+        parts.push(
+          <img
+            key={`icon-${key++}`}
+            src={iconSrc}
+            alt={match[0].replace(/[\[\]]/g, '')}
+            className={styles.inlineIcon}
+          />
+        );
+      }
 
       currentIndex = match.index + match[0].length;
     }
@@ -58,11 +82,19 @@ export function AbilityText({ text }: AbilityTextProps) {
 
   return (
     <div className={styles.abilityText}>
-      {lines.map((line, index) => (
-        <div key={index} className={styles.line}>
-          {parseText(line)}
-        </div>
-      ))}
+      {lines.map((line, index) => {
+        // Check if line starts with bullet emoji
+        const bulletMatch = line.match(/^(🔶)\s*/);
+        const bullet = bulletMatch ? bulletMatch[1] : null;
+        const textContent = bullet ? line.substring(bulletMatch[0].length) : line;
+
+        return (
+          <div key={index} className={styles.line}>
+            {bullet && <span className={styles.bullet}>{bullet}</span>}
+            <span className={styles.textContent}>{parseText(textContent)}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }

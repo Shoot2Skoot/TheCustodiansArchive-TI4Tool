@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { STRATEGY_CARDS } from '@/lib/constants';
 import { getFactionImage } from '@/lib/factions';
 import { AbilityText } from './AbilityText';
@@ -28,6 +29,16 @@ export function StrategyCard({
   onClick,
 }: StrategyCardProps) {
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
+  const [showPrimary, setShowPrimary] = useState(true);
+
+  // Alternate between primary and secondary every 15 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowPrimary((prev) => !prev);
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!card) {
     return null;
@@ -80,13 +91,18 @@ export function StrategyCard({
             </div>
           ) : (
             <>
-              <div className={styles.actionSection}>
-                <div className={styles.actionLabel}>PRIMARY</div>
-                <AbilityText text={card.primary} />
+              <div className={styles.timerBar}>
+                <div
+                  key={showPrimary ? 'primary' : 'secondary'}
+                  className={`${styles.timerProgress} ${showPrimary ? styles.timerFill : styles.timerEmpty}`}
+                  style={{ '--strategy-color': card.color } as React.CSSProperties}
+                />
               </div>
-              <div className={styles.actionSection}>
-                <div className={styles.actionLabel}>SECONDARY</div>
-                <AbilityText text={card.secondary} />
+              <div className={`${styles.actionSection} ${styles.fullHeight}`}>
+                <div className={styles.actionLabel}>{showPrimary ? 'PRIMARY' : 'SECONDARY'}</div>
+                <div className={styles.abilityContent}>
+                  <AbilityText text={showPrimary ? card.primary : card.secondary} />
+                </div>
               </div>
             </>
           )}

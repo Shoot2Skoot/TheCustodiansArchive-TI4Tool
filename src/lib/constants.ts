@@ -20,7 +20,7 @@ export const PLAYER_COLOR_MAP: Record<PlayerColor, string> = {
   green: '#43a047',
   yellow: '#fdd835',
   purple: '#8e24aa',
-  black: '#c0c0c0', // Silver for visibility on dark backgrounds
+  black: '#a0a0a0', // Darker silver for visibility on dark backgrounds
   orange: '#fb8c00',
   pink: '#ec407a',
 };

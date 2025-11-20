@@ -27,6 +27,7 @@ interface StrategyPhaseProps {
   players: Player[];
   speakerPosition: number;
   roundNumber: number;
+  initialTradeGoodBonuses?: Record<number, number>;
   onComplete: (selections: StrategySelection[]) => void;
   onReset: () => void;
 }
@@ -36,6 +37,7 @@ export function StrategyPhase({
   players,
   speakerPosition,
   roundNumber,
+  initialTradeGoodBonuses,
   onComplete,
   onReset,
 }: StrategyPhaseProps) {
@@ -47,14 +49,18 @@ export function StrategyPhase({
   // Calculate player order based on speaker
   const playerOrder = getPlayerOrder(players, speakerPosition);
 
-  // Initialize trade good bonuses (all cards start with 0)
+  // Initialize trade good bonuses from prop or default to 0
   useEffect(() => {
-    const initialBonuses: Record<number, number> = {};
-    STRATEGY_CARDS.forEach((card) => {
-      initialBonuses[card.id] = 0;
-    });
-    setTradeGoodBonuses(initialBonuses);
-  }, []);
+    if (initialTradeGoodBonuses) {
+      setTradeGoodBonuses(initialTradeGoodBonuses);
+    } else {
+      const initialBonuses: Record<number, number> = {};
+      STRATEGY_CARDS.forEach((card) => {
+        initialBonuses[card.id] = 0;
+      });
+      setTradeGoodBonuses(initialBonuses);
+    }
+  }, [initialTradeGoodBonuses]);
 
   const currentPlayer = playerOrder[currentPlayerIndex];
   const isSelectionComplete = selections.length === players.length;
@@ -71,14 +77,6 @@ export function StrategyPhase({
 
     setSelections([...selections, newSelection]);
 
-    // Update trade good bonuses for remaining cards
-    const newBonuses = { ...tradeGoodBonuses };
-    delete newBonuses[cardId]; // Remove the selected card
-    Object.keys(newBonuses).forEach((key) => {
-      newBonuses[Number(key)] += 1;
-    });
-    setTradeGoodBonuses(newBonuses);
-
     // Move to next player
     setCurrentPlayerIndex(currentPlayerIndex + 1);
 
@@ -93,12 +91,16 @@ export function StrategyPhase({
     setCurrentPlayerIndex(0);
     setShowSummary(false);
 
-    // Reset trade good bonuses
-    const initialBonuses: Record<number, number> = {};
-    STRATEGY_CARDS.forEach((card) => {
-      initialBonuses[card.id] = 0;
-    });
-    setTradeGoodBonuses(initialBonuses);
+    // Reset trade good bonuses to initial values
+    if (initialTradeGoodBonuses) {
+      setTradeGoodBonuses(initialTradeGoodBonuses);
+    } else {
+      const initialBonuses: Record<number, number> = {};
+      STRATEGY_CARDS.forEach((card) => {
+        initialBonuses[card.id] = 0;
+      });
+      setTradeGoodBonuses(initialBonuses);
+    }
 
     onReset();
   };

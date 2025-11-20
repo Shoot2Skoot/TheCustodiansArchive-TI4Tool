@@ -1,7 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 import { useLoadGame } from '@/hooks';
-import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker } from '@/store';
+import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
+import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTradeGoodBonuses';
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
 import { FACTIONS } from '@/lib/factions';
 import { Panel } from '@/components/common';
@@ -17,6 +19,13 @@ export function GamePage() {
   const players = useStore(selectPlayers);
   const gameState = useStore(selectGameState);
   const speaker = useStore(selectSpeaker);
+  const strategySelections = useStore(selectStrategySelections);
+
+  // Calculate trade good bonuses from previous rounds
+  const tradeGoodBonuses = useMemo(() => {
+    if (!gameState) return {};
+    return calculateTradeGoodBonuses(strategySelections, gameState.currentRound);
+  }, [strategySelections, gameState]);
 
   if (isLoading) {
     return (
@@ -94,6 +103,7 @@ export function GamePage() {
             players={playersWithFactions}
             speakerPosition={speaker?.position ?? 1}
             roundNumber={gameState.currentRound}
+            initialTradeGoodBonuses={tradeGoodBonuses}
             onComplete={handleStrategyComplete}
             onReset={handleStrategyReset}
           />
