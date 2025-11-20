@@ -3,6 +3,11 @@
   position: relative;
   width: 100%;
   height: 100%;
+  z-index: 1;
+}
+
+.cardWrapper:has(.expanded) {
+  z-index: 100;
 }
 
 .cardContainer {
@@ -11,7 +16,7 @@
   flex-direction: column;
   background: var(--strategy-color);
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease-in-out;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     0 4px 12px rgba(0, 0, 0, 0.5);
@@ -21,6 +26,19 @@
     16px 0, 100% 0, 100% calc(100% - 16px),
     calc(100% - 16px) 100%, 0 100%, 0 16px
   );
+}
+
+.cardContainer.expanded {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(200% + var(--space-4));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.8),
+    0 0 40px var(--strategy-color);
+  transform: scale(1.02);
 }
 
 /* Inner background layer to create border effect */
@@ -288,6 +306,19 @@
   to {
     width: 100%;
   }
+}
+
+/* Expanded Card Styles */
+.expandedSection {
+  flex: 1;
+}
+
+.expanded .expandedSection .actionLabel {
+  font-size: var(--font-size-2xl);
+}
+
+.expanded .expandedSection .abilityContent {
+  font-size: var(--font-size-3xl);
 }
 
 .actionSection {

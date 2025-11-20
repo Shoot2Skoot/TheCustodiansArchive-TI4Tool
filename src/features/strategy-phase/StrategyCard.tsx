@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { STRATEGY_CARDS } from '@/lib/constants';
 import { getFactionImage } from '@/lib/factions';
 import { AbilityText } from './AbilityText';
@@ -30,6 +30,8 @@ export function StrategyCard({
 }: StrategyCardProps) {
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
   const [showPrimary, setShowPrimary] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Alternate between primary and secondary every 15 seconds
   useEffect(() => {
@@ -40,6 +42,36 @@ export function StrategyCard({
     return () => clearInterval(interval);
   }, []);
 
+  // Handle mouse enter with delay
+  const handleMouseEnter = () => {
+    if (isPicked) return; // Don't expand picked cards
+
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsExpanded(true);
+    }, 2000); // 2 second delay
+  };
+
+  // Handle mouse leave
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setIsExpanded(false);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (!card) {
     return null;
   }
@@ -47,7 +79,11 @@ export function StrategyCard({
   const tradeGoodImage = tradeGoodBonus === 1 ? tradeGood1 : tradeGood3;
 
   return (
-    <div className={styles.cardWrapper}>
+    <div
+      className={styles.cardWrapper}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {tradeGoodBonus > 0 && !isPicked && (
         <div className={styles.bonusBadge}>
           <img src={tradeGoodImage} alt="Trade Good" className={styles.bonusImage} />
@@ -56,7 +92,7 @@ export function StrategyCard({
       )}
 
       <div
-        className={`${styles.cardContainer} ${isSelected ? styles.selected : ''} ${isPicked ? styles.picked : ''}`}
+        className={`${styles.cardContainer} ${isSelected ? styles.selected : ''} ${isPicked ? styles.picked : ''} ${isExpanded ? styles.expanded : ''}`}
         onClick={!isPicked ? onClick : undefined}
         role="button"
         tabIndex={isPicked ? -1 : 0}
@@ -89,6 +125,21 @@ export function StrategyCard({
                 </div>
               </div>
             </div>
+          ) : isExpanded ? (
+            <>
+              <div className={`${styles.actionSection} ${styles.expandedSection}`}>
+                <div className={styles.actionLabel}>PRIMARY</div>
+                <div className={styles.abilityContent}>
+                  <AbilityText text={card.primary} />
+                </div>
+              </div>
+              <div className={`${styles.actionSection} ${styles.expandedSection}`}>
+                <div className={styles.actionLabel}>SECONDARY</div>
+                <div className={styles.abilityContent}>
+                  <AbilityText text={card.secondary} />
+                </div>
+              </div>
+            </>
           ) : (
             <>
               <div className={styles.timerBar}>
