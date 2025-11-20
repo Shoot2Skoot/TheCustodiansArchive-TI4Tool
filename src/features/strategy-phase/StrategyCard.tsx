@@ -18,6 +18,7 @@ interface StrategyCardProps {
     color: string;
   };
   onClick: () => void;
+  isBottomRow?: boolean;
 }
 
 export function StrategyCard({
@@ -27,6 +28,7 @@ export function StrategyCard({
   isPicked,
   pickedBy,
   onClick,
+  isBottomRow = false,
 }: StrategyCardProps) {
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
   const [showPrimary, setShowPrimary] = useState(true);
@@ -52,7 +54,7 @@ export function StrategyCard({
 
     hoverTimeoutRef.current = setTimeout(() => {
       setIsExpanded(true);
-    }, 2000); // 2 second delay
+    }, 600); // 600ms delay - intentional but responsive
   };
 
   // Handle mouse leave
@@ -92,7 +94,7 @@ export function StrategyCard({
       )}
 
       <div
-        className={`${styles.cardContainer} ${isSelected ? styles.selected : ''} ${isPicked ? styles.picked : ''} ${isExpanded ? styles.expanded : ''}`}
+        className={`${styles.cardContainer} ${isSelected ? styles.selected : ''} ${isPicked ? styles.picked : ''} ${isExpanded ? styles.expanded : ''} ${isBottomRow ? styles.bottomRow : ''}`}
         onClick={!isPicked ? onClick : undefined}
         role="button"
         tabIndex={isPicked ? -1 : 0}

@@ -222,6 +222,7 @@ export function StrategyPhase({
             isPicked={pickedCardIds.has(card.id)}
             pickedBy={cardPickedByMap.get(card.id)}
             onClick={() => handleCardSelect(card.id)}
+            isBottomRow={card.id >= 5} // Cards 5-8 are in bottom row
           />
         ))}
       </div>

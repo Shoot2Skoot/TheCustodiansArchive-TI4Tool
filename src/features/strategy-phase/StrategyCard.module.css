@@ -41,6 +41,12 @@
   transform: scale(1.02);
 }
 
+/* Bottom row cards expand upward instead of downward */
+.cardContainer.expanded.bottomRow {
+  top: auto;
+  bottom: 0;
+}
+
 /* Inner background layer to create border effect */
 .cardContainer::before {
   content: '';
@@ -314,11 +320,12 @@
 }
 
 .expanded .expandedSection .actionLabel {
-  font-size: var(--font-size-2xl);
+  font-size: calc(var(--font-size-2xl) * 1.75);
 }
 
+/* Target the ability content wrapper - font size cascades to AbilityText component */
 .expanded .expandedSection .abilityContent {
-  font-size: var(--font-size-3xl);
+  font-size: calc(var(--font-size-2xl) * 4);
 }
 
 .actionSection {
