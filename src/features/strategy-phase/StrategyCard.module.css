@@ -1,17 +1,43 @@
+/* Card Wrapper - allows badge to sit outside clipped area */
+.cardWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .cardContainer {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: #231e20;
-  border: 4px solid;
-  border-radius: 8px;
-  overflow: visible;
+  background: var(--strategy-color);
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     0 4px 12px rgba(0, 0, 0, 0.5);
-  min-height: 280px;
+  height: 100%;
+  isolation: isolate;
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+/* Inner background layer to create border effect */
+.cardContainer::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #231e20;
+  z-index: -1;
+  clip-path: polygon(
+    calc(16px - 2px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(16px - 2px)),
+    calc(100% - calc(16px - 2px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(16px - 2px)
+  );
 }
 
 .cardContainer:hover:not(.picked) {
@@ -101,19 +127,40 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  background: #000000;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.3);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 4px 12px rgba(0, 0, 0, 0.6);
   z-index: 15;
+  isolation: isolate;
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.bonusBadge::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: #000000;
+  z-index: -1;
+  clip-path: polygon(
+    calc(8px - 1px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(8px - 1px)),
+    calc(100% - calc(8px - 1px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(8px - 1px)
+  );
 }
 
 .bonusImage {
   width: 32px;
   height: 32px;
   object-fit: contain;
+  position: relative;
+  z-index: 0;
 }
 
 .bonusText {
@@ -122,6 +169,8 @@
   color: #fce44c;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   min-width: 24px;
+  position: relative;
+  z-index: 0;
 }
 
 /* Card Header */
@@ -135,18 +184,18 @@
 }
 
 .cardNumber {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: #000000;
-  border: 4px solid;
-  border-radius: 4px;
-  font-size: var(--font-size-3xl);
+  width: 52px;
+  height: 52px;
+  background: var(--strategy-color, var(--color-accent-primary));
+  font-size: var(--font-size-4xl);
   font-weight: 700;
   color: white;
   flex-shrink: 0;
+  isolation: isolate;
   text-shadow:
     0 0 10px var(--strategy-color, var(--color-accent-primary)),
     0 0 20px var(--strategy-color, var(--color-accent-primary)),
@@ -155,11 +204,33 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     inset 0 2px 4px rgba(0, 0, 0, 0.5),
     0 2px 6px rgba(0, 0, 0, 0.4);
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+  padding-bottom: 2px;
+}
+
+.cardNumber::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #000000;
+  z-index: -1;
+  clip-path: polygon(
+    calc(8px - 2px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(8px - 2px)),
+    calc(100% - calc(8px - 2px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(8px - 2px)
+  );
 }
 
 .cardName {
   flex: 1;
-  font-size: var(--font-size-2xl);
+  font-family: var(--font-space-heading);
+  font-size: var(--font-size-3xl);
   font-weight: 700;
   color: white;
   letter-spacing: 0.05em;
@@ -172,7 +243,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-4);
   flex: 1;
 }
 
@@ -188,11 +259,10 @@
   color: var(--strategy-color, var(--color-accent-primary));
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  text-shadow: 0 0 4px var(--strategy-color, var(--color-accent-primary));
 }
 
 .actionText {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
   white-space: pre-line;

@@ -140,10 +140,10 @@ export function GamePage() {
           ← Back to Home
         </button>
         <div className={styles.gameInfo}>
-          <h1 className={styles.gameTitle}>Round {gameState.currentRound}</h1>
-          <p className={styles.phaseLabel}>
-            Current Phase: <span className={styles.phaseName}>{currentPhase}</span>
-          </p>
+          <span className={styles.gameTitle}>Round {gameState.currentRound}</span>
+        </div>
+        <div className={styles.phaseInfo}>
+          <span className={styles.phaseName}>{currentPhase.charAt(0).toUpperCase() + currentPhase.slice(1)}</span>
         </div>
       </div>
 

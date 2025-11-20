@@ -41,13 +41,14 @@
   --color-player-green: #43a047;
   --color-player-yellow: #fdd835;
   --color-player-purple: #8e24aa;
-  --color-player-black: #424242;
+  --color-player-black: #c0c0c0;
   --color-player-orange: #fb8c00;
   --color-player-pink: #ec407a;
 
   /* Typography */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Roboto Mono', 'Courier New', monospace;
+  --font-space-heading: 'Audiowide', sans-serif;
 
   /* Font Sizes */
   --font-size-xs: 0.75rem;

@@ -1,5 +1,5 @@
 import { Panel, Button } from '@/components/common';
-import { STRATEGY_CARDS } from '@/lib/constants';
+import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
 import styles from './StrategySelectionSummary.module.css';
 
 interface Player {
@@ -60,7 +60,7 @@ export function StrategySelectionSummary({
                 <div className={styles.playerInfo}>
                   <div
                     className={styles.playerName}
-                    style={{ color: player.color }}
+                    style={{ color: getPlayerColor(player.color) }}
                   >
                     {player.displayName}
                   </div>

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Panel, Button } from '@/components/common';
 import { StrategyCard } from './StrategyCard';
 import { StrategySelectionSummary } from './StrategySelectionSummary';
-import { STRATEGY_CARDS } from '@/lib/constants';
+import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
+import { getFactionImage, FACTIONS } from '@/lib/factions';
 import styles from './StrategyPhase.module.css';
 
 interface Player {
@@ -11,6 +12,7 @@ interface Player {
   displayName: string;
   color: string;
   factionName: string;
+  factionId: string;
 }
 
 interface StrategySelection {
@@ -129,7 +131,7 @@ export function StrategyPhase({
               factionId: player.factionId,
               factionName: player.factionName,
               playerName: player.displayName,
-              color: player.color,
+              color: getPlayerColor(player.color),
             }
           : undefined,
       ];
@@ -138,33 +140,73 @@ export function StrategyPhase({
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Strategy Phase - Round {roundNumber}</h1>
-        <p className={styles.description}>
-          Players select strategy cards in speaker order
-        </p>
-      </div>
-
+      {/* Combined Turn Panel */}
       <Panel className={styles.turnIndicator}>
-        <div className={styles.turnInfo}>
-          {!isSelectionComplete ? (
-            <>
-              <div className={styles.turnLabel}>Current Turn:</div>
-              <div
-                className={styles.currentPlayer}
-                style={{ color: currentPlayer?.color }}
-              >
-                {currentPlayer?.displayName} ({currentPlayer?.factionName})
-              </div>
-              <div className={styles.turnOrder}>
-                Selection {selections.length + 1} of {players.length}
-              </div>
-            </>
-          ) : (
-            <div className={styles.completedMessage}>
-              All strategy cards have been selected!
+        <div className={styles.turnPanelLayout}>
+          <div className={styles.turnPanelSpacer}></div>
+
+          <div className={styles.turnPanelCenter}>
+            {/* Compact Turn Queue Bar */}
+            <div className={styles.turnQueueBar}>
+              {playerOrder.map((player, index) => {
+                const hasSelected = selections.some((s) => s.playerId === player.id);
+                const isCurrent = index === currentPlayerIndex;
+                const isOnDeck = index === currentPlayerIndex + 1;
+
+                return (
+                  <div
+                    key={player.id}
+                    className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${hasSelected ? styles.queueBarCompleted : ''}`}
+                    style={{
+                      borderColor: getPlayerColor(player.color),
+                    }}
+                  >
+                    <img
+                      src={getFactionImage(player.factionId, 'color')}
+                      alt={player.factionName}
+                      className={styles.queueBarIcon}
+                    />
+                    <div className={styles.queueBarInfo}>
+                      <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                        {FACTIONS[player.factionId]?.shortName || player.factionName}
+                      </div>
+                      <div className={styles.queueBarPlayer}>
+                        ({player.displayName})
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
+
+            {/* Current Turn Indicator */}
+            <div className={styles.turnInfo}>
+              {!isSelectionComplete ? (
+                <div className={styles.currentTurnText}>
+                  <span
+                    className={styles.currentPlayer}
+                    style={{ color: getPlayerColor(currentPlayer?.color || 'blue') }}
+                  >
+                    {currentPlayer?.factionName} ({currentPlayer?.displayName})
+                  </span>
+                  <span className={styles.turnPrompt}>, Choose Your Strategy...</span>
+                  <span className={styles.turnCount}>
+                    [{selections.length + 1}/{players.length}]
+                  </span>
+                </div>
+              ) : (
+                <div className={styles.completedMessage}>
+                  All strategy cards selected!
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.turnPanelActions}>
+            <Button variant="secondary" onClick={handleReset}>
+              Reset Phase
+            </Button>
+          </div>
         </div>
       </Panel>
 
@@ -180,46 +222,6 @@ export function StrategyPhase({
             onClick={() => handleCardSelect(card.id)}
           />
         ))}
-      </div>
-
-      <div className={styles.playerQueue}>
-        <h3 className={styles.queueTitle}>Selection Order</h3>
-        <div className={styles.queueList}>
-          {playerOrder.map((player, index) => {
-            const hasSelected = selections.some((s) => s.playerId === player.id);
-            const isCurrent = index === currentPlayerIndex;
-
-            return (
-              <div
-                key={player.id}
-                className={`${styles.queueItem} ${isCurrent ? styles.currentTurn : ''} ${hasSelected ? styles.completed : ''}`}
-              >
-                <div className={styles.queueNumber}>{index + 1}</div>
-                <div className={styles.queuePlayerInfo}>
-                  <div
-                    className={styles.queuePlayerName}
-                    style={{ color: player.color }}
-                  >
-                    {player.displayName}
-                  </div>
-                  <div className={styles.queueFactionName}>{player.factionName}</div>
-                </div>
-                {hasSelected && (
-                  <div className={styles.queueCheckmark}>✓</div>
-                )}
-                {isCurrent && !hasSelected && (
-                  <div className={styles.queueIndicator}>←</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className={styles.actions}>
-        <Button variant="secondary" onClick={handleReset}>
-          Reset Phase
-        </Button>
       </div>
     </div>
   );
