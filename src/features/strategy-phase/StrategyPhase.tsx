@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Panel, Button } from '@/components/common';
 import { StrategyCard } from './StrategyCard';
 import { PlayPhaseEndEffectModal } from './PlayPhaseEndEffectModal';
-import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
+import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
@@ -41,10 +41,10 @@ interface StrategyPhaseProps {
 }
 
 export function StrategyPhase({
-  gameId,
+  gameId: _gameId,
   players,
   speakerPosition,
-  roundNumber,
+  roundNumber: _roundNumber,
   initialTradeGoodBonuses,
   onComplete,
   onReset,
@@ -58,8 +58,6 @@ export function StrategyPhase({
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
-  const undo = useStore((state) => state.undo);
-  const redo = useStore((state) => state.redo);
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
   const currentGame = useStore((state) => state.currentGame);
@@ -288,7 +286,7 @@ export function StrategyPhase({
               factionId: player.factionId,
               factionName: player.factionName,
               playerName: player.displayName,
-              color: getPlayerColor(player.color),
+              color: getPlayerColor(player.color as PlayerColor),
             }
           : undefined,
       ];
@@ -317,7 +315,7 @@ export function StrategyPhase({
                         key={player.id}
                         className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${hasSelected ? styles.queueBarCompleted : ''}`}
                         style={{
-                          borderColor: getPlayerColor(player.color),
+                          borderColor: getPlayerColor(player.color as PlayerColor),
                         }}
                       >
                         <img
@@ -326,7 +324,7 @@ export function StrategyPhase({
                           className={styles.queueBarIcon}
                         />
                         <div className={styles.queueBarInfo}>
-                          <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                          <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color as PlayerColor) }}>
                             {FACTIONS[player.factionId]?.shortName || player.factionName}
                           </div>
                           <div className={styles.queueBarPlayer}>
@@ -343,7 +341,7 @@ export function StrategyPhase({
                   <div className={styles.currentTurnText}>
                     <span
                       className={styles.currentPlayer}
-                      style={{ color: getPlayerColor(currentPlayer?.color || 'blue') }}
+                      style={{ color: getPlayerColor((currentPlayer?.color as PlayerColor) || 'blue') }}
                     >
                       {currentPlayer?.factionName} ({currentPlayer?.displayName})
                     </span>

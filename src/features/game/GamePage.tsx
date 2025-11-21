@@ -64,10 +64,11 @@ export function GamePage() {
     );
   }
 
-  // Map players to include faction names
+  // Map players to include faction names and handle null displayName
   const playersWithFactions = players.map((player) => ({
     ...player,
     factionName: FACTIONS[player.factionId]?.name || player.factionId,
+    displayName: player.displayName || `Player ${player.position}`,
   }));
 
   const handleStrategyComplete = async (selections: any[]) => {

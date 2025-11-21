@@ -547,7 +547,7 @@ export function ActionPhase({
                   if (bIsCurrent) return -1;
 
                   // Sort by initiative order, wrapping around from on-deck player
-                  if (onDeckInitiative !== null) {
+                  if (onDeckInitiative != null) {
                     const aInitiative = a.strategyCardId;
                     const bInitiative = b.strategyCardId;
 
@@ -608,7 +608,7 @@ export function ActionPhase({
                       {!isCondensed && (
                         <div className={styles.queueBarInfo}>
                           <div className={styles.queueBarTop}>
-                            <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                            <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color as PlayerColor) }}>
                               {FACTIONS[player.factionId]?.shortName || player.factionName}
                             </div>
                             <div className={styles.queueBarTacticalCount}>
