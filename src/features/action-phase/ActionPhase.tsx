@@ -67,7 +67,7 @@ export function ActionPhase({
   }, [players]);
 
   // Calculate turn order based on strategy card initiative
-  const turnOrder = [...strategySelections].sort((a, b) => a.cardId - b.cardId);
+  const turnOrder = [...strategySelections].sort((a, b) => a.strategyCardId - b.strategyCardId);
 
   // Debug logging
   console.log('ActionPhase - Strategy Selections:', strategySelections);
@@ -138,7 +138,7 @@ export function ActionPhase({
 
     pushHistory({
       type: 'strategyCardAction',
-      strategyCardId: strategyCard.cardId,
+      strategyCardId: strategyCard.strategyCardId,
       data: getCurrentStateSnapshot(),
       userId: currentUserId,
       timestamp: Date.now(),
@@ -152,7 +152,7 @@ export function ActionPhase({
     );
 
     // Check if this is Politics card (card 3) - will open speaker selection modal later
-    if (strategyCard.cardId === 3) {
+    if (strategyCard.strategyCardId === 3) {
       // TODO: Open speaker selection modal
       console.log('Politics card - speaker selection needed');
     }
@@ -327,7 +327,7 @@ export function ActionPhase({
 
   const currentStrategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
   const strategyCardData = currentStrategyCard
-    ? STRATEGY_CARDS.find((c) => c.id === currentStrategyCard.cardId)
+    ? STRATEGY_CARDS.find((c) => c.id === currentStrategyCard.strategyCardId)
     : null;
 
   return (
@@ -413,7 +413,7 @@ export function ActionPhase({
           {turnOrder.map((selection) => {
             const player = players.find((p) => p.id === selection.playerId);
             const state = playerActionStates.find((s) => s.playerId === selection.playerId);
-            const card = STRATEGY_CARDS.find((c) => c.id === selection.cardId);
+            const card = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
 
             console.log('Player Status Map - Selection:', selection);
             console.log('  - Found Player:', player);
