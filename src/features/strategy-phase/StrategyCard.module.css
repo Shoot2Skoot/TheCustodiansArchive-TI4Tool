@@ -261,6 +261,33 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: white;
+  font-size: var(--font-size-2xl);
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.expandButton:hover {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.expandButton:active {
+  transform: scale(0.95);
+}
+
 /* Card Actions */
 .cardActions {
   position: relative;
@@ -325,7 +352,7 @@
 
 /* Target the ability content wrapper - font size cascades to AbilityText component */
 .expanded .expandedSection .abilityContent {
-  font-size: calc(var(--font-size-2xl) * 4);
+  font-size: calc(var(--font-size-2xl) * 1.4);
 }
 
 .actionSection {
@@ -342,6 +369,7 @@
 .abilityContent {
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
+  font-size: calc(var(--font-size-sm) * 1.9);
 }
 
 .actionLabel {

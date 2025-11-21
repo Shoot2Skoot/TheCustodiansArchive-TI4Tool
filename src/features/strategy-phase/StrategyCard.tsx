@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { STRATEGY_CARDS } from '@/lib/constants';
 import { getFactionImage } from '@/lib/factions';
 import { AbilityText } from './AbilityText';
@@ -33,7 +33,6 @@ export function StrategyCard({
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
   const [showPrimary, setShowPrimary] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Alternate between primary and secondary every 15 seconds
   useEffect(() => {
@@ -44,35 +43,11 @@ export function StrategyCard({
     return () => clearInterval(interval);
   }, []);
 
-  // Handle mouse enter with delay
-  const handleMouseEnter = () => {
-    if (isPicked) return; // Don't expand picked cards
-
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-
-    hoverTimeoutRef.current = setTimeout(() => {
-      setIsExpanded(true);
-    }, 600); // 600ms delay - intentional but responsive
+  // Toggle expansion
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card selection
+    setIsExpanded((prev) => !prev);
   };
-
-  // Handle mouse leave
-  const handleMouseLeave = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-    setIsExpanded(false);
-  };
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-    };
-  }, []);
 
   if (!card) {
     return null;
@@ -81,11 +56,7 @@ export function StrategyCard({
   const tradeGoodImage = tradeGoodBonus === 1 ? tradeGood1 : tradeGood3;
 
   return (
-    <div
-      className={styles.cardWrapper}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={styles.cardWrapper}>
       {tradeGoodBonus > 0 && !isPicked && (
         <div className={styles.bonusBadge}>
           <img src={tradeGoodImage} alt="Trade Good" className={styles.bonusImage} />
@@ -110,6 +81,15 @@ export function StrategyCard({
             {cardId}
           </div>
           <div className={styles.cardName}>{card.name.toUpperCase()}</div>
+          {!isPicked && (
+            <button
+              className={styles.expandButton}
+              onClick={handleToggleExpand}
+              aria-label={isExpanded ? 'Collapse card' : 'Expand card'}
+            >
+              {isExpanded ? '−' : '+'}
+            </button>
+          )}
         </div>
 
         <div className={styles.cardActions}>

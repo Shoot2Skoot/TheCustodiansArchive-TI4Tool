@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Panel, Button } from '@/components/common';
 import { StrategyCard } from './StrategyCard';
-import { StrategySelectionSummary } from './StrategySelectionSummary';
 import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
+import { useStore } from '@/store';
+import { getCurrentUserId } from '@/lib/auth';
 import styles from './StrategyPhase.module.css';
 
 interface Player {
@@ -44,10 +45,21 @@ export function StrategyPhase({
   const [selections, setSelections] = useState<StrategySelection[]>([]);
   const [tradeGoodBonuses, setTradeGoodBonuses] = useState<Record<number, number>>({});
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [showSummary, setShowSummary] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Get undo/redo functions from store
+  const pushHistory = useStore((state) => state.pushHistory);
+  const undo = useStore((state) => state.undo);
+  const canUndo = useStore((state) => state.canUndo);
+  const currentGame = useStore((state) => state.currentGame);
 
   // Calculate player order based on speaker
   const playerOrder = getPlayerOrder(players, speakerPosition);
+
+  // Get current user ID on mount
+  useEffect(() => {
+    getCurrentUserId().then(setCurrentUserId);
+  }, []);
 
   // Initialize trade good bonuses from prop or default to 0
   useEffect(() => {
@@ -64,9 +76,10 @@ export function StrategyPhase({
 
   const currentPlayer = playerOrder[currentPlayerIndex];
   const isSelectionComplete = selections.length === players.length;
+  const isHost = currentUserId && currentGame?.createdBy === currentUserId;
 
   const handleCardSelect = (cardId: number) => {
-    if (!currentPlayer) return;
+    if (!currentPlayer || !currentUserId) return;
 
     const newSelection: StrategySelection = {
       playerId: currentPlayer.id,
@@ -75,21 +88,53 @@ export function StrategyPhase({
       selectionOrder: selections.length + 1,
     };
 
-    setSelections([...selections, newSelection]);
+    const newSelections = [...selections, newSelection];
+
+    // Push to undo history BEFORE updating state
+    pushHistory({
+      type: 'strategySelection',
+      data: selections, // Store the state BEFORE this action
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
+
+    setSelections(newSelections);
 
     // Move to next player
     setCurrentPlayerIndex(currentPlayerIndex + 1);
-
-    // Check if all selections are complete
-    if (selections.length + 1 === players.length) {
-      setShowSummary(true);
-    }
   };
+
+  const handleUndo = useCallback(() => {
+    if (!currentUserId || !canUndo(currentUserId, isHost || false)) return;
+
+    const entry = undo();
+    if (entry && entry.type === 'strategySelection') {
+      // Restore the previous state
+      setSelections(entry.data);
+      setCurrentPlayerIndex(entry.data.length);
+    }
+  }, [currentUserId, isHost, canUndo, undo]);
+
+  // Keyboard shortcuts for undo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Z for undo (Cmd+Z on Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleUndo]);
 
   const handleReset = () => {
     setSelections([]);
     setCurrentPlayerIndex(0);
-    setShowSummary(false);
+
+    // Clear undo history
+    useStore.getState().clearHistory();
 
     // Reset trade good bonuses to initial values
     if (initialTradeGoodBonuses) {
@@ -108,17 +153,6 @@ export function StrategyPhase({
   const handleEndPhase = () => {
     onComplete(selections);
   };
-
-  if (showSummary) {
-    return (
-      <StrategySelectionSummary
-        selections={selections}
-        players={players}
-        onReset={handleReset}
-        onEndPhase={handleEndPhase}
-      />
-    );
-  }
 
   const pickedCardIds = new Set(selections.map((s) => s.cardId));
 
@@ -205,9 +239,21 @@ export function StrategyPhase({
           </div>
 
           <div className={styles.turnPanelActions}>
+            <Button
+              variant="secondary"
+              onClick={handleUndo}
+              disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
+            >
+              Undo
+            </Button>
             <Button variant="secondary" onClick={handleReset}>
               Reset Phase
             </Button>
+            {isSelectionComplete && (
+              <Button variant="primary" onClick={handleEndPhase} className={styles.endPhaseButton}>
+                End Phase
+              </Button>
+            )}
           </div>
         </div>
       </Panel>

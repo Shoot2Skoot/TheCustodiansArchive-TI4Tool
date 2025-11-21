@@ -3,9 +3,10 @@ import { devtools } from 'zustand/middleware';
 import { createGameSlice, type GameSliceState } from './slices/gameSlice';
 import { createPlayerSlice, type PlayerSliceState } from './slices/playerSlice';
 import { createRealtimeSlice, type RealtimeSliceState } from './slices/realtimeSlice';
+import { createUndoSlice, type UndoSliceState } from './slices/undoSlice';
 
 // Combined store type
-export type StoreState = GameSliceState & PlayerSliceState & RealtimeSliceState;
+export type StoreState = GameSliceState & PlayerSliceState & RealtimeSliceState & UndoSliceState;
 
 // Create the main store
 export const useStore = create<StoreState>()(
@@ -14,6 +15,7 @@ export const useStore = create<StoreState>()(
       ...createGameSlice(...args),
       ...createPlayerSlice(...args),
       ...createRealtimeSlice(...args),
+      ...createUndoSlice(...args),
     }),
     {
       name: 'ti4-store',
