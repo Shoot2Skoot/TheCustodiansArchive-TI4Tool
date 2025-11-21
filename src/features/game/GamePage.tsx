@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useLoadGame } from '@/hooks';
 import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
+import { ActionPhase } from '@/features/action-phase';
 import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTradeGoodBonuses';
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
 import { FACTIONS } from '@/lib/factions';
@@ -111,10 +112,17 @@ export function GamePage() {
 
       case 'action':
         return (
-          <Panel>
-            <h2>Action Phase</h2>
-            <p>Action phase (not yet implemented)</p>
-          </Panel>
+          <ActionPhase
+            gameId={gameId}
+            players={playersWithFactions}
+            roundNumber={gameState.currentRound}
+            strategySelections={strategySelections}
+            speakerPlayerId={gameState.speakerPlayerId}
+            onComplete={() => {
+              console.log('Action phase complete');
+              // TODO: Transition to next phase (Status)
+            }}
+          />
         );
 
       case 'status':
