@@ -635,21 +635,6 @@ export function ActionPhase({
                         </div>
                       </div>
                     </div>
-
-                    {/* Turn Text */}
-                    <div className={styles.turnInfo}>
-                      <div className={styles.currentTurnText}>
-                        <div
-                          className={styles.currentPlayer}
-                          style={{ color: getPlayerColor(currentPlayer.color) }}
-                        >
-                          {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}, {currentPlayer.displayName}
-                        </div>
-                        <div className={styles.turnPrompt}>
-                          Choose Your Action <span className={styles.turnCount}>[Turn {currentPlayerTurnCount}]</span>
-                        </div>
-                      </div>
-                    </div>
                   </>
                 );
               })()}
@@ -694,6 +679,9 @@ export function ActionPhase({
           {/* Action Buttons Panel - Hide when strategy card is in progress */}
           {!isStrategyCardActionInProgress && (
             <Panel className={styles.actionPanel}>
+              <div className={styles.actionPanelHeading}>
+                Choose Your Action <span className={styles.turnCount}>[Turn {currentPlayerTurnCount}]</span>
+              </div>
               <div className={styles.actionButtons}>
                 <div className={styles.actionButtonRow}>
                   <Button
