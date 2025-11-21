@@ -498,67 +498,92 @@ export function ActionPhase({
           <div className={styles.turnPanelCenter}>
             {/* Action Queue Bar */}
             <div className={styles.turnQueueBar}>
-              {turnOrder.map((selection) => {
-                const player = players.find((p) => p.id === selection.playerId);
-                const state = playerActionStates.find((s) => s.playerId === selection.playerId);
-                const cardData = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
-
-                if (!player || !state) return null;
-
+              {(() => {
                 const activeTurnSelection = activePlayers[currentTurnIndex % activePlayers.length];
-                const isCurrent = activeTurnSelection?.playerId === player.id;
                 const nextTurnSelection = activePlayers[(currentTurnIndex + 1) % activePlayers.length];
-                const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
-                const isPassed = state.hasPassed;
 
-                // Hide current player from queue - they'll be shown separately below
-                if (isCurrent) return null;
+                // Sort queue: on-deck first, then others (excluding current player)
+                const sortedTurnOrder = [...turnOrder].sort((a, b) => {
+                  const aState = playerActionStates.find((s) => s.playerId === a.playerId);
+                  const bState = playerActionStates.find((s) => s.playerId === b.playerId);
 
-                return (
-                  <div
-                    key={player.id}
-                    className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''}`}
-                    style={{
-                      borderColor: getPlayerColor(player.color),
-                    }}
-                  >
-                    {cardData && (
-                      <StrategyCardNumber
-                        number={selection.strategyCardId}
-                        color={cardData.color}
-                        size="small"
-                        className={state.strategyCardUsed ? styles.cardNumberUsed : ''}
+                  const aIsCurrent = activeTurnSelection?.playerId === a.playerId;
+                  const bIsCurrent = activeTurnSelection?.playerId === b.playerId;
+                  const aIsOnDeck = !aState?.hasPassed && nextTurnSelection?.playerId === a.playerId;
+                  const bIsOnDeck = !bState?.hasPassed && nextTurnSelection?.playerId === b.playerId;
+
+                  // Current player is hidden, but handle for sorting
+                  if (aIsCurrent) return 1;
+                  if (bIsCurrent) return -1;
+
+                  // On-deck player comes first
+                  if (aIsOnDeck) return -1;
+                  if (bIsOnDeck) return 1;
+
+                  // Maintain original order for others
+                  return 0;
+                });
+
+                return sortedTurnOrder.map((selection) => {
+                  const player = players.find((p) => p.id === selection.playerId);
+                  const state = playerActionStates.find((s) => s.playerId === selection.playerId);
+                  const cardData = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
+
+                  if (!player || !state) return null;
+
+                  const isCurrent = activeTurnSelection?.playerId === player.id;
+                  const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
+                  const isPassed = state.hasPassed;
+
+                  // Hide current player from queue - they'll be shown separately below
+                  if (isCurrent) return null;
+
+                  return (
+                    <div
+                      key={player.id}
+                      className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''}`}
+                      style={{
+                        borderColor: getPlayerColor(player.color),
+                      }}
+                    >
+                      {cardData && (
+                        <StrategyCardNumber
+                          number={selection.strategyCardId}
+                          color={cardData.color}
+                          size="small"
+                          className={state.strategyCardUsed ? styles.cardNumberUsed : ''}
+                        />
+                      )}
+                      <img
+                        src={getFactionImage(player.factionId, 'color')}
+                        alt={player.factionName}
+                        className={styles.queueBarIcon}
                       />
-                    )}
-                    <img
-                      src={getFactionImage(player.factionId, 'color')}
-                      alt={player.factionName}
-                      className={styles.queueBarIcon}
-                    />
-                    <div className={styles.queueBarInfo}>
-                      <div className={styles.queueBarTop}>
-                        <div className={styles.queueBarNames}>
-                          <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
-                            {FACTIONS[player.factionId]?.shortName || player.factionName}
+                      <div className={styles.queueBarInfo}>
+                        <div className={styles.queueBarTop}>
+                          <div className={styles.queueBarNames}>
+                            <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                              {FACTIONS[player.factionId]?.shortName || player.factionName}
+                            </div>
+                            <div className={styles.queueBarPlayer}>
+                              ({player.displayName})
+                            </div>
                           </div>
-                          <div className={styles.queueBarPlayer}>
-                            ({player.displayName})
+                          <div className={styles.queueBarTacticalCount}>
+                            {state.tacticalActionsCount > 0 && `T${state.tacticalActionsCount}`}
+                            {state.tacticalActionsCount > 0 && state.componentActionsCount > 0 && ' '}
+                            {state.componentActionsCount > 0 && `C${state.componentActionsCount}`}
+                            {state.tacticalActionsCount === 0 && state.componentActionsCount === 0 && '—'}
                           </div>
                         </div>
-                        <div className={styles.queueBarTacticalCount}>
-                          {state.tacticalActionsCount > 0 && `T${state.tacticalActionsCount}`}
-                          {state.tacticalActionsCount > 0 && state.componentActionsCount > 0 && ' '}
-                          {state.componentActionsCount > 0 && `C${state.componentActionsCount}`}
-                          {state.tacticalActionsCount === 0 && state.componentActionsCount === 0 && '—'}
+                        <div className={styles.queueBarStatuses}>
+                          {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
                         </div>
-                      </div>
-                      <div className={styles.queueBarStatuses}>
-                        {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
 
             {/* Enlarged Current Player Display */}
