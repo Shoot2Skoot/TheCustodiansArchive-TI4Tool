@@ -157,3 +157,40 @@ export async function getGamesByUser(userId: string) {
 
   return data.map(toCamelCase);
 }
+
+// Get games where user is a player (with player details)
+export async function getGamesByPlayer(userId: string) {
+  const { data, error } = await supabase
+    .from('games')
+    .select(`
+      *,
+      players!inner(
+        id,
+        user_id,
+        faction_id,
+        color,
+        display_name,
+        position
+      )
+    `)
+    .eq('players.user_id', userId)
+    .is('deleted_at', null)
+    .order('updated_at', { ascending: false })
+    .limit(10);
+
+  if (error) {
+    throw new Error(`Failed to get user games: ${error.message}`);
+  }
+
+  return data.map((game: any) => ({
+    game: toCamelCase(game),
+    players: game.players.map((p: any) => ({
+      id: p.id,
+      userId: p.user_id,
+      factionId: p.faction_id,
+      color: p.color,
+      displayName: p.display_name,
+      position: p.position,
+    })),
+  }));
+}

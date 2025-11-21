@@ -135,7 +135,8 @@ body {
   font-size: var(--text-base);
   line-height: 1.5;
   color: var(--color-text-primary);
-  background: var(--color-bg-primary);
+  background: url('/src/assets/backgrounds/space-1.jpg') center center / cover no-repeat fixed;
+  background-color: var(--color-bg-primary); /* Fallback */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
