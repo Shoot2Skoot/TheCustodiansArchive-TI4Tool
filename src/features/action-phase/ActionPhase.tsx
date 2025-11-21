@@ -726,11 +726,9 @@ export function ActionPhase({
                     size="large"
                     disabled={!currentPlayerState?.strategyCardUsed}
                     className={!currentPlayerState?.strategyCardUsed ? styles.narrowButton : styles.wideButton}
+                    title={!currentPlayerState?.strategyCardUsed ? 'Must use strategy card first' : 'Pass your turn'}
                   >
                     Pass
-                    {!currentPlayerState?.strategyCardUsed && (
-                      <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
-                    )}
                   </Button>
                 </div>
               </div>
