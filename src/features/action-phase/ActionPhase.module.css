@@ -300,7 +300,7 @@
 .buttonSubtext {
   font-size: var(--font-size-sm);
   opacity: 0.8;
-  margin-top: var(--space-1);
+  margin-top: 2px;
 }
 
 .endPhaseSection {
