@@ -72,7 +72,7 @@ export function ActionStrategyCard({
                       onClick={onCancel}
                       variant="secondary"
                       size="large"
-                      style={{ minWidth: '150px', fontSize: 'var(--font-size-xl)' }}
+                      style={{ minWidth: '200px', fontSize: 'var(--font-size-2xl)', padding: 'var(--space-4) var(--space-6)' }}
                     >
                       Cancel
                     </Button>
@@ -84,7 +84,7 @@ export function ActionStrategyCard({
                       size="large"
                       customColor="#1a1a1a"
                       customBorderColor="#22c55e"
-                      style={{ minWidth: '150px', fontSize: 'var(--font-size-xl)' }}
+                      style={{ minWidth: '225px', fontSize: 'var(--font-size-2xl)', padding: 'var(--space-4) var(--space-6)' }}
                     >
                       Done
                     </Button>
