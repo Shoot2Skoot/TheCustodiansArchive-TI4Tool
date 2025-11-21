@@ -220,25 +220,12 @@
   width: 100%;
 }
 
-.queueBarNames {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  flex: 1;
-}
-
 .queueBarFaction {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-lg);
   font-weight: 700;
   line-height: 1;
-}
-
-.queueBarPlayer {
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1;
+  flex: 1;
+  text-align: center;
 }
 
 .queueBarTacticalCount {
@@ -265,11 +252,7 @@
 }
 
 .queueBarCurrent .queueBarFaction {
-  font-size: var(--font-size-xl);
-}
-
-.queueBarCurrent .queueBarPlayer {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-2xl);
 }
 
 .queueBarCurrent .queueBarTacticalCount {
@@ -278,14 +261,6 @@
 
 .queueBarCurrent .queueBarStatus {
   font-size: var(--font-size-sm);
-}
-
-.queueBarOnDeck .queueBarFaction {
-  font-size: var(--font-size-lg);
-}
-
-.queueBarOnDeck .queueBarPlayer {
-  font-size: var(--font-size-xs);
 }
 
 .queueBarOnDeck .queueBarTacticalCount {

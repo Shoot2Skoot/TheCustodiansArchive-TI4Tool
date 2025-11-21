@@ -565,13 +565,8 @@ export function ActionPhase({
                       />
                       <div className={styles.queueBarInfo}>
                         <div className={styles.queueBarTop}>
-                          <div className={styles.queueBarNames}>
-                            <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
-                              {FACTIONS[player.factionId]?.shortName || player.factionName}
-                            </div>
-                            <div className={styles.queueBarPlayer}>
-                              ({player.displayName})
-                            </div>
+                          <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                            {FACTIONS[player.factionId]?.shortName || player.factionName}
                           </div>
                           <div className={styles.queueBarTacticalCount}>
                             {state.tacticalActionsCount > 0 && `T${state.tacticalActionsCount}`}
