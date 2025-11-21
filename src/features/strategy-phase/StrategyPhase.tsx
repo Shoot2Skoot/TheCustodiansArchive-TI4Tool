@@ -141,7 +141,8 @@ export function StrategyPhase({
   const handleRedo = useCallback(() => {
     if (!canRedo()) return;
 
-    // Get the redo stack to peek at the entry    const redoStack = useStore.getState().redoStack;
+    // Get the redo stack to peek at the entry
+    const redoStack = useStore.getState().redoStack;
     if (redoStack.length === 0) return;
 
     const entry = redoStack[redoStack.length - 1];
