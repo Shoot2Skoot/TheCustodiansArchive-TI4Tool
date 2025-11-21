@@ -610,58 +610,60 @@ export function ActionPhase({
 
         {/* Right Column - Action buttons + Strategy Card stacked */}
         <div className={styles.rightColumn}>
-          {/* Action Buttons Panel */}
-          <Panel className={styles.actionPanel}>
-            <div className={styles.actionButtons}>
-              <div className={styles.actionButtonRow}>
+          {/* Action Buttons Panel - Hide when strategy card is in progress */}
+          {!isStrategyCardActionInProgress && (
+            <Panel className={styles.actionPanel}>
+              <div className={styles.actionButtons}>
+                <div className={styles.actionButtonRow}>
+                  <Button
+                    onClick={handleTacticalAction}
+                    variant="primary"
+                    size="large"
+                    customColor="#1e88e5"
+                    className={styles.halfButton}
+                  >
+                    Tactical
+                  </Button>
+                  <Button
+                    onClick={handleComponentAction}
+                    variant="primary"
+                    size="large"
+                    customColor="#fb8c00"
+                    className={styles.halfButton}
+                  >
+                    Component
+                  </Button>
+                </div>
+
                 <Button
-                  onClick={handleTacticalAction}
+                  onClick={handleStrategyCardAction}
                   variant="primary"
                   size="large"
-                  customColor="#1e88e5"
-                  className={styles.halfButton}
+                  disabled={currentPlayerState?.strategyCardUsed}
+                  customColor="#1a1a1a"
+                  customBorderColor={strategyCardData?.color}
+                  className={styles.strategyCardButton}
                 >
-                  Tactical
+                  Use {strategyCardData?.name || 'Strategy'} Card
+                  {currentPlayerState?.strategyCardUsed && (
+                    <span className={styles.buttonSubtext}>(Already Used)</span>
+                  )}
                 </Button>
+
                 <Button
-                  onClick={handleComponentAction}
-                  variant="primary"
+                  onClick={handlePass}
+                  variant="secondary"
                   size="large"
-                  customColor="#fb8c00"
-                  className={styles.halfButton}
+                  disabled={!currentPlayerState?.strategyCardUsed}
                 >
-                  Component
+                  Pass
+                  {!currentPlayerState?.strategyCardUsed && (
+                    <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
+                  )}
                 </Button>
               </div>
-
-              <Button
-                onClick={handleStrategyCardAction}
-                variant="primary"
-                size="large"
-                disabled={currentPlayerState?.strategyCardUsed}
-                customColor="#1a1a1a"
-                customBorderColor={strategyCardData?.color}
-                className={styles.strategyCardButton}
-              >
-                Use {strategyCardData?.name || 'Strategy'} Card
-                {currentPlayerState?.strategyCardUsed && (
-                  <span className={styles.buttonSubtext}>(Already Used)</span>
-                )}
-              </Button>
-
-              <Button
-                onClick={handlePass}
-                variant="secondary"
-                size="large"
-                disabled={!currentPlayerState?.strategyCardUsed}
-              >
-                Pass
-                {!currentPlayerState?.strategyCardUsed && (
-                  <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
-                )}
-              </Button>
-            </div>
-          </Panel>
+            </Panel>
+          )}
 
           {/* Strategy Card */}
           {currentStrategyCard && (
