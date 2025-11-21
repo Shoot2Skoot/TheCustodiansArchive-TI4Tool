@@ -724,16 +724,20 @@ export function ActionPhase({
                     )}
                   </Button>
 
-                  <Button
-                    onClick={handlePass}
-                    variant="secondary"
-                    size="large"
-                    disabled={!currentPlayerState?.strategyCardUsed}
+                  <div
                     className={!currentPlayerState?.strategyCardUsed ? styles.narrowButton : styles.wideButton}
                     title={!currentPlayerState?.strategyCardUsed ? 'Must use strategy card first' : 'Pass your turn'}
                   >
-                    Pass
-                  </Button>
+                    <Button
+                      onClick={handlePass}
+                      variant="secondary"
+                      size="large"
+                      disabled={!currentPlayerState?.strategyCardUsed}
+                      style={{ width: '100%' }}
+                    >
+                      Pass
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Panel>
