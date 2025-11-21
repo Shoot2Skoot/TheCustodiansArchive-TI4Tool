@@ -10,7 +10,9 @@
     "preview": "doppler run -- vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "fetch-rls": "node scripts/fetch-rls.js",
+    "fetch-rls:save": "node scripts/fetch-rls.js --output docs/rls-policies.md"
   },
   "keywords": ["twilight-imperium", "ti4", "dashboard", "multiplayer", "game-tracker"],
   "author": "",
