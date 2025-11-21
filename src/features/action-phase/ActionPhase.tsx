@@ -519,57 +519,64 @@ export function ActionPhase({
         </div>
       </Panel>
 
-      {/* Two Column Layout: Actions + Strategy Card */}
-      <div className={styles.mainContent}>
-        {/* Main Action Panel */}
-        <Panel className={styles.actionPanel}>
-          <div className={styles.actionButtons}>
-            <Button onClick={handleTacticalAction} variant="primary" size="large">
-              Tactical / Component Action
-            </Button>
+      {/* Content Area: Left panels (70%) + Right strategy card (30%) */}
+      <div className={styles.contentArea}>
+        {/* Left Column - Will contain multiple panels stacked vertically */}
+        <div className={styles.leftColumn}>
+          {/* Main Action Panel */}
+          <Panel className={styles.actionPanel}>
+            <div className={styles.actionButtons}>
+              <Button onClick={handleTacticalAction} variant="primary" size="large">
+                Tactical / Component Action
+              </Button>
 
-            <Button
-              onClick={handleStrategyCardAction}
-              variant="primary"
-              size="large"
-              disabled={currentPlayerState?.strategyCardUsed}
-            >
-              Use Strategy Card
-              {currentPlayerState?.strategyCardUsed && (
-                <span className={styles.buttonSubtext}>(Already Used)</span>
-              )}
-            </Button>
+              <Button
+                onClick={handleStrategyCardAction}
+                variant="primary"
+                size="large"
+                disabled={currentPlayerState?.strategyCardUsed}
+              >
+                Use Strategy Card
+                {currentPlayerState?.strategyCardUsed && (
+                  <span className={styles.buttonSubtext}>(Already Used)</span>
+                )}
+              </Button>
 
-            <Button
-              onClick={handlePass}
-              variant="secondary"
-              size="large"
-              disabled={!currentPlayerState?.strategyCardUsed}
-            >
-              Pass
-              {!currentPlayerState?.strategyCardUsed && (
-                <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
-              )}
-            </Button>
-          </div>
-
-          {allPlayersPassed && (
-            <div className={styles.endPhaseSection}>
-              <Button onClick={handleEndPhase} variant="primary" size="large">
-                End Action Phase
+              <Button
+                onClick={handlePass}
+                variant="secondary"
+                size="large"
+                disabled={!currentPlayerState?.strategyCardUsed}
+              >
+                Pass
+                {!currentPlayerState?.strategyCardUsed && (
+                  <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
+                )}
               </Button>
             </div>
-          )}
-        </Panel>
 
-        {/* Strategy Card Display */}
-        {currentStrategyCard && (
-          <ActionStrategyCard
-            cardId={currentStrategyCard.strategyCardId}
-            isUsed={currentPlayerState?.strategyCardUsed || false}
-            usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
-          />
-        )}
+            {allPlayersPassed && (
+              <div className={styles.endPhaseSection}>
+                <Button onClick={handleEndPhase} variant="primary" size="large">
+                  End Action Phase
+                </Button>
+              </div>
+            )}
+          </Panel>
+
+          {/* Future panels will be added here below the action panel */}
+        </div>
+
+        {/* Right Column - Strategy Card (full height) */}
+        <div className={styles.rightColumn}>
+          {currentStrategyCard && (
+            <ActionStrategyCard
+              cardId={currentStrategyCard.strategyCardId}
+              isUsed={currentPlayerState?.strategyCardUsed || false}
+              usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
+            />
+          )}
+        </div>
       </div>
 
       {/* Strategy Card Action Modal */}

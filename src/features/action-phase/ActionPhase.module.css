@@ -177,12 +177,28 @@
   font-size: var(--font-size-xs);
 }
 
-/* Main Content - Two Column Layout */
-.mainContent {
-  display: grid;
-  grid-template-columns: 1fr 30%;
+/* Content Area - Split into left panels (70%) and right strategy card (30%) */
+.contentArea {
+  display: flex;
   gap: var(--space-4);
+  flex: 1;
   align-items: stretch;
+}
+
+/* Left Column - Will contain multiple panels stacked vertically */
+.leftColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 70%;
+}
+
+/* Right Column - Strategy card takes full remaining height */
+.rightColumn {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Action Panel */
@@ -222,8 +238,16 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .mainContent {
-    grid-template-columns: 1fr;
+  .contentArea {
+    flex-direction: column;
+  }
+
+  .leftColumn {
+    max-width: 100%;
+  }
+
+  .rightColumn {
+    width: 100%;
   }
 }
 
