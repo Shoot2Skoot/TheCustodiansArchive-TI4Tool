@@ -18,8 +18,8 @@
     inset 0 2px 4px rgba(0, 0, 0, 0.5),
     0 2px 6px rgba(0, 0, 0, 0.4);
   clip-path: polygon(
-    8px 0, 100% 0, 100% calc(100% - 8px),
-    calc(100% - 8px) 100%, 0 100%, 0 8px
+    10px 0, 100% 0, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 0 100%, 0 10px
   );
   padding-bottom: 2px;
 }
@@ -28,34 +28,34 @@
 .strategy-card-number::before {
   content: '';
   position: absolute;
-  inset: 4px;
+  inset: 5px;
   background: #000000;
   z-index: -1;
   clip-path: polygon(
-    calc(8px - 2px) 0,
+    calc(10px - 2px) 0,
     calc(100% - 0px) 0,
-    calc(100% - 0px) calc(100% - calc(8px - 2px)),
-    calc(100% - calc(8px - 2px)) calc(100% - 0px),
+    calc(100% - 0px) calc(100% - calc(10px - 2px)),
+    calc(100% - calc(10px - 2px)) calc(100% - 0px),
     0 calc(100% - 0px),
-    0 calc(8px - 2px)
+    0 calc(10px - 2px)
   );
 }
 
 /* Size variants */
 .strategy-card-number.small {
-  width: 32px;
-  height: 32px;
-  font-size: var(--font-size-xl);
+  width: 42px;
+  height: 42px;
+  font-size: var(--font-size-2xl);
 }
 
 .strategy-card-number.medium {
-  width: 52px;
-  height: 52px;
-  font-size: var(--font-size-4xl);
+  width: 68px;
+  height: 68px;
+  font-size: var(--font-size-5xl);
 }
 
 .strategy-card-number.large {
-  width: 72px;
-  height: 72px;
-  font-size: var(--font-size-5xl);
+  width: 94px;
+  height: 94px;
+  font-size: var(--font-size-6xl);
 }
