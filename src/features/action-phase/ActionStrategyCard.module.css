@@ -1,0 +1,238 @@
+/* Card Wrapper */
+.cardWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cardContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--strategy-color);
+  transition: all 0.3s ease-in-out;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+  height: 100%;
+  isolation: isolate;
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+/* Inner background layer to create border effect */
+.cardContainer::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #231e20;
+  z-index: -1;
+  clip-path: polygon(
+    calc(16px - 2px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(16px - 2px)),
+    calc(100% - calc(16px - 2px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(16px - 2px)
+  );
+}
+
+.cardContainer.used {
+  opacity: 0.85;
+}
+
+/* Used Overlay */
+.usedOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: rgba(0, 0, 0, 0.9);
+  padding: var(--space-6);
+  border-radius: 4px;
+  min-height: 100%;
+}
+
+.usedIcon {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  color: var(--color-success);
+  background: rgba(34, 197, 94, 0.1);
+  border: 4px solid var(--color-success);
+  border-radius: 50%;
+  box-shadow:
+    0 0 20px rgba(34, 197, 94, 0.3),
+    inset 0 0 20px rgba(34, 197, 94, 0.2);
+}
+
+.usedInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.usedTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
+}
+
+.usedTurn {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Card Header */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.cardNumber {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: var(--strategy-color, var(--color-accent-primary));
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  isolation: isolate;
+  text-shadow:
+    0 0 10px var(--strategy-color, var(--color-accent-primary)),
+    0 0 20px var(--strategy-color, var(--color-accent-primary)),
+    0 0 30px var(--strategy-color, var(--color-accent-primary));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+  padding-bottom: 2px;
+}
+
+.cardNumber::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #000000;
+  z-index: -1;
+  clip-path: polygon(
+    calc(8px - 2px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(8px - 2px)),
+    calc(100% - calc(8px - 2px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(8px - 2px)
+  );
+}
+
+.cardName {
+  flex: 1;
+  font-family: var(--font-space-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Card Actions */
+.cardActions {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-4);
+  flex: 1;
+}
+
+/* Timer Bar */
+.timerBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.timerProgress {
+  height: 100%;
+  background: var(--strategy-color);
+  box-shadow: 0 0 8px var(--strategy-color);
+}
+
+.timerEmpty {
+  animation: timerEmpty 15s linear forwards;
+}
+
+.timerFill {
+  animation: timerFill 15s linear forwards;
+}
+
+@keyframes timerEmpty {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes timerFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.actionSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fullHeight {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.abilityContent {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+  font-size: calc(var(--font-size-sm) * 1.9);
+}
+
+.actionLabel {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--strategy-color, var(--color-accent-primary));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}

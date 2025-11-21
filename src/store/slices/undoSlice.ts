@@ -5,6 +5,7 @@ import type { StrategySelection } from '../../types';
 export interface PlayerActionState {
   playerId: string;
   strategyCardUsed: boolean;
+  strategyCardUsedOnTurn?: number;
   hasPassed: boolean;
   tacticalActionsCount: number;
 }

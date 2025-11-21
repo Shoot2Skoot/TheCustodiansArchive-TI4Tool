@@ -7,6 +7,7 @@ import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
 import { StrategyCardActionModal } from './StrategyCardActionModal';
 import { PoliticsCardModal } from './PoliticsCardModal';
+import { ActionStrategyCard } from './ActionStrategyCard';
 import { useSaveActionPhaseState } from './useSaveActionPhaseState';
 import styles from './ActionPhase.module.css';
 
@@ -46,6 +47,7 @@ export function ActionPhase({
   // Local state for action phase
   const [playerActionStates, setPlayerActionStates] = useState<PlayerActionState[]>([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
+  const [globalTurnCounter, setGlobalTurnCounter] = useState(1);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentSpeakerPlayerId, setCurrentSpeakerPlayerId] = useState<string | null>(speakerPlayerId);
   const [showStrategyCardModal, setShowStrategyCardModal] = useState(false);
@@ -145,6 +147,9 @@ export function ActionPhase({
       playerId: currentPlayer.id,
     });
 
+    // Increment global turn counter
+    setGlobalTurnCounter((prev) => prev + 1);
+
     // Move to next player
     advanceToNextPlayer();
   };
@@ -183,10 +188,12 @@ export function ActionPhase({
       timestamp: Date.now(),
     });
 
-    // Mark strategy card as used
+    // Mark strategy card as used with turn number
     setPlayerActionStates((prev) =>
       prev.map((state) =>
-        state.playerId === currentPlayer.id ? { ...state, strategyCardUsed: true } : state
+        state.playerId === currentPlayer.id
+          ? { ...state, strategyCardUsed: true, strategyCardUsedOnTurn: globalTurnCounter }
+          : state
       )
     );
 
@@ -197,6 +204,9 @@ export function ActionPhase({
       playerId: currentPlayer.id,
       strategyCardId: strategyCard.strategyCardId,
     });
+
+    // Increment global turn counter
+    setGlobalTurnCounter((prev) => prev + 1);
 
     // Check if this is Politics card (card 3) - open speaker selection modal
     if (strategyCard.strategyCardId === 3) {
@@ -509,46 +519,60 @@ export function ActionPhase({
         </div>
       </Panel>
 
-      {/* Main Action Panel */}
-      <Panel className={styles.actionPanel}>
-        <div className={styles.actionButtons}>
-          <Button onClick={handleTacticalAction} variant="primary" size="large">
-            Tactical / Component Action
-          </Button>
+      {/* Two Column Layout: Actions + Strategy Card */}
+      <div className={styles.mainContent}>
+        {/* Main Action Panel */}
+        <Panel className={styles.actionPanel}>
+          <div className={styles.actionButtons}>
+            <Button onClick={handleTacticalAction} variant="primary" size="large">
+              Tactical / Component Action
+            </Button>
 
-          <Button
-            onClick={handleStrategyCardAction}
-            variant="primary"
-            size="large"
-            disabled={currentPlayerState?.strategyCardUsed}
-          >
-            Use Strategy Card
-            {currentPlayerState?.strategyCardUsed && (
-              <span className={styles.buttonSubtext}>(Already Used)</span>
-            )}
-          </Button>
+            <Button
+              onClick={handleStrategyCardAction}
+              variant="primary"
+              size="large"
+              disabled={currentPlayerState?.strategyCardUsed}
+            >
+              Use Strategy Card
+              {currentPlayerState?.strategyCardUsed && (
+                <span className={styles.buttonSubtext}>(Already Used)</span>
+              )}
+            </Button>
 
-          <Button
-            onClick={handlePass}
-            variant="secondary"
-            size="large"
-            disabled={!currentPlayerState?.strategyCardUsed}
-          >
-            Pass
-            {!currentPlayerState?.strategyCardUsed && (
-              <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
-            )}
-          </Button>
-        </div>
-
-        {allPlayersPassed && (
-          <div className={styles.endPhaseSection}>
-            <Button onClick={handleEndPhase} variant="primary" size="large">
-              End Action Phase
+            <Button
+              onClick={handlePass}
+              variant="secondary"
+              size="large"
+              disabled={!currentPlayerState?.strategyCardUsed}
+            >
+              Pass
+              {!currentPlayerState?.strategyCardUsed && (
+                <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
+              )}
             </Button>
           </div>
-        )}
-      </Panel>
+
+          {allPlayersPassed && (
+            <div className={styles.endPhaseSection}>
+              <Button onClick={handleEndPhase} variant="primary" size="large">
+                End Action Phase
+              </Button>
+            </div>
+          )}
+        </Panel>
+
+        {/* Strategy Card Display */}
+        <Panel className={styles.strategyCardPanel}>
+          {currentStrategyCard && (
+            <ActionStrategyCard
+              cardId={currentStrategyCard.strategyCardId}
+              isUsed={currentPlayerState?.strategyCardUsed || false}
+              usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
+            />
+          )}
+        </Panel>
+      </div>
 
       {/* Strategy Card Action Modal */}
       {showStrategyCardModal && modalCardId !== null && (
