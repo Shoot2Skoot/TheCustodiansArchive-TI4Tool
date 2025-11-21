@@ -356,8 +356,19 @@
 
 /* Faded Card Number when strategy card is used */
 .cardNumberUsed {
-  opacity: 0.3;
-  filter: grayscale(70%);
+  opacity: 0.3 !important;
+  filter: grayscale(100%) !important;
+  position: relative;
+}
+
+/* Add an overlay to further indicate the used state */
+.cardNumberUsed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Content Area - Split into left panels (70%) and right column (30% - actions + strategy card) */
