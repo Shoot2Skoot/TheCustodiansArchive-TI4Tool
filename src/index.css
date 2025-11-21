@@ -59,6 +59,8 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
 
   /* Legacy font size aliases (deprecated) */
   --text-xs: var(--font-size-xs);
@@ -69,6 +71,8 @@
   --text-2xl: var(--font-size-2xl);
   --text-3xl: var(--font-size-3xl);
   --text-4xl: var(--font-size-4xl);
+  --text-5xl: var(--font-size-5xl);
+  --text-6xl: var(--font-size-6xl);
 
   /* Font Weights */
   --font-normal: 400;

@@ -36,7 +36,7 @@ export function ActionStrategyCard({
         } as React.CSSProperties}
       >
         <div className={styles.cardHeader}>
-          <StrategyCardNumber number={cardId} color={card.color} size="large" />
+          <StrategyCardNumber number={cardId} color={card.color} size="small" />
           <div className={styles.cardName}>{card.name.toUpperCase()}</div>
         </div>
 
