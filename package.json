@@ -11,10 +11,17 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
-    "fetch-rls": "node scripts/fetch-rls.js",
-    "fetch-rls:save": "node scripts/fetch-rls.js --output docs/rls-policies.md"
+    "test-db": "doppler run -- node scripts/test-db-connection.js",
+    "fetch-rls": "doppler run -- node scripts/fetch-rls-node.js",
+    "fetch-rls:save": "doppler run -- node scripts/fetch-rls-node.js --output docs/rls-policies.md"
   },
-  "keywords": ["twilight-imperium", "ti4", "dashboard", "multiplayer", "game-tracker"],
+  "keywords": [
+    "twilight-imperium",
+    "ti4",
+    "dashboard",
+    "multiplayer",
+    "game-tracker"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -38,6 +45,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "pg": "^8.16.3",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0"
