@@ -502,26 +502,30 @@ export function ActionPhase({
                 const activeTurnSelection = activePlayers[currentTurnIndex % activePlayers.length];
                 const nextTurnSelection = activePlayers[(currentTurnIndex + 1) % activePlayers.length];
 
-                // Sort queue: on-deck first, then others (excluding current player)
-                const sortedTurnOrder = [...turnOrder].sort((a, b) => {
-                  const aState = playerActionStates.find((s) => s.playerId === a.playerId);
-                  const bState = playerActionStates.find((s) => s.playerId === b.playerId);
+                // Sort queue: starting from on-deck player, continue in initiative order (wrapping around)
+                const onDeckInitiative = nextTurnSelection ? turnOrder.find(t => t.playerId === nextTurnSelection.playerId)?.strategyCardId : null;
 
+                const sortedTurnOrder = [...turnOrder].sort((a, b) => {
                   const aIsCurrent = activeTurnSelection?.playerId === a.playerId;
                   const bIsCurrent = activeTurnSelection?.playerId === b.playerId;
-                  const aIsOnDeck = !aState?.hasPassed && nextTurnSelection?.playerId === a.playerId;
-                  const bIsOnDeck = !bState?.hasPassed && nextTurnSelection?.playerId === b.playerId;
 
-                  // Current player is hidden, but handle for sorting
+                  // Current player is hidden, sort them to the end
                   if (aIsCurrent) return 1;
                   if (bIsCurrent) return -1;
 
-                  // On-deck player comes first
-                  if (aIsOnDeck) return -1;
-                  if (bIsOnDeck) return 1;
+                  // Sort by initiative order, wrapping around from on-deck player
+                  if (onDeckInitiative !== null) {
+                    const aInitiative = a.strategyCardId;
+                    const bInitiative = b.strategyCardId;
 
-                  // Maintain original order for others
-                  return 0;
+                    // Calculate position relative to on-deck initiative (wrapping around)
+                    const aOffset = aInitiative >= onDeckInitiative ? aInitiative - onDeckInitiative : (8 - onDeckInitiative) + aInitiative;
+                    const bOffset = bInitiative >= onDeckInitiative ? bInitiative - onDeckInitiative : (8 - onDeckInitiative) + bInitiative;
+
+                    return aOffset - bOffset;
+                  }
+
+                  return a.strategyCardId - b.strategyCardId;
                 });
 
                 return sortedTurnOrder.map((selection) => {
