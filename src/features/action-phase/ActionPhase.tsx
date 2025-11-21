@@ -284,9 +284,27 @@ export function ActionPhase({
 
   // Handle Politics modal cancel
   const handlePoliticsCancel = () => {
+    if (!currentPlayer) return;
+
     setShowPoliticsModal(false);
-    // Still advance turn even if they cancel speaker selection
-    advanceToNextPlayer();
+
+    // Revert the strategy card action since they canceled
+    setPlayerActionStates((prev) =>
+      prev.map((state) =>
+        state.playerId === currentPlayer.id
+          ? {
+              ...state,
+              strategyCardUsed: false,
+              strategyCardUsedOnTurn: undefined,
+            }
+          : state
+      )
+    );
+
+    // Decrement the global turn counter since this action is being canceled
+    setGlobalTurnCounter((prev) => prev - 1);
+
+    // Don't advance turn - let them try another action
   };
 
   // Handle pass action
