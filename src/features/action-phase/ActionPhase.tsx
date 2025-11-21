@@ -585,7 +585,7 @@ export function ActionPhase({
               })()}
             </div>
 
-            {/* Current Player Display with Turn Info */}
+            {/* Current Player Display with Undo/Redo */}
             <div className={styles.currentPlayerDisplay}>
               {(() => {
                 const currentStrategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
@@ -634,27 +634,27 @@ export function ActionPhase({
                         </div>
                       </div>
                     </div>
+
+                    <div className={styles.undoRedoActions}>
+                      <Button
+                        variant="secondary"
+                        onClick={handleUndo}
+                        disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
+                      >
+                        Undo
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={handleRedo}
+                        disabled={!canRedo()}
+                      >
+                        Redo
+                      </Button>
+                    </div>
                   </>
                 );
               })()}
             </div>
-          </div>
-
-          <div className={styles.turnPanelActions}>
-            <Button
-              variant="secondary"
-              onClick={handleUndo}
-              disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
-            >
-              Undo
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleRedo}
-              disabled={!canRedo()}
-            >
-              Redo
-            </Button>
           </div>
         </div>
       </Panel>
