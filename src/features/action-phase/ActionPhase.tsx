@@ -5,6 +5,7 @@ import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
 import { StrategyCardActionModal } from './StrategyCardActionModal';
+import { PoliticsCardModal } from './PoliticsCardModal';
 import styles from './ActionPhase.module.css';
 
 interface Player {
@@ -47,6 +48,7 @@ export function ActionPhase({
   const [showStrategyCardModal, setShowStrategyCardModal] = useState(false);
   const [modalCardId, setModalCardId] = useState<number | null>(null);
   const [modalPlayerName, setModalPlayerName] = useState<string>('');
+  const [showPoliticsModal, setShowPoliticsModal] = useState(false);
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
@@ -170,13 +172,41 @@ export function ActionPhase({
       )
     );
 
-    // Check if this is Politics card (card 3) - will open speaker selection modal later
+    // Check if this is Politics card (card 3) - open speaker selection modal
     if (strategyCard.strategyCardId === 3) {
-      // TODO: Open speaker selection modal
-      console.log('Politics card - speaker selection needed');
+      setShowPoliticsModal(true);
+      return; // Don't advance turn yet - wait for speaker selection
     }
 
     // Move to next player
+    advanceToNextPlayer();
+  };
+
+  // Handle speaker selection from Politics card
+  const handleSelectSpeaker = (newSpeakerId: string) => {
+    if (!currentUserId) return;
+
+    // Push current state to undo history BEFORE updating speaker
+    pushHistory({
+      type: 'speakerChange',
+      newSpeakerId,
+      data: getCurrentStateSnapshot(),
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
+
+    // Update speaker
+    setCurrentSpeakerPlayerId(newSpeakerId);
+    setShowPoliticsModal(false);
+
+    // Now advance to next player
+    advanceToNextPlayer();
+  };
+
+  // Handle Politics modal cancel
+  const handlePoliticsCancel = () => {
+    setShowPoliticsModal(false);
+    // Still advance turn even if they cancel speaker selection
     advanceToNextPlayer();
   };
 
@@ -476,6 +506,16 @@ export function ActionPhase({
           strategyCardId={modalCardId}
           playerName={modalPlayerName}
           onClose={handleStrategyCardModalClose}
+        />
+      )}
+
+      {/* Politics Card Modal */}
+      {showPoliticsModal && (
+        <PoliticsCardModal
+          players={players}
+          currentSpeakerId={currentSpeakerPlayerId}
+          onSelectSpeaker={handleSelectSpeaker}
+          onCancel={handlePoliticsCancel}
         />
       )}
     </Panel>
