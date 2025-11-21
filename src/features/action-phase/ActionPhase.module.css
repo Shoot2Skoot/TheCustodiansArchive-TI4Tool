@@ -54,8 +54,10 @@
 /* Current Player Display (enlarged, 1.5x) */
 .currentPlayerDisplay {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: var(--space-4) 0;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-6);
   border-top: 2px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -126,14 +128,14 @@
 .turnInfo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-2) var(--space-6) var(--space-3);
+  justify-content: flex-start;
 }
 
 .currentTurnText {
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
   font-size: var(--font-size-3xl);
   font-weight: 600;
   color: white;

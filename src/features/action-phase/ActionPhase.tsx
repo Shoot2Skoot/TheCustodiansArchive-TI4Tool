@@ -586,7 +586,7 @@ export function ActionPhase({
               })()}
             </div>
 
-            {/* Enlarged Current Player Display */}
+            {/* Current Player Display with Turn Info */}
             <div className={styles.currentPlayerDisplay}>
               {(() => {
                 const currentStrategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
@@ -596,62 +596,63 @@ export function ActionPhase({
                   : null;
 
                 return (
-                  <div
-                    className={styles.currentPlayerCard}
-                    style={{
-                      borderColor: getPlayerColor(currentPlayer.color),
-                    }}
-                  >
-                    {currentCardData && (
-                      <StrategyCardNumber
-                        number={currentStrategyCard!.strategyCardId}
-                        color={currentCardData.color}
-                        size="small"
-                        className={currentState?.strategyCardUsed ? styles.cardNumberUsed : ''}
+                  <>
+                    <div
+                      className={styles.currentPlayerCard}
+                      style={{
+                        borderColor: getPlayerColor(currentPlayer.color),
+                      }}
+                    >
+                      {currentCardData && (
+                        <StrategyCardNumber
+                          number={currentStrategyCard!.strategyCardId}
+                          color={currentCardData.color}
+                          size="small"
+                          className={currentState?.strategyCardUsed ? styles.cardNumberUsed : ''}
+                        />
+                      )}
+                      <img
+                        src={getFactionImage(currentPlayer.factionId, 'color')}
+                        alt={currentPlayer.factionName}
+                        className={styles.currentPlayerIcon}
                       />
-                    )}
-                    <img
-                      src={getFactionImage(currentPlayer.factionId, 'color')}
-                      alt={currentPlayer.factionName}
-                      className={styles.currentPlayerIcon}
-                    />
-                    <div className={styles.currentPlayerInfo}>
-                      <div className={styles.currentPlayerTop}>
-                        <div className={styles.currentPlayerNames}>
-                          <div className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
-                            {FACTIONS[currentPlayer.factionId]?.shortName || currentPlayer.factionName}
+                      <div className={styles.currentPlayerInfo}>
+                        <div className={styles.currentPlayerTop}>
+                          <div className={styles.currentPlayerNames}>
+                            <div className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
+                              {FACTIONS[currentPlayer.factionId]?.shortName || currentPlayer.factionName}
+                            </div>
+                            <div className={styles.currentPlayerName}>
+                              ({currentPlayer.displayName})
+                            </div>
                           </div>
-                          <div className={styles.currentPlayerName}>
-                            ({currentPlayer.displayName})
+                          <div className={styles.currentPlayerTacticalCount}>
+                            {currentState && currentState.tacticalActionsCount > 0 && `T${currentState.tacticalActionsCount}`}
+                            {currentState && currentState.tacticalActionsCount > 0 && currentState.componentActionsCount > 0 && ' '}
+                            {currentState && currentState.componentActionsCount > 0 && `C${currentState.componentActionsCount}`}
+                            {currentState && currentState.tacticalActionsCount === 0 && currentState.componentActionsCount === 0 && '—'}
                           </div>
-                        </div>
-                        <div className={styles.currentPlayerTacticalCount}>
-                          {currentState && currentState.tacticalActionsCount > 0 && `T${currentState.tacticalActionsCount}`}
-                          {currentState && currentState.tacticalActionsCount > 0 && currentState.componentActionsCount > 0 && ' '}
-                          {currentState && currentState.componentActionsCount > 0 && `C${currentState.componentActionsCount}`}
-                          {currentState && currentState.tacticalActionsCount === 0 && currentState.componentActionsCount === 0 && '—'}
                         </div>
                       </div>
                     </div>
-                  </div>
+
+                    {/* Turn Text */}
+                    <div className={styles.turnInfo}>
+                      <div className={styles.currentTurnText}>
+                        <div
+                          className={styles.currentPlayer}
+                          style={{ color: getPlayerColor(currentPlayer.color) }}
+                        >
+                          {currentPlayer.factionName}, {currentPlayer.displayName}
+                        </div>
+                        <div className={styles.turnPrompt}>
+                          Choose Your Action <span className={styles.turnCount}>[Turn {currentPlayerTurnCount}]</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 );
               })()}
-            </div>
-
-            {/* Current Turn Indicator */}
-            <div className={styles.turnInfo}>
-              <div className={styles.currentTurnText}>
-                <span
-                  className={styles.currentPlayer}
-                  style={{ color: getPlayerColor(currentPlayer.color) }}
-                >
-                  {currentPlayer.factionName}, {currentPlayer.displayName}
-                </span>
-                <span className={styles.turnPrompt}>, Choose Your Action</span>
-                <span className={styles.turnCount}>
-                  [Turn {currentPlayerTurnCount}]
-                </span>
-              </div>
             </div>
           </div>
 
