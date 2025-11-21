@@ -519,6 +519,7 @@ export function ActionPhase({
                         number={selection.strategyCardId}
                         color={cardData.color}
                         size="small"
+                        className={state.strategyCardUsed ? styles.cardNumberUsed : ''}
                       />
                     )}
                     <img
@@ -544,9 +545,6 @@ export function ActionPhase({
                         </div>
                       </div>
                       <div className={styles.queueBarStatuses}>
-                        {state.strategyCardUsed && (
-                          <div className={styles.queueBarStatus}>Card Used</div>
-                        )}
                         {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
                       </div>
                     </div>

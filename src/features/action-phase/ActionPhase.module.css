@@ -217,6 +217,12 @@
   font-size: var(--font-size-3xl);
 }
 
+/* Faded Card Number when strategy card is used */
+.cardNumberUsed {
+  opacity: 0.3;
+  filter: grayscale(70%);
+}
+
 /* Content Area - Split into left panels (70%) and right column (30% - actions + strategy card) */
 .contentArea {
   display: flex;

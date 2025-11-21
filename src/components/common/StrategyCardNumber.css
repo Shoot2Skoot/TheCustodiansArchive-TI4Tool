@@ -51,11 +51,11 @@
 .strategy-card-number.medium {
   width: 68px;
   height: 68px;
-  font-size: var(--font-size-5xl);
+  font-size: var(--font-size-6xl);
 }
 
 .strategy-card-number.large {
   width: 94px;
   height: 94px;
-  font-size: var(--font-size-6xl);
+  font-size: calc(var(--font-size-6xl) * 1.2);
 }
