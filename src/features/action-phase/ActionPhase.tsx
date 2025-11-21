@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Panel, Button } from '@/components/common';
-import { STRATEGY_CARDS } from '@/lib/constants';
+import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
+import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
@@ -417,126 +418,137 @@ export function ActionPhase({
     ? STRATEGY_CARDS.find((c) => c.id === currentStrategyCard.strategyCardId)
     : null;
 
-  return (
-    <Panel className={styles.actionPhasePanel}>
-      <div className={styles.header}>
-        <h2>Action Phase - Round {roundNumber}</h2>
-        <div className={styles.undoButtons}>
-          <Button
-            onClick={handleUndo}
-            disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
-            variant="secondary"
-            size="small"
-          >
-            Undo
-          </Button>
-          <Button onClick={handleRedo} disabled={!canRedo()} variant="secondary" size="small">
-            Redo
-          </Button>
-        </div>
-      </div>
+  // Get turn counter for current player (count their tactical actions + 1 for current turn)
+  const currentPlayerTurnCount = currentPlayerState ? currentPlayerState.tacticalActionsCount + 1 : 1;
 
-      <div className={styles.currentPlayerDisplay}>
-        <h3>Current Player</h3>
-        <div className={styles.playerInfo}>
-          <div className={styles.playerColor} style={{ backgroundColor: currentPlayer.color }} />
-          <span className={styles.playerName}>{currentPlayer.displayName}</span>
-          <span className={styles.factionName}>({currentPlayer.factionName})</span>
-        </div>
-        {strategyCardData && (
-          <div className={styles.strategyCardInfo}>
-            <div
-              className={styles.strategyCardBadge}
-              style={{ backgroundColor: strategyCardData.color }}
-            >
-              {strategyCardData.id}. {strategyCardData.name}
+  return (
+    <div className={styles.container}>
+      {/* Turn Indicator Panel - Matching Strategy Phase */}
+      <Panel className={styles.turnIndicator}>
+        <div className={styles.turnPanelLayout}>
+          <div className={styles.turnPanelSpacer}></div>
+
+          <div className={styles.turnPanelCenter}>
+            {/* Action Queue Bar */}
+            <div className={styles.turnQueueBar}>
+              {turnOrder.map((selection) => {
+                const player = players.find((p) => p.id === selection.playerId);
+                const state = playerActionStates.find((s) => s.playerId === selection.playerId);
+
+                if (!player || !state) return null;
+
+                const activeTurnSelection = activePlayers[currentTurnIndex % activePlayers.length];
+                const isCurrent = activeTurnSelection?.playerId === player.id;
+                const nextTurnSelection = activePlayers[(currentTurnIndex + 1) % activePlayers.length];
+                const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
+                const isPassed = state.hasPassed;
+
+                return (
+                  <div
+                    key={player.id}
+                    className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${isPassed ? styles.queueBarPassed : ''}`}
+                    style={{
+                      borderColor: getPlayerColor(player.color),
+                    }}
+                  >
+                    <img
+                      src={getFactionImage(player.factionId, 'color')}
+                      alt={player.factionName}
+                      className={styles.queueBarIcon}
+                    />
+                    <div className={styles.queueBarInfo}>
+                      <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                        {FACTIONS[player.factionId]?.shortName || player.factionName}
+                      </div>
+                      <div className={styles.queueBarPlayer}>
+                        ({player.displayName})
+                      </div>
+                      {state.strategyCardUsed && (
+                        <div className={styles.queueBarStatus}>Card Used</div>
+                      )}
+                      {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Current Turn Indicator */}
+            <div className={styles.turnInfo}>
+              <div className={styles.currentTurnText}>
+                <span
+                  className={styles.currentPlayer}
+                  style={{ color: getPlayerColor(currentPlayer.color) }}
+                >
+                  {currentPlayer.factionName}, {currentPlayer.displayName}
+                </span>
+                <span className={styles.turnPrompt}>, Choose Your Action</span>
+                <span className={styles.turnCount}>
+                  [Turn {currentPlayerTurnCount}]
+                </span>
+              </div>
             </div>
           </div>
-        )}
-      </div>
 
-      <div className={styles.actionButtons}>
-        <Button onClick={handleTacticalAction} variant="primary" size="large">
-          Tactical / Component Action
-          <span className={styles.buttonSubtext}>Resolving...</span>
-        </Button>
+          <div className={styles.turnPanelActions}>
+            <Button
+              variant="secondary"
+              onClick={handleUndo}
+              disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
+            >
+              Undo
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleRedo}
+              disabled={!canRedo()}
+            >
+              Redo
+            </Button>
+          </div>
+        </div>
+      </Panel>
 
-        <Button
-          onClick={handleStrategyCardAction}
-          variant="primary"
-          size="large"
-          disabled={currentPlayerState?.strategyCardUsed}
-        >
-          Use Strategy Card
-          {currentPlayerState?.strategyCardUsed && (
-            <span className={styles.buttonSubtext}>(Already Used)</span>
-          )}
-        </Button>
+      {/* Main Action Panel */}
+      <Panel className={styles.actionPanel}>
+        <div className={styles.actionButtons}>
+          <Button onClick={handleTacticalAction} variant="primary" size="large">
+            Tactical / Component Action
+          </Button>
 
-        <Button
-          onClick={handlePass}
-          variant="secondary"
-          size="large"
-          disabled={!currentPlayerState?.strategyCardUsed}
-        >
-          Pass
-          {!currentPlayerState?.strategyCardUsed && (
-            <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
-          )}
-        </Button>
-      </div>
+          <Button
+            onClick={handleStrategyCardAction}
+            variant="primary"
+            size="large"
+            disabled={currentPlayerState?.strategyCardUsed}
+          >
+            Use Strategy Card
+            {currentPlayerState?.strategyCardUsed && (
+              <span className={styles.buttonSubtext}>(Already Used)</span>
+            )}
+          </Button>
 
-      {allPlayersPassed && (
-        <div className={styles.endPhaseSection}>
-          <Button onClick={handleEndPhase} variant="primary" size="large">
-            End Action Phase
+          <Button
+            onClick={handlePass}
+            variant="secondary"
+            size="large"
+            disabled={!currentPlayerState?.strategyCardUsed}
+          >
+            Pass
+            {!currentPlayerState?.strategyCardUsed && (
+              <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
+            )}
           </Button>
         </div>
-      )}
 
-      {/* Action Queue Bar */}
-      <div className={styles.actionQueueBar}>
-        {turnOrder.map((selection, index) => {
-          const player = players.find((p) => p.id === selection.playerId);
-          const state = playerActionStates.find((s) => s.playerId === selection.playerId);
-          const card = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
-
-          if (!player || !state || !card) return null;
-
-          const activeTurnSelection = activePlayers[currentTurnIndex % activePlayers.length];
-          const isCurrent = activeTurnSelection?.playerId === player.id;
-          const nextTurnSelection = activePlayers[(currentTurnIndex + 1) % activePlayers.length];
-          const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
-          const isPassed = state.hasPassed;
-
-          return (
-            <div
-              key={player.id}
-              className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${isPassed ? styles.queueBarPassed : ''}`}
-              style={{
-                borderColor: player.color,
-              }}
-            >
-              <div
-                className={styles.queueBarCard}
-                style={{ backgroundColor: card.color }}
-              >
-                {card.id}
-              </div>
-              <div className={styles.queueBarInfo}>
-                <div className={styles.queueBarFaction} style={{ color: player.color }}>
-                  {player.factionName}
-                </div>
-                <div className={styles.queueBarPlayer}>({player.displayName})</div>
-                {state.strategyCardUsed && (
-                  <div className={styles.queueBarStatus}>Card Used</div>
-                )}
-                {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+        {allPlayersPassed && (
+          <div className={styles.endPhaseSection}>
+            <Button onClick={handleEndPhase} variant="primary" size="large">
+              End Action Phase
+            </Button>
+          </div>
+        )}
+      </Panel>
 
       {/* Strategy Card Action Modal */}
       {showStrategyCardModal && modalCardId !== null && (
@@ -556,6 +568,6 @@ export function ActionPhase({
           onCancel={handlePoliticsCancel}
         />
       )}
-    </Panel>
+    </div>
   );
 }
