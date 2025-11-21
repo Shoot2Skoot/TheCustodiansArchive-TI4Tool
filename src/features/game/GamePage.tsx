@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useGame } from '@/hooks';
 import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
@@ -7,7 +7,7 @@ import { ActionPhase } from '@/features/action-phase';
 import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTradeGoodBonuses';
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
 import { FACTIONS } from '@/lib/factions';
-import { Panel } from '@/components/common';
+import { Panel, Button } from '@/components/common';
 import styles from './GamePage.module.css';
 
 export function GamePage() {
@@ -21,6 +21,14 @@ export function GamePage() {
   const gameState = useStore(selectGameState);
   const speaker = useStore(selectSpeaker);
   const strategySelections = useStore(selectStrategySelections);
+
+  // State for undo/redo functionality from child phases
+  const [undoRedoHandlers, setUndoRedoHandlers] = useState<{
+    canUndo: boolean;
+    canRedo: boolean;
+    onUndo: () => void;
+    onRedo: () => void;
+  } | null>(null);
 
   // Debug logging
   console.log('GamePage render - Phase:', currentPhase, 'GameState:', gameState);
@@ -110,6 +118,7 @@ export function GamePage() {
             initialTradeGoodBonuses={tradeGoodBonuses}
             onComplete={handleStrategyComplete}
             onReset={handleStrategyReset}
+            onUndoRedoChange={setUndoRedoHandlers}
           />
         );
 
@@ -125,6 +134,7 @@ export function GamePage() {
               console.log('Action phase complete');
               // TODO: Transition to next phase (Status)
             }}
+            onUndoRedoChange={setUndoRedoHandlers}
           />
         );
 
@@ -166,6 +176,24 @@ export function GamePage() {
         <div className={styles.phaseInfo}>
           <span className={styles.phaseName}>{currentPhase.charAt(0).toUpperCase() + currentPhase.slice(1)}</span>
         </div>
+        {undoRedoHandlers && (
+          <div className={styles.undoRedoButtons}>
+            <Button
+              variant="secondary"
+              onClick={undoRedoHandlers.onUndo}
+              disabled={!undoRedoHandlers.canUndo}
+            >
+              Undo
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={undoRedoHandlers.onRedo}
+              disabled={!undoRedoHandlers.canRedo}
+            >
+              Redo
+            </Button>
+          </div>
+        )}
       </div>
 
       {renderPhase()}

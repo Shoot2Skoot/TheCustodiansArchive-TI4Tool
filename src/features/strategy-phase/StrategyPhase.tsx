@@ -32,6 +32,12 @@ interface StrategyPhaseProps {
   initialTradeGoodBonuses?: Record<number, number>;
   onComplete: (selections: StrategySelection[]) => void;
   onReset: () => void;
+  onUndoRedoChange?: (handlers: {
+    canUndo: boolean;
+    canRedo: boolean;
+    onUndo: () => void;
+    onRedo: () => void;
+  } | null) => void;
 }
 
 export function StrategyPhase({
@@ -42,6 +48,7 @@ export function StrategyPhase({
   initialTradeGoodBonuses,
   onComplete,
   onReset,
+  onUndoRedoChange,
 }: StrategyPhaseProps) {
   const [selections, setSelections] = useState<StrategySelection[]>([]);
   const [tradeGoodBonuses, setTradeGoodBonuses] = useState<Record<number, number>>({});
@@ -167,6 +174,25 @@ export function StrategyPhase({
       setCurrentPlayerIndex(entry.data.length);
     }
   }, [canRedo, selections, currentUserId]);
+
+  // Provide undo/redo handlers to parent component
+  useEffect(() => {
+    if (onUndoRedoChange) {
+      onUndoRedoChange({
+        canUndo: currentUserId ? canUndo(currentUserId, isHost || false) : false,
+        canRedo: canRedo(),
+        onUndo: handleUndo,
+        onRedo: handleRedo,
+      });
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      if (onUndoRedoChange) {
+        onUndoRedoChange(null);
+      }
+    };
+  }, [currentUserId, isHost, canUndo, canRedo, handleUndo, handleRedo, onUndoRedoChange]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
@@ -351,23 +377,6 @@ export function StrategyPhase({
                 </div>
               </>
             )}
-          </div>
-
-          <div className={styles.turnPanelActions}>
-            <Button
-              variant="secondary"
-              onClick={handleUndo}
-              disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
-            >
-              Undo
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleRedo}
-              disabled={!canRedo()}
-            >
-              Redo
-            </Button>
           </div>
         </div>
       </Panel>

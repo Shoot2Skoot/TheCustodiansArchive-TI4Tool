@@ -55,6 +55,12 @@
   text-transform: capitalize;
 }
 
+.undoRedoButtons {
+  display: flex;
+  gap: var(--space-3);
+  margin-left: var(--space-4);
+}
+
 /* Loading State */
 .loadingPanel {
   margin: var(--space-8);

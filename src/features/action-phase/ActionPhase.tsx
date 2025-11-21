@@ -33,6 +33,12 @@ interface ActionPhaseProps {
   strategySelections: StrategySelection[];
   speakerPlayerId: string | null;
   onComplete: () => void;
+  onUndoRedoChange?: (handlers: {
+    canUndo: boolean;
+    canRedo: boolean;
+    onUndo: () => void;
+    onRedo: () => void;
+  } | null) => void;
 }
 
 // Maximum number of players to show in full format in the queue bar
@@ -49,6 +55,7 @@ export function ActionPhase({
   strategySelections,
   speakerPlayerId,
   onComplete,
+  onUndoRedoChange,
 }: ActionPhaseProps) {
   // Local state for action phase
   const [playerActionStates, setPlayerActionStates] = useState<PlayerActionState[]>([]);
@@ -444,6 +451,25 @@ export function ActionPhase({
     }
   }, [canRedo, currentUserId, activePlayers, getCurrentStateSnapshot]);
 
+  // Provide undo/redo handlers to parent component
+  useEffect(() => {
+    if (onUndoRedoChange) {
+      onUndoRedoChange({
+        canUndo: currentUserId ? canUndo(currentUserId, isHost || false) : false,
+        canRedo: canRedo(),
+        onUndo: handleUndo,
+        onRedo: handleRedo,
+      });
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      if (onUndoRedoChange) {
+        onUndoRedoChange(null);
+      }
+    };
+  }, [currentUserId, isHost, canUndo, canRedo, handleUndo, handleRedo, onUndoRedoChange]);
+
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -603,7 +629,7 @@ export function ActionPhase({
               })()}
             </div>
 
-            {/* Current Player Display with Undo/Redo */}
+            {/* Current Player Display */}
             <div className={styles.currentPlayerDisplay}>
               {(() => {
                 const currentStrategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
@@ -613,63 +639,44 @@ export function ActionPhase({
                   : null;
 
                 return (
-                  <>
-                    <div
-                      className={styles.currentPlayerCard}
-                      style={{
-                        color: getPlayerColor(currentPlayer.color as PlayerColor),
-                      }}
-                    >
-                      {currentCardData && (
-                        <StrategyCardNumber
-                          number={currentStrategyCard!.strategyCardId}
-                          color={currentCardData.color}
-                          size="small"
-                          className={currentState?.strategyCardUsed ? styles.cardNumberUsed : ''}
-                        />
-                      )}
-                      <img
-                        src={getFactionImage(currentPlayer.factionId, 'color')}
-                        alt={currentPlayer.factionName}
-                        className={styles.currentPlayerIcon}
+                  <div
+                    className={styles.currentPlayerCard}
+                    style={{
+                      color: getPlayerColor(currentPlayer.color as PlayerColor),
+                    }}
+                  >
+                    {currentCardData && (
+                      <StrategyCardNumber
+                        number={currentStrategyCard!.strategyCardId}
+                        color={currentCardData.color}
+                        size="small"
+                        className={currentState?.strategyCardUsed ? styles.cardNumberUsed : ''}
                       />
-                      <div className={styles.currentPlayerInfo}>
-                        <div className={styles.currentPlayerTop}>
-                          <div className={styles.currentPlayerNames}>
-                            <span className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
-                              {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}
-                            </span>
-                            <span className={styles.currentPlayerName}>
-                              {currentPlayer.displayName}
-                            </span>
-                          </div>
-                          <div className={styles.currentPlayerTacticalCount}>
-                            {currentState && currentState.tacticalActionsCount > 0 && `T${currentState.tacticalActionsCount}`}
-                            {currentState && currentState.tacticalActionsCount > 0 && currentState.componentActionsCount > 0 && ' '}
-                            {currentState && currentState.componentActionsCount > 0 && `C${currentState.componentActionsCount}`}
-                            {currentState && currentState.tacticalActionsCount === 0 && currentState.componentActionsCount === 0 && '—'}
-                          </div>
+                    )}
+                    <img
+                      src={getFactionImage(currentPlayer.factionId, 'color')}
+                      alt={currentPlayer.factionName}
+                      className={styles.currentPlayerIcon}
+                    />
+                    <div className={styles.currentPlayerInfo}>
+                      <div className={styles.currentPlayerTop}>
+                        <div className={styles.currentPlayerNames}>
+                          <span className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color as PlayerColor) }}>
+                            {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}
+                          </span>
+                          <span className={styles.currentPlayerName}>
+                            {currentPlayer.displayName}
+                          </span>
+                        </div>
+                        <div className={styles.currentPlayerTacticalCount}>
+                          {currentState && currentState.tacticalActionsCount > 0 && `T${currentState.tacticalActionsCount}`}
+                          {currentState && currentState.tacticalActionsCount > 0 && currentState.componentActionsCount > 0 && ' '}
+                          {currentState && currentState.componentActionsCount > 0 && `C${currentState.componentActionsCount}`}
+                          {currentState && currentState.tacticalActionsCount === 0 && currentState.componentActionsCount === 0 && '—'}
                         </div>
                       </div>
                     </div>
-
-                    <div className={styles.undoRedoActions}>
-                      <Button
-                        variant="secondary"
-                        onClick={handleUndo}
-                        disabled={!currentUserId || !canUndo(currentUserId, isHost || false)}
-                      >
-                        Undo
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        onClick={handleRedo}
-                        disabled={!canRedo()}
-                      >
-                        Redo
-                      </Button>
-                    </div>
-                  </>
+                  </div>
                 );
               })()}
             </div>

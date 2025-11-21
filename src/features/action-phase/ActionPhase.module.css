@@ -41,7 +41,7 @@
 .currentPlayerDisplay {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--space-6);
   padding: var(--space-4) var(--space-6);
   border-top: 2px solid rgba(255, 255, 255, 0.2);
@@ -95,11 +95,6 @@
   );
 }
 
-.undoRedoActions {
-  display: flex;
-  gap: var(--space-3);
-  margin-left: auto;
-}
 
 .currentPlayerIcon {
   width: 52px; /* 1.5x larger than queueBarCurrent */
