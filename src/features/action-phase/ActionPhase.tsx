@@ -81,6 +81,7 @@ export function ActionPhase({
       strategyCardUsed: false,
       hasPassed: false,
       tacticalActionsCount: 0,
+      componentActionsCount: 0,
     }));
     setPlayerActionStates(initialStates);
   }, [players]);
@@ -118,7 +119,7 @@ export function ActionPhase({
     speakerPlayerId: currentSpeakerPlayerId,
   });
 
-  // Handle tactical/component action
+  // Handle tactical action
   const handleTacticalAction = async () => {
     if (!currentPlayer || !currentUserId) return;
 
@@ -141,6 +142,42 @@ export function ActionPhase({
     );
 
     // Save to database
+    await saveTacticalAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+    });
+
+    // Increment global turn counter
+    setGlobalTurnCounter((prev) => prev + 1);
+
+    // Move to next player
+    advanceToNextPlayer();
+  };
+
+  // Handle component action
+  const handleComponentAction = async () => {
+    if (!currentPlayer || !currentUserId) return;
+
+    // Push current state to undo history BEFORE updating
+    pushHistory({
+      type: 'actionPhaseAction',
+      actionType: 'component',
+      data: getCurrentStateSnapshot(),
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
+
+    // Update the player's component action count
+    setPlayerActionStates((prev) =>
+      prev.map((state) =>
+        state.playerId === currentPlayer.id
+          ? { ...state, componentActionsCount: state.componentActionsCount + 1 }
+          : state
+      )
+    );
+
+    // Save to database (reusing tactical action table for now)
     await saveTacticalAction({
       gameId,
       roundNumber,
@@ -428,8 +465,10 @@ export function ActionPhase({
     ? STRATEGY_CARDS.find((c) => c.id === currentStrategyCard.strategyCardId)
     : null;
 
-  // Get turn counter for current player (count their tactical actions + 1 for current turn)
-  const currentPlayerTurnCount = currentPlayerState ? currentPlayerState.tacticalActionsCount + 1 : 1;
+  // Get turn counter for current player (count their tactical + component actions + 1 for current turn)
+  const currentPlayerTurnCount = currentPlayerState
+    ? currentPlayerState.tacticalActionsCount + currentPlayerState.componentActionsCount + 1
+    : 1;
 
   return (
     <div className={styles.container}>
@@ -485,7 +524,10 @@ export function ActionPhase({
                           </div>
                         </div>
                         <div className={styles.queueBarTacticalCount}>
-                          {state.tacticalActionsCount}
+                          {state.tacticalActionsCount > 0 && `T${state.tacticalActionsCount}`}
+                          {state.tacticalActionsCount > 0 && state.componentActionsCount > 0 && ' '}
+                          {state.componentActionsCount > 0 && `C${state.componentActionsCount}`}
+                          {state.tacticalActionsCount === 0 && state.componentActionsCount === 0 && '—'}
                         </div>
                       </div>
                       <div className={styles.queueBarStatuses}>
@@ -555,9 +597,32 @@ export function ActionPhase({
           {/* Action Buttons Panel */}
           <Panel className={styles.actionPanel}>
             <div className={styles.actionButtons}>
-              <Button onClick={handleTacticalAction} variant="primary" size="large">
-                Tactical / Component Action
-              </Button>
+              <div className={styles.actionButtonRow}>
+                <Button
+                  onClick={handleTacticalAction}
+                  variant="primary"
+                  size="large"
+                  style={{
+                    backgroundColor: '#1e88e5',
+                    borderColor: '#1e88e5',
+                  }}
+                  className={styles.halfButton}
+                >
+                  Tactical
+                </Button>
+                <Button
+                  onClick={handleComponentAction}
+                  variant="primary"
+                  size="large"
+                  style={{
+                    backgroundColor: '#fb8c00',
+                    borderColor: '#fb8c00',
+                  }}
+                  className={styles.halfButton}
+                >
+                  Component
+                </Button>
+              </div>
 
               <Button
                 onClick={handleStrategyCardAction}
@@ -569,7 +634,7 @@ export function ActionPhase({
                   borderColor: strategyCardData?.color,
                 }}
               >
-                Use {strategyCardData?.name || 'Strategy Card'}
+                Use {strategyCardData?.name || 'Strategy'} Card
                 {currentPlayerState?.strategyCardUsed && (
                   <span className={styles.buttonSubtext}>(Already Used)</span>
                 )}

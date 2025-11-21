@@ -8,6 +8,7 @@ export interface PlayerActionState {
   strategyCardUsedOnTurn?: number;
   hasPassed: boolean;
   tacticalActionsCount: number;
+  componentActionsCount: number;
 }
 
 // Action phase state snapshot
