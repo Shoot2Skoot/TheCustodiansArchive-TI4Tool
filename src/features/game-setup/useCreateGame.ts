@@ -4,6 +4,7 @@ import { createPlayer } from '@/lib/db/players';
 import { initializeGameState } from '@/lib/db/gameState';
 import { ensureAnonymousSession } from '@/lib/auth';
 import { useStore } from '@/store';
+import { supabase } from '@/lib/supabase';
 import type { GameConfig } from '@/types';
 import type { PlayerColor } from '@/types/enums';
 
@@ -54,6 +55,19 @@ export function useCreateGame() {
 
       if (!game) {
         throw new Error('Failed to create game');
+      }
+
+      // Step 1.5: Add creator to game_users table
+      const { error: gameUserError } = await supabase
+        .from('game_users')
+        .insert({
+          game_id: game.id,
+          user_id: userId,
+        });
+
+      if (gameUserError) {
+        console.warn('Failed to add creator to game_users (may already exist):', gameUserError);
+        // Don't throw - the migration may have already added them, or they might be added via trigger
       }
 
       // Step 2: Create all player records

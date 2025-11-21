@@ -78,6 +78,25 @@ export interface Database {
           joined_at?: string | null;
         };
       };
+      game_users: {
+        Row: {
+          id: string;
+          game_id: string;
+          user_id: string;
+          joined_at: string;
+          is_active: boolean;
+        };
+        Insert: {
+          id?: string;
+          game_id: string;
+          user_id: string;
+          joined_at?: string;
+          is_active?: boolean;
+        };
+        Update: {
+          is_active?: boolean;
+        };
+      };
       game_state: {
         Row: {
           game_id: string;
@@ -302,7 +321,20 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      join_game_by_room_code: {
+        Args: {
+          room_code_input: string;
+        };
+        Returns: string; // game_id
+      };
+      is_user_in_game_v2: {
+        Args: {
+          game_uuid: string;
+        };
+        Returns: boolean;
+      };
+    };
     Enums: Record<string, never>;
   };
 }
