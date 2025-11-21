@@ -132,11 +132,18 @@ export function StrategyPhase({
   }, [handleUndo]);
 
   const handleReset = () => {
+    if (!currentUserId) return;
+
+    // Push current state to undo history BEFORE resetting
+    pushHistory({
+      type: 'strategySelection',
+      data: selections,
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
+
     setSelections([]);
     setCurrentPlayerIndex(0);
-
-    // Clear undo history
-    useStore.getState().clearHistory();
 
     // Reset trade good bonuses to initial values
     if (initialTradeGoodBonuses) {
