@@ -150,3 +150,40 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
+
+/* In Progress State - Glow Effect */
+.cardContainer.inProgress {
+  animation: strategyCardGlow 2s ease-in-out infinite;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 30px var(--strategy-color),
+    0 0 60px var(--strategy-color),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes strategyCardGlow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+      0 0 30px var(--strategy-color),
+      0 0 60px var(--strategy-color),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      0 0 40px var(--strategy-color),
+      0 0 80px var(--strategy-color),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Done Button Container */
+.doneButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+}

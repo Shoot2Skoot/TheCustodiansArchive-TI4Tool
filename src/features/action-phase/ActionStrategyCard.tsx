@@ -1,5 +1,5 @@
 import { STRATEGY_CARDS } from '@/lib/constants';
-import { StrategyCardNumber } from '@/components/common';
+import { StrategyCardNumber, Button } from '@/components/common';
 import { AbilityText } from '../strategy-phase/AbilityText';
 import styles from './ActionStrategyCard.module.css';
 
@@ -7,12 +7,16 @@ interface ActionStrategyCardProps {
   cardId: number;
   isUsed: boolean;
   usedOnTurn?: number;
+  isInProgress?: boolean;
+  onDone?: () => void;
 }
 
 export function ActionStrategyCard({
   cardId,
   isUsed,
   usedOnTurn,
+  isInProgress = false,
+  onDone,
 }: ActionStrategyCardProps) {
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
 
@@ -23,7 +27,7 @@ export function ActionStrategyCard({
   return (
     <div className={styles.cardWrapper}>
       <div
-        className={`${styles.cardContainer} ${isUsed ? styles.used : ''}`}
+        className={`${styles.cardContainer} ${isUsed ? styles.used : ''} ${isInProgress ? styles.inProgress : ''}`}
         style={{
           '--strategy-color': card.color,
           borderColor: card.color,
@@ -59,6 +63,13 @@ export function ActionStrategyCard({
                   <AbilityText text={card.secondary} />
                 </div>
               </div>
+              {isInProgress && onDone && (
+                <div className={styles.doneButtonContainer}>
+                  <Button onClick={onDone} variant="primary" size="large" customColor="#22c55e">
+                    Done
+                  </Button>
+                </div>
+              )}
             </>
           )}
         </div>

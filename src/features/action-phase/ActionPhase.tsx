@@ -5,7 +5,6 @@ import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
-import { StrategyCardActionModal } from './StrategyCardActionModal';
 import { PoliticsCardModal } from './PoliticsCardModal';
 import { ActionStrategyCard } from './ActionStrategyCard';
 import { useSaveActionPhaseState } from './useSaveActionPhaseState';
@@ -50,9 +49,7 @@ export function ActionPhase({
   const [globalTurnCounter, setGlobalTurnCounter] = useState(1);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentSpeakerPlayerId, setCurrentSpeakerPlayerId] = useState<string | null>(speakerPlayerId);
-  const [showStrategyCardModal, setShowStrategyCardModal] = useState(false);
-  const [modalCardId, setModalCardId] = useState<number | null>(null);
-  const [modalPlayerName, setModalPlayerName] = useState<string>('');
+  const [isStrategyCardActionInProgress, setIsStrategyCardActionInProgress] = useState(false);
   const [showPoliticsModal, setShowPoliticsModal] = useState(false);
 
   // Get undo/redo functions from store
@@ -191,7 +188,7 @@ export function ActionPhase({
     advanceToNextPlayer();
   };
 
-  // Handle strategy card action - open modal
+  // Handle strategy card action - activate glow effect
   const handleStrategyCardAction = () => {
     if (!currentPlayer || !currentPlayerState) return;
 
@@ -201,15 +198,13 @@ export function ActionPhase({
     const strategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
     if (!strategyCard) return;
 
-    // Open the strategy card modal
-    setModalCardId(strategyCard.strategyCardId);
-    setModalPlayerName(currentPlayer.displayName);
-    setShowStrategyCardModal(true);
+    // Set strategy card action in progress (will add glow effect)
+    setIsStrategyCardActionInProgress(true);
   };
 
-  // Handle strategy card modal close - process the action
-  const handleStrategyCardModalClose = async () => {
-    setShowStrategyCardModal(false);
+  // Handle strategy card done button - process the action
+  const handleStrategyCardDone = async () => {
+    setIsStrategyCardActionInProgress(false);
 
     if (!currentPlayer || !currentUserId) return;
 
@@ -670,19 +665,12 @@ export function ActionPhase({
               cardId={currentStrategyCard.strategyCardId}
               isUsed={currentPlayerState?.strategyCardUsed || false}
               usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
+              isInProgress={isStrategyCardActionInProgress}
+              onDone={handleStrategyCardDone}
             />
           )}
         </div>
       </div>
-
-      {/* Strategy Card Action Modal */}
-      {showStrategyCardModal && modalCardId !== null && (
-        <StrategyCardActionModal
-          strategyCardId={modalCardId}
-          playerName={modalPlayerName}
-          onClose={handleStrategyCardModalClose}
-        />
-      )}
 
       {/* Politics Card Modal */}
       {showPoliticsModal && (
