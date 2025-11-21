@@ -6,6 +6,7 @@ import { GamePage } from '@/features/game';
 import { StateManagementTest } from '@/features/test/StateManagementTest';
 import { RealtimeTest } from '@/features/test/RealtimeTest';
 import { ComponentShowcase } from '@/features/test/ComponentShowcase';
+import { AudioTestPage } from '@/features/audio-test';
 import { useEnsureSession } from '@/hooks';
 import './App.css';
 
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/setup" element={<GameSetupWizard />} />
                     <Route path="/components" element={<ComponentsPage />} />
                     <Route path="/tests" element={<TestsPage />} />
+                    <Route path="/audio-test" element={<AudioTestPage />} />
                   </Routes>
                 </main>
               </div>

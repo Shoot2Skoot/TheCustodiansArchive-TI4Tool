@@ -54,7 +54,7 @@ export function PlayPhaseEndEffectModal({
 
   const handleConfirmSwap = () => {
     if (selectedCards.length === 2) {
-      onSwapComplete(selectedCards[0], selectedCards[1]);
+      onSwapComplete(selectedCards[0]!, selectedCards[1]!);
       handleClose();
     }
   };

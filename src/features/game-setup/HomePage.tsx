@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Modal, Panel, useToast } from '@/components/common';
-import { useBackgroundPreference, type BackgroundType } from '@/hooks/useBackgroundPreference';
+import { useBackgroundPreference } from '@/hooks/useBackgroundPreference';
 import { useRecentGames } from '@/hooks/useRecentGames';
-import { getFactionById, getFactionImage } from '@/lib/factions';
+import { getFactionImage } from '@/lib/factions';
 import styles from './HomePage.module.css';
 
 export function HomePage() {
@@ -20,7 +20,7 @@ export function HomePage() {
   // Show toast notification if there's an error loading recent games
   useEffect(() => {
     if (gamesError) {
-      showToast(gamesError, 'error');
+      showToast('error', gamesError);
     }
   }, [gamesError, showToast]);
 

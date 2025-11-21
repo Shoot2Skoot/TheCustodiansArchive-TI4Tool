@@ -10,8 +10,6 @@ import {
   audioService,
   SoundCategory,
   PhaseType,
-  StrategyCardType,
-  EventType,
   playFactionName,
   playPhaseEnter,
   playPhaseExit,

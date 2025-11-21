@@ -90,7 +90,7 @@ export function StrategyPhase({
   const handleCardSelect = (cardId: number) => {
     if (!currentPlayer || !currentUserId) return;
 
-    const newSelection: StrategySelection = {
+    const newSelection: LocalStrategySelection = {
       playerId: currentPlayer.id,
       cardId,
       tradeGoodBonus: tradeGoodBonuses[cardId] || 0,

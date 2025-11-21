@@ -13,10 +13,8 @@ import { useState, useEffect } from 'react';
 import { Panel, Button } from '@/components/common';
 import { useAudio } from '@/hooks/useAudio';
 import {
-  audioService,
   SoundCategory,
   PhaseType,
-  StrategyCardType,
   EventType,
   playFactionPrompt,
 } from '@/lib/audio';

@@ -24,7 +24,6 @@ export function StateManagementTest() {
   const runTests = async () => {
     setStatus('testing');
     setLogs([]);
-    let createdGameId: string | null = null;
 
     try {
       // Test 1: Authentication
@@ -48,7 +47,6 @@ export function StateManagementTest() {
       };
 
       const game = await createGame(testConfig, authData.user?.id);
-      createdGameId = game.id;
       setTestGameId(game.id);
       addLog(`Created game: ${game.roomCode} (ID: ${game.id})`, 'success');
 
@@ -60,7 +58,7 @@ export function StateManagementTest() {
       // Test 4: Create Players
       addLog('Creating players...');
       const player1 = await createPlayer(game.id, 1, 'red', 'hacan', 'Player 1');
-      const player2 = await createPlayer(game.id, 2, 'blue', 'sol', 'Player 2');
+      await createPlayer(game.id, 2, 'blue', 'sol', 'Player 2');
       addLog(`Created ${2} players`, 'success');
 
       // Test 5: Get Players

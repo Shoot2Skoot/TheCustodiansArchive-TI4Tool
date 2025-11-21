@@ -36,7 +36,7 @@ export function calculateTradeGoodBonuses(
     // Any card that wasn't picked gets +1 bonus
     for (let cardId = 1; cardId <= 8; cardId++) {
       if (!pickedCardIds.has(cardId)) {
-        bonuses[cardId] += 1;
+        bonuses[cardId] = (bonuses[cardId] || 0) + 1;
       }
     }
   }

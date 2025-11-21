@@ -1,3 +1,4 @@
+import React from 'react';
 import influenceIcon from '@/assets/icons/color/influence-bg.png';
 import resourcesIcon from '@/assets/icons/color/resources-bg.png';
 import tradeGoodIcon from '@/assets/icons/color/trade-good-1.png';
@@ -10,7 +11,7 @@ interface AbilityTextProps {
 export function AbilityText({ text }: AbilityTextProps) {
   // Split text by icon markers and render with inline images
   const parseText = (text: string) => {
-    const parts: (string | JSX.Element)[] = [];
+    const parts: (string | React.ReactElement)[] = [];
     let currentIndex = 0;
     let key = 0;
 
@@ -86,7 +87,7 @@ export function AbilityText({ text }: AbilityTextProps) {
         // Check if line starts with bullet emoji
         const bulletMatch = line.match(/^(🔶)\s*/);
         const bullet = bulletMatch ? bulletMatch[1] : null;
-        const textContent = bullet ? line.substring(bulletMatch[0].length) : line;
+        const textContent = bulletMatch ? line.substring(bulletMatch[0].length) : line;
 
         return (
           <div key={index} className={styles.line}>

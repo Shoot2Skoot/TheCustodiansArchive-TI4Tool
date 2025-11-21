@@ -44,13 +44,13 @@ export function useRecentGames() {
 
         if (mounted) {
           // Transform to RecentGame format
-          const formattedGames: RecentGame[] = gamesData.map((gameData) => ({
+          const formattedGames: RecentGame[] = gamesData.map((gameData: any) => ({
             gameId: gameData.game.id,
             roomCode: gameData.game.roomCode,
             lastUpdated: gameData.game.updatedAt,
             players: gameData.players
-              .sort((a, b) => a.position - b.position)
-              .map((player) => {
+              .sort((a: any, b: any) => a.position - b.position)
+              .map((player: any) => {
                 const faction = getFactionById(player.factionId);
                 return {
                   factionId: player.factionId,
@@ -96,13 +96,13 @@ export function useRecentGames() {
 
       const gamesData = await getGamesByPlayer(user.id);
 
-      const formattedGames: RecentGame[] = gamesData.map((gameData) => ({
+      const formattedGames: RecentGame[] = gamesData.map((gameData: any) => ({
         gameId: gameData.game.id,
         roomCode: gameData.game.roomCode,
         lastUpdated: gameData.game.updatedAt,
         players: gameData.players
-          .sort((a, b) => a.position - b.position)
-          .map((player) => {
+          .sort((a: any, b: any) => a.position - b.position)
+          .map((player: any) => {
             const faction = getFactionById(player.factionId);
             return {
               factionId: player.factionId,
