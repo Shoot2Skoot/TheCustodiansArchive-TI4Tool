@@ -556,8 +556,12 @@ export function ActionPhase({
                 variant="primary"
                 size="large"
                 disabled={currentPlayerState?.strategyCardUsed}
+                style={{
+                  backgroundColor: strategyCardData?.color,
+                  borderColor: strategyCardData?.color,
+                }}
               >
-                Use Strategy Card
+                Use {strategyCardData?.name || 'Strategy Card'}
                 {currentPlayerState?.strategyCardUsed && (
                   <span className={styles.buttonSubtext}>(Already Used)</span>
                 )}
