@@ -164,11 +164,21 @@ export function StrategyPhase({
   };
 
   const handleSwapComplete = (cardId1: number, cardId2: number) => {
+    if (!currentUserId) return;
+
     // Find the selections for these cards
     const selection1 = selections.find((s) => s.cardId === cardId1);
     const selection2 = selections.find((s) => s.cardId === cardId2);
 
     if (!selection1 || !selection2) return;
+
+    // Push current state to undo history BEFORE swapping
+    pushHistory({
+      type: 'strategySelection',
+      data: selections,
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
 
     // Create new selections array with swapped card IDs
     const newSelections = selections.map((s) => {
