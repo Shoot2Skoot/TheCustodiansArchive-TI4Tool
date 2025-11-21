@@ -6,6 +6,7 @@ import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
 import { StrategyCardActionModal } from './StrategyCardActionModal';
 import { PoliticsCardModal } from './PoliticsCardModal';
+import { useSaveActionPhaseState } from './useSaveActionPhaseState';
 import styles from './ActionPhase.module.css';
 
 interface Player {
@@ -19,7 +20,7 @@ interface Player {
 
 interface StrategySelection {
   playerId: string;
-  cardId: number;
+  strategyCardId: number;
   tradeGoodBonus: number;
   selectionOrder: number;
 }
@@ -34,6 +35,7 @@ interface ActionPhaseProps {
 }
 
 export function ActionPhase({
+  gameId,
   players,
   roundNumber,
   strategySelections,
@@ -55,6 +57,14 @@ export function ActionPhase({
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
   const currentGame = useStore((state) => state.currentGame);
+
+  // Database hooks
+  const {
+    saveStrategyCardAction,
+    saveTacticalAction,
+    savePassAction,
+    changeSpeaker,
+  } = useSaveActionPhaseState();
 
   // Get current user ID on mount
   useEffect(() => {
@@ -106,7 +116,7 @@ export function ActionPhase({
   });
 
   // Handle tactical/component action
-  const handleTacticalAction = () => {
+  const handleTacticalAction = async () => {
     if (!currentPlayer || !currentUserId) return;
 
     // Push current state to undo history BEFORE updating
@@ -126,6 +136,13 @@ export function ActionPhase({
           : state
       )
     );
+
+    // Save to database
+    await saveTacticalAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+    });
 
     // Move to next player
     advanceToNextPlayer();
@@ -148,7 +165,7 @@ export function ActionPhase({
   };
 
   // Handle strategy card modal close - process the action
-  const handleStrategyCardModalClose = () => {
+  const handleStrategyCardModalClose = async () => {
     setShowStrategyCardModal(false);
 
     if (!currentPlayer || !currentUserId) return;
@@ -172,6 +189,14 @@ export function ActionPhase({
       )
     );
 
+    // Save to database
+    await saveStrategyCardAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+      strategyCardId: strategyCard.strategyCardId,
+    });
+
     // Check if this is Politics card (card 3) - open speaker selection modal
     if (strategyCard.strategyCardId === 3) {
       setShowPoliticsModal(true);
@@ -183,7 +208,7 @@ export function ActionPhase({
   };
 
   // Handle speaker selection from Politics card
-  const handleSelectSpeaker = (newSpeakerId: string) => {
+  const handleSelectSpeaker = async (newSpeakerId: string) => {
     if (!currentUserId) return;
 
     // Push current state to undo history BEFORE updating speaker
@@ -199,6 +224,12 @@ export function ActionPhase({
     setCurrentSpeakerPlayerId(newSpeakerId);
     setShowPoliticsModal(false);
 
+    // Save to database
+    await changeSpeaker({
+      gameId,
+      newSpeakerId,
+    });
+
     // Now advance to next player
     advanceToNextPlayer();
   };
@@ -211,7 +242,7 @@ export function ActionPhase({
   };
 
   // Handle pass action
-  const handlePass = () => {
+  const handlePass = async () => {
     if (!currentPlayer || !currentUserId || !currentPlayerState) return;
 
     // Can only pass after using strategy card
@@ -229,6 +260,13 @@ export function ActionPhase({
     setPlayerActionStates((prev) =>
       prev.map((state) => (state.playerId === currentPlayer.id ? { ...state, hasPassed: true } : state))
     );
+
+    // Save to database
+    await savePassAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+    });
 
     // Move to next player
     advanceToNextPlayer();
