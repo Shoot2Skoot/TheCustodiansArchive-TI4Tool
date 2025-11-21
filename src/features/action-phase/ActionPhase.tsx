@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Panel, Button, StrategyCardNumber } from '@/components/common';
-import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
+import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
@@ -34,6 +34,13 @@ interface ActionPhaseProps {
   speakerPlayerId: string | null;
   onComplete: () => void;
 }
+
+// Maximum number of players to show in full format in the queue bar
+const MAX_FULL_QUEUE_ITEMS = 5;
+// Maximum number of players to show in condensed format (just icon + initiative)
+const MAX_CONDENSED_QUEUE_ITEMS = 4;
+// Total items shown
+const MAX_TOTAL_QUEUE_ITEMS = MAX_FULL_QUEUE_ITEMS + MAX_CONDENSED_QUEUE_ITEMS;
 
 export function ActionPhase({
   gameId,
@@ -528,7 +535,12 @@ export function ActionPhase({
                   return a.strategyCardId - b.strategyCardId;
                 });
 
-                return sortedTurnOrder.map((selection) => {
+                // Limit the number of items shown in the queue to prevent overflow
+                const visibleTurnOrder = sortedTurnOrder.slice(0, MAX_TOTAL_QUEUE_ITEMS + 1); // +1 to account for current player being filtered out
+
+                let visibleItemIndex = 0; // Track index of visible items (excluding current player)
+
+                return visibleTurnOrder.map((selection) => {
                   const player = players.find((p) => p.id === selection.playerId);
                   const state = playerActionStates.find((s) => s.playerId === selection.playerId);
                   const cardData = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
@@ -542,10 +554,14 @@ export function ActionPhase({
                   // Hide current player from queue - they'll be shown separately below
                   if (isCurrent) return null;
 
+                  // Determine if this item should be condensed (beyond the first N items)
+                  const isCondensed = visibleItemIndex >= MAX_FULL_QUEUE_ITEMS;
+                  visibleItemIndex++;
+
                   return (
                     <div
                       key={player.id}
-                      className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''}`}
+                      className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''} ${isCondensed ? styles.queueBarCondensed : ''}`}
                       style={{
                         borderColor: getPlayerColor(player.color),
                       }}
@@ -563,22 +579,24 @@ export function ActionPhase({
                         alt={player.factionName}
                         className={styles.queueBarIcon}
                       />
-                      <div className={styles.queueBarInfo}>
-                        <div className={styles.queueBarTop}>
-                          <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
-                            {FACTIONS[player.factionId]?.shortName || player.factionName}
+                      {!isCondensed && (
+                        <div className={styles.queueBarInfo}>
+                          <div className={styles.queueBarTop}>
+                            <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                              {FACTIONS[player.factionId]?.shortName || player.factionName}
+                            </div>
+                            <div className={styles.queueBarTacticalCount}>
+                              {state.tacticalActionsCount > 0 && `T${state.tacticalActionsCount}`}
+                              {state.tacticalActionsCount > 0 && state.componentActionsCount > 0 && ' '}
+                              {state.componentActionsCount > 0 && `C${state.componentActionsCount}`}
+                              {state.tacticalActionsCount === 0 && state.componentActionsCount === 0 && '—'}
+                            </div>
                           </div>
-                          <div className={styles.queueBarTacticalCount}>
-                            {state.tacticalActionsCount > 0 && `T${state.tacticalActionsCount}`}
-                            {state.tacticalActionsCount > 0 && state.componentActionsCount > 0 && ' '}
-                            {state.componentActionsCount > 0 && `C${state.componentActionsCount}`}
-                            {state.tacticalActionsCount === 0 && state.componentActionsCount === 0 && '—'}
+                          <div className={styles.queueBarStatuses}>
+                            {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
                           </div>
                         </div>
-                        <div className={styles.queueBarStatuses}>
-                          {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
-                        </div>
-                      </div>
+                      )}
                     </div>
                   );
                 });
@@ -599,7 +617,7 @@ export function ActionPhase({
                     <div
                       className={styles.currentPlayerCard}
                       style={{
-                        borderColor: getPlayerColor(currentPlayer.color),
+                        color: getPlayerColor(currentPlayer.color as PlayerColor),
                       }}
                     >
                       {currentCardData && (

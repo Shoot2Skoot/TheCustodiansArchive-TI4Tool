@@ -34,7 +34,6 @@
   padding: calc(var(--space-3) * 1.2) calc(var(--space-4) * 1.2);
   justify-content: center;
   align-items: center;
-  overflow-x: auto;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -54,10 +53,43 @@
   gap: calc(var(--space-3) * 1.5);
   padding: calc(var(--space-1) * 1.5) calc(var(--space-4) * 1.5);
   background: var(--color-bg-tertiary);
-  border: 3px solid;
-  border-radius: 8px;
+  border: 0; /* Border will be created with pseudo-elements */
   min-width: fit-content;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+  isolation: isolate;
+  --bevel-size: 10px;
+  --border-width: 3px;
+}
+
+/* Border layer - sits behind everything */
+.currentPlayerCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: currentColor; /* Will use the border color from inline style */
+  z-index: -2;
+  clip-path: polygon(
+    var(--bevel-size) 0, 100% 0, 100% calc(100% - var(--bevel-size)),
+    calc(100% - var(--bevel-size)) 100%, 0 100%, 0 var(--bevel-size)
+  );
+}
+
+/* Background layer - creates the border effect by being inset */
+.currentPlayerCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-tertiary);
+  z-index: -1;
+  clip-path: polygon(
+    var(--border-width) calc(var(--bevel-size) + calc(var(--border-width) * 0.5)),
+    calc(var(--bevel-size) + calc(var(--border-width) * 0.5)) var(--border-width),
+    calc(100% - var(--border-width)) var(--border-width),
+    calc(100% - var(--border-width)) calc(100% - calc(var(--bevel-size) + calc(var(--border-width) * 0.5))),
+    calc(100% - calc(var(--bevel-size) + calc(var(--border-width) * 0.5))) calc(100% - var(--border-width)),
+    var(--border-width) calc(100% - var(--border-width))
+  );
 }
 
 .undoRedoActions {
@@ -165,6 +197,18 @@
   position: relative;
 }
 
+.queueBarCondensed {
+  /* Same padding and gap as regular items, just without the text content */
+  padding: calc(var(--space-2)) calc(var(--space-3) * 1.2);
+  gap: calc(var(--space-2) * 1.2);
+  min-width: auto;
+}
+
+/* Prevent condensed items from getting enlarged when they're on-deck */
+.queueBarCondensed.queueBarCurrent {
+  padding: calc(var(--space-2)) calc(var(--space-3) * 1.2);
+}
+
 .queueBarCurrent {
   background: rgba(var(--color-accent-primary-rgb), 0.2);
   box-shadow: 0 0 0 2px var(--color-accent-primary);
@@ -185,6 +229,23 @@
   height: 40px;
   object-fit: contain;
   flex-shrink: 0;
+}
+
+.queueBarCondensed .queueBarIcon {
+  width: 32px;
+  height: 32px;
+}
+
+/* Keep condensed items small even when on-deck */
+.queueBarCondensed.queueBarCurrent .queueBarIcon {
+  width: 32px;
+  height: 32px;
+}
+
+/* Slightly smaller strategy card number for condensed items */
+.queueBarCondensed :global(.strategyCardNumber) {
+  transform: scale(0.85);
+  transform-origin: center;
 }
 
 .queueBarCurrent .queueBarIcon {
