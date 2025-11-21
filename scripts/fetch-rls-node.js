@@ -14,6 +14,10 @@ const { Client } = pkg;
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dns from 'dns';
+
+// Fix for Node.js DNS resolution on Windows - prefer IPv4
+dns.setDefaultResultOrder('ipv4first');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
