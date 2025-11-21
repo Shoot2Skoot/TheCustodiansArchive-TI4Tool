@@ -620,7 +620,7 @@ export function ActionPhase({
                         <div className={styles.currentPlayerTop}>
                           <div className={styles.currentPlayerNames}>
                             <div className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
-                              {FACTIONS[currentPlayer.factionId]?.shortName || currentPlayer.factionName}
+                              {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}
                             </div>
                             <div className={styles.currentPlayerName}>
                               ({currentPlayer.displayName})
