@@ -67,19 +67,11 @@ export function HomePage() {
             Create New Game
           </Button>
 
-          <Button
-            variant="secondary"
-            size="large"
-            onClick={() => setShowJoinModal(true)}
-          >
+          <Button variant="secondary" size="large" onClick={() => setShowJoinModal(true)}>
             Join Existing Game
           </Button>
 
-          <Button
-            variant="secondary"
-            size="large"
-            onClick={() => setShowOptionsModal(true)}
-          >
+          <Button variant="secondary" size="large" onClick={() => setShowOptionsModal(true)}>
             Options
           </Button>
         </div>
@@ -100,11 +92,7 @@ export function HomePage() {
         </div>
       </Panel>
 
-      <Modal
-        isOpen={showJoinModal}
-        onClose={() => setShowJoinModal(false)}
-        title="Join Game"
-      >
+      <Modal isOpen={showJoinModal} onClose={() => setShowJoinModal(false)} title="Join Game">
         <div className={styles.joinModal}>
           {/* Tabs */}
           <div className={styles.joinTabs}>
@@ -137,10 +125,7 @@ export function HomePage() {
                 className={styles.roomCodeInput}
               />
               <div className={styles.modalActions}>
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowJoinModal(false)}
-                >
+                <Button variant="secondary" onClick={() => setShowJoinModal(false)}>
                   Cancel
                 </Button>
                 <Button
@@ -157,9 +142,7 @@ export function HomePage() {
           {/* Recent Games View */}
           {joinView === 'recent' && (
             <>
-              <p className={styles.modalDescription}>
-                Select a game to rejoin
-              </p>
+              <p className={styles.modalDescription}>Select a game to rejoin</p>
               {isLoadingGames ? (
                 <div className={styles.loadingState}>
                   <div className={styles.spinner} />
@@ -194,7 +177,10 @@ export function HomePage() {
                               alt={player.factionName}
                               className={styles.recentGameFactionIcon}
                             />
-                            <span className={styles.recentGamePlayerName} style={{ color: player.color }}>
+                            <span
+                              className={styles.recentGamePlayerName}
+                              style={{ color: player.color }}
+                            >
                               {player.displayName || player.factionName}
                             </span>
                           </div>
@@ -205,10 +191,7 @@ export function HomePage() {
                 </div>
               )}
               <div className={styles.modalActions}>
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowJoinModal(false)}
-                >
+                <Button variant="secondary" onClick={() => setShowJoinModal(false)}>
                   Cancel
                 </Button>
               </div>
@@ -217,16 +200,10 @@ export function HomePage() {
         </div>
       </Modal>
 
-      <Modal
-        isOpen={showOptionsModal}
-        onClose={() => setShowOptionsModal(false)}
-        title="Options"
-      >
+      <Modal isOpen={showOptionsModal} onClose={() => setShowOptionsModal(false)} title="Options">
         <div className={styles.optionsModal}>
           <h3>Background</h3>
-          <p className={styles.modalDescription}>
-            Choose your preferred background style
-          </p>
+          <p className={styles.modalDescription}>Choose your preferred background style</p>
           <div className={styles.backgroundOptions}>
             <div
               className={`${styles.backgroundOption} ${background === 'solid' ? styles.selected : ''}`}
@@ -234,7 +211,10 @@ export function HomePage() {
               role="button"
               tabIndex={0}
             >
-              <div className={styles.backgroundPreview} style={{ background: 'var(--color-bg-primary)' }} />
+              <div
+                className={styles.backgroundPreview}
+                style={{ background: 'var(--color-bg-primary)' }}
+              />
               <span>Solid Color</span>
             </div>
             <div
@@ -245,16 +225,33 @@ export function HomePage() {
             >
               <div
                 className={styles.backgroundPreview}
-                style={{ backgroundImage: "url('/src/assets/backgrounds/space-1.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                style={{
+                  backgroundImage: "url('/src/assets/backgrounds/space-1.jpg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
               />
               <span>Space</span>
             </div>
+            <div
+              className={`${styles.backgroundOption} ${background === 'space-2' ? styles.selected : ''}`}
+              onClick={() => setBackground('space-2')}
+              role="button"
+              tabIndex={0}
+            >
+              <div
+                className={styles.backgroundPreview}
+                style={{
+                  backgroundImage: "url('/src/assets/backgrounds/space-2.jpg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <span>Space 2</span>
+            </div>
           </div>
           <div className={styles.modalActions}>
-            <Button
-              variant="primary"
-              onClick={() => setShowOptionsModal(false)}
-            >
+            <Button variant="primary" onClick={() => setShowOptionsModal(false)}>
               Close
             </Button>
           </div>

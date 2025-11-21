@@ -38,9 +38,14 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         filter: `game_id=eq.${gameId}`,
       },
       (payload) => {
-        console.log('Game state update:', payload);
+        console.log('🔄 Game state update received:', payload);
+        console.log('🔄 Event type:', payload.eventType);
+        console.log('🔄 New game state:', payload.new);
         if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-          useStore.getState().setGameState(payload.new as GameState);
+          const newGameState = payload.new as GameState;
+          console.log('🔄 Setting game state with phase:', newGameState.currentPhase);
+          useStore.getState().setGameState(newGameState);
+          console.log('🔄 Game state set in store');
         }
       }
     )

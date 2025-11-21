@@ -22,6 +22,9 @@ export function GamePage() {
   const speaker = useStore(selectSpeaker);
   const strategySelections = useStore(selectStrategySelections);
 
+  // Debug logging
+  console.log('GamePage render - Phase:', currentPhase, 'GameState:', gameState);
+
   // Calculate trade good bonuses from previous rounds
   const tradeGoodBonuses = useMemo(() => {
     if (!gameState) return {};
