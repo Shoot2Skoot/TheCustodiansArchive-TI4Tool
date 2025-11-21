@@ -111,24 +111,61 @@ export function StrategyPhase({
   const handleUndo = useCallback(() => {
     if (!currentUserId || !canUndo(currentUserId, isHost || false)) return;
 
-    const entry = undo();
-    if (entry && entry.type === 'strategySelection') {
-      // Restore the previous state
+    // Get the undo stack to peek at the entry
+    const undoStack = useStore.getState().undoStack;
+    if (undoStack.length === 0) return;
+
+    const entry = undoStack[undoStack.length - 1];
+
+    // Manually manage the stacks - push CURRENT state to redo before undoing
+    const currentStateEntry = {
+      type: 'strategySelection' as const,
+      data: selections,
+      userId: currentUserId,
+      timestamp: Date.now(),
+    };
+
+    // Pop from undo stack and push current state to redo stack
+    useStore.setState((state) => ({
+      undoStack: state.undoStack.slice(0, -1),
+      redoStack: [...state.redoStack, currentStateEntry],
+    }));
+
+    // Restore to the "before" state
+    if (entry.type === 'strategySelection') {
       setSelections(entry.data);
       setCurrentPlayerIndex(entry.data.length);
     }
-  }, [currentUserId, isHost, canUndo, undo]);
+  }, [currentUserId, isHost, canUndo, selections]);
 
   const handleRedo = useCallback(() => {
     if (!canRedo()) return;
 
-    const entry = redo();
-    if (entry && entry.type === 'strategySelection') {
-      // Restore the redone state
+    // Get the redo stack to peek at the entry    const redoStack = useStore.getState().redoStack;
+    if (redoStack.length === 0) return;
+
+    const entry = redoStack[redoStack.length - 1];
+
+    // Manually manage the stacks - push CURRENT state to undo before redoing
+    const currentStateEntry = {
+      type: 'strategySelection' as const,
+      data: selections,
+      userId: currentUserId || '',
+      timestamp: Date.now(),
+    };
+
+    // Pop from redo stack and push current state to undo stack
+    useStore.setState((state) => ({
+      redoStack: state.redoStack.slice(0, -1),
+      undoStack: [...state.undoStack, currentStateEntry],
+    }));
+
+    // Restore to the "after" state
+    if (entry.type === 'strategySelection') {
       setSelections(entry.data);
       setCurrentPlayerIndex(entry.data.length);
     }
-  }, [canRedo, redo]);
+  }, [canRedo, selections, currentUserId]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
