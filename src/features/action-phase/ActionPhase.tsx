@@ -407,44 +407,48 @@ export function ActionPhase({
         </div>
       )}
 
-      <div className={styles.playerStates}>
-        <h4>Player Status</h4>
-        <div className={styles.playerList}>
-          {turnOrder.map((selection) => {
-            const player = players.find((p) => p.id === selection.playerId);
-            const state = playerActionStates.find((s) => s.playerId === selection.playerId);
-            const card = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
+      {/* Action Queue Bar */}
+      <div className={styles.actionQueueBar}>
+        {turnOrder.map((selection, index) => {
+          const player = players.find((p) => p.id === selection.playerId);
+          const state = playerActionStates.find((s) => s.playerId === selection.playerId);
+          const card = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
 
-            console.log('Player Status Map - Selection:', selection);
-            console.log('  - Found Player:', player);
-            console.log('  - Found State:', state);
-            console.log('  - Found Card:', card);
+          if (!player || !state || !card) return null;
 
-            if (!player || !state || !card) {
-              console.warn('Skipping player status item - missing data:', { player, state, card });
-              return null;
-            }
+          const activeTurnSelection = activePlayers[currentTurnIndex % activePlayers.length];
+          const isCurrent = activeTurnSelection?.playerId === player.id;
+          const nextTurnSelection = activePlayers[(currentTurnIndex + 1) % activePlayers.length];
+          const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
+          const isPassed = state.hasPassed;
 
-            return (
-              <div key={player.id} className={styles.playerStateItem}>
-                <div className={styles.playerColor} style={{ backgroundColor: player.color }} />
-                <span className={styles.playerName}>{player.displayName}</span>
-                <div className={styles.cardBadge} style={{ backgroundColor: card.color }}>
-                  {card.id}
-                </div>
-                <div className={styles.stateIndicators}>
-                  {state.strategyCardUsed && <span className={styles.indicator}>✓ Card Used</span>}
-                  {state.hasPassed && <span className={styles.indicator}>⏸ Passed</span>}
-                  {state.tacticalActionsCount > 0 && (
-                    <span className={styles.indicator}>
-                      {state.tacticalActionsCount} Tactical
-                    </span>
-                  )}
-                </div>
+          return (
+            <div
+              key={player.id}
+              className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${isPassed ? styles.queueBarPassed : ''}`}
+              style={{
+                borderColor: player.color,
+              }}
+            >
+              <div
+                className={styles.queueBarCard}
+                style={{ backgroundColor: card.color }}
+              >
+                {card.id}
               </div>
-            );
-          })}
-        </div>
+              <div className={styles.queueBarInfo}>
+                <div className={styles.queueBarFaction} style={{ color: player.color }}>
+                  {player.factionName}
+                </div>
+                <div className={styles.queueBarPlayer}>({player.displayName})</div>
+                {state.strategyCardUsed && (
+                  <div className={styles.queueBarStatus}>Card Used</div>
+                )}
+                {state.hasPassed && <div className={styles.queueBarStatus}>Passed</div>}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </Panel>
   );
