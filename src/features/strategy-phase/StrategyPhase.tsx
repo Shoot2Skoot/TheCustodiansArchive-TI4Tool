@@ -259,8 +259,11 @@ export function StrategyPhase({
               <>
                 {/* Phase End Buttons - Centered */}
                 <div className={styles.phaseEndButtons}>
+                  <Button variant="secondary" onClick={handleReset}>
+                    Reset Phase
+                  </Button>
                   <Button variant="secondary" onClick={() => setShowPlayEffectModal(true)}>
-                    Play
+                    Play End Phase Effect
                   </Button>
                   <Button variant="primary" onClick={handleEndPhase} className={styles.endPhaseButton}>
                     End Phase
@@ -285,8 +288,8 @@ export function StrategyPhase({
             >
               Undo
             </Button>
-            <Button variant="secondary" onClick={handleReset}>
-              Reset
+            <Button variant="secondary" disabled>
+              Redo
             </Button>
           </div>
         </div>
