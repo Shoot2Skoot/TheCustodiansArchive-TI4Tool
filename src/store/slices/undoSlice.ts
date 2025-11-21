@@ -1,13 +1,66 @@
 import type { StateCreator } from 'zustand';
 import type { StrategySelection } from '../../types';
 
+// Player action state for action phase
+export interface PlayerActionState {
+  playerId: string;
+  strategyCardUsed: boolean;
+  hasPassed: boolean;
+  tacticalActionsCount: number;
+}
+
+// Action phase state snapshot
+export interface ActionPhaseState {
+  currentTurnPlayerId: string;
+  playerActionStates: PlayerActionState[];
+  speakerPlayerId: string | null;
+}
+
 // History entry for undoable actions
-interface HistoryEntry {
+interface StrategySelectionEntry {
   type: 'strategySelection';
   data: StrategySelection[];
-  userId: string; // Track who made this action
+  userId: string;
   timestamp: number;
 }
+
+interface ActionPhaseActionEntry {
+  type: 'actionPhaseAction';
+  actionType: 'tactical' | 'component';
+  data: ActionPhaseState;
+  userId: string;
+  timestamp: number;
+}
+
+interface StrategyCardActionEntry {
+  type: 'strategyCardAction';
+  strategyCardId: number;
+  data: ActionPhaseState;
+  userId: string;
+  timestamp: number;
+}
+
+interface PassActionEntry {
+  type: 'passAction';
+  data: ActionPhaseState;
+  userId: string;
+  timestamp: number;
+}
+
+interface SpeakerChangeEntry {
+  type: 'speakerChange';
+  newSpeakerId: string;
+  data: ActionPhaseState;
+  userId: string;
+  timestamp: number;
+}
+
+type HistoryEntry =
+  | StrategySelectionEntry
+  | ActionPhaseActionEntry
+  | StrategyCardActionEntry
+  | PassActionEntry
+  | SpeakerChangeEntry;
 
 // Undo slice state interface
 export interface UndoSliceState {
@@ -40,6 +93,8 @@ export const createUndoSlice: StateCreator<UndoSliceState> = (set, get) => ({
     if (state.undoStack.length === 0) return null;
 
     const entry = state.undoStack[state.undoStack.length - 1];
+    if (!entry) return null;
+
     set({
       undoStack: state.undoStack.slice(0, -1),
       redoStack: [...state.redoStack, entry],
@@ -53,6 +108,8 @@ export const createUndoSlice: StateCreator<UndoSliceState> = (set, get) => ({
     if (state.redoStack.length === 0) return null;
 
     const entry = state.redoStack[state.redoStack.length - 1];
+    if (!entry) return null;
+
     set({
       redoStack: state.redoStack.slice(0, -1),
       undoStack: [...state.undoStack, entry],
@@ -76,6 +133,8 @@ export const createUndoSlice: StateCreator<UndoSliceState> = (set, get) => ({
 
     // Non-host can only undo if the most recent action is theirs
     const lastEntry = state.undoStack[state.undoStack.length - 1];
+    if (!lastEntry) return false;
+
     return lastEntry.userId === currentUserId;
   },
 
