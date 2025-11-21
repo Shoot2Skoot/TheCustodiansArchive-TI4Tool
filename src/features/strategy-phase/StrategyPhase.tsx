@@ -52,7 +52,9 @@ export function StrategyPhase({
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
   const undo = useStore((state) => state.undo);
+  const redo = useStore((state) => state.redo);
   const canUndo = useStore((state) => state.canUndo);
+  const canRedo = useStore((state) => state.canRedo);
   const currentGame = useStore((state) => state.currentGame);
 
   // Calculate player order based on speaker
@@ -117,7 +119,18 @@ export function StrategyPhase({
     }
   }, [currentUserId, isHost, canUndo, undo]);
 
-  // Keyboard shortcuts for undo
+  const handleRedo = useCallback(() => {
+    if (!canRedo()) return;
+
+    const entry = redo();
+    if (entry && entry.type === 'strategySelection') {
+      // Restore the redone state
+      setSelections(entry.data);
+      setCurrentPlayerIndex(entry.data.length);
+    }
+  }, [canRedo, redo]);
+
+  // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ctrl+Z for undo (Cmd+Z on Mac)
@@ -125,11 +138,16 @@ export function StrategyPhase({
         e.preventDefault();
         handleUndo();
       }
+      // Ctrl+Y or Ctrl+Shift+Z for redo (Cmd+Shift+Z on Mac)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        handleRedo();
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleUndo]);
+  }, [handleUndo, handleRedo]);
 
   const handleReset = () => {
     if (!currentUserId) return;
@@ -305,7 +323,11 @@ export function StrategyPhase({
             >
               Undo
             </Button>
-            <Button variant="secondary" disabled>
+            <Button
+              variant="secondary"
+              onClick={handleRedo}
+              disabled={!canRedo()}
+            >
               Redo
             </Button>
           </div>
