@@ -69,6 +69,12 @@ export function ActionPhase({
   // Calculate turn order based on strategy card initiative
   const turnOrder = [...strategySelections].sort((a, b) => a.cardId - b.cardId);
 
+  // Debug logging
+  console.log('ActionPhase - Strategy Selections:', strategySelections);
+  console.log('ActionPhase - Turn Order:', turnOrder);
+  console.log('ActionPhase - Players:', players);
+  console.log('ActionPhase - Player Action States:', playerActionStates);
+
   // Get active players (not passed)
   const activePlayers = turnOrder.filter((selection) => {
     const state = playerActionStates.find((s) => s.playerId === selection.playerId);
@@ -409,7 +415,15 @@ export function ActionPhase({
             const state = playerActionStates.find((s) => s.playerId === selection.playerId);
             const card = STRATEGY_CARDS.find((c) => c.id === selection.cardId);
 
-            if (!player || !state || !card) return null;
+            console.log('Player Status Map - Selection:', selection);
+            console.log('  - Found Player:', player);
+            console.log('  - Found State:', state);
+            console.log('  - Found Card:', card);
+
+            if (!player || !state || !card) {
+              console.warn('Skipping player status item - missing data:', { player, state, card });
+              return null;
+            }
 
             return (
               <div key={player.id} className={styles.playerStateItem}>
