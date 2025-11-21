@@ -528,11 +528,23 @@ export function ActionPhase({
         </div>
       </Panel>
 
-      {/* Content Area: Left panels (80%) + Right strategy card (20%) */}
+      {/* Content Area: Left panels (70%) + Right column (30% - actions + strategy card) */}
       <div className={styles.contentArea}>
         {/* Left Column - Will contain multiple panels stacked vertically */}
         <div className={styles.leftColumn}>
-          {/* Main Action Panel */}
+          {/* Future panels will be added here */}
+          {allPlayersPassed && (
+            <Panel className={styles.endPhasePanel}>
+              <Button onClick={handleEndPhase} variant="primary" size="large">
+                End Action Phase
+              </Button>
+            </Panel>
+          )}
+        </div>
+
+        {/* Right Column - Action buttons + Strategy Card stacked */}
+        <div className={styles.rightColumn}>
+          {/* Action Buttons Panel */}
           <Panel className={styles.actionPanel}>
             <div className={styles.actionButtons}>
               <Button onClick={handleTacticalAction} variant="primary" size="large">
@@ -563,21 +575,9 @@ export function ActionPhase({
                 )}
               </Button>
             </div>
-
-            {allPlayersPassed && (
-              <div className={styles.endPhaseSection}>
-                <Button onClick={handleEndPhase} variant="primary" size="large">
-                  End Action Phase
-                </Button>
-              </div>
-            )}
           </Panel>
 
-          {/* Future panels will be added here below the action panel */}
-        </div>
-
-        {/* Right Column - Strategy Card (full height) */}
-        <div className={styles.rightColumn}>
+          {/* Strategy Card */}
           {currentStrategyCard && (
             <ActionStrategyCard
               cardId={currentStrategyCard.strategyCardId}

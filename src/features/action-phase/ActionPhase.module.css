@@ -217,7 +217,7 @@
   font-size: var(--font-size-3xl);
 }
 
-/* Content Area - Split into left panels (80%) and right strategy card (20%) */
+/* Content Area - Split into left panels (70%) and right column (30% - actions + strategy card) */
 .contentArea {
   display: flex;
   gap: var(--space-4);
@@ -231,19 +231,26 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: 80%;
+  max-width: 70%;
 }
 
-/* Right Column - Strategy card takes full remaining height */
+/* Right Column - Action buttons + Strategy card stacked */
 .rightColumn {
-  width: 20%;
+  width: 30%;
   display: flex;
   flex-direction: column;
+  gap: var(--space-4);
 }
 
 /* Action Panel */
 .actionPanel {
-  padding: var(--space-6);
+  padding: var(--space-4) var(--space-3);
+}
+
+/* End Phase Panel */
+.endPhasePanel {
+  padding: var(--space-4);
+  text-align: center;
 }
 
 .actionButtons {
