@@ -35,7 +35,7 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         event: '*',
         schema: 'public',
         table: 'game_state',
-        filter: `gameId=eq.${gameId}`,
+        filter: `game_id=eq.${gameId}`,
       },
       (payload) => {
         console.log('Game state update:', payload);
@@ -50,7 +50,7 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         event: '*',
         schema: 'public',
         table: 'players',
-        filter: `gameId=eq.${gameId}`,
+        filter: `game_id=eq.${gameId}`,
       },
       (payload) => {
         console.log('Player update:', payload);
@@ -75,7 +75,7 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         event: '*',
         schema: 'public',
         table: 'strategy_selections',
-        filter: `gameId=eq.${gameId}`,
+        filter: `game_id=eq.${gameId}`,
       },
       (payload) => {
         console.log('Strategy selection update:', payload);
@@ -100,7 +100,7 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         event: '*',
         schema: 'public',
         table: 'player_action_state',
-        filter: `gameId=eq.${gameId}`,
+        filter: `game_id=eq.${gameId}`,
       },
       (payload) => {
         console.log('Player action state update:', payload);
@@ -125,7 +125,7 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         event: '*',
         schema: 'public',
         table: 'objectives',
-        filter: `gameId=eq.${gameId}`,
+        filter: `game_id=eq.${gameId}`,
       },
       (payload) => {
         console.log('Objectives update:', payload);

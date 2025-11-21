@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { useLoadGame } from '@/hooks';
+import { useGame } from '@/hooks';
 import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
 import { ActionPhase } from '@/features/action-phase';
@@ -13,7 +13,7 @@ import styles from './GamePage.module.css';
 export function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { isLoading, error } = useLoadGame(gameId);
+  const { isLoading, error } = useGame(gameId || null);
   const { saveSelections } = useSaveStrategySelections();
 
   const currentPhase = useStore(selectCurrentPhase);
