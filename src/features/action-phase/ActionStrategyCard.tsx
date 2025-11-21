@@ -1,4 +1,5 @@
 import { STRATEGY_CARDS } from '@/lib/constants';
+import { StrategyCardNumber } from '@/components/common';
 import { AbilityText } from '../strategy-phase/AbilityText';
 import styles from './ActionStrategyCard.module.css';
 
@@ -29,9 +30,7 @@ export function ActionStrategyCard({
         } as React.CSSProperties}
       >
         <div className={styles.cardHeader}>
-          <div className={styles.cardNumber} style={{ borderColor: card.color } as React.CSSProperties}>
-            {cardId}
-          </div>
+          <StrategyCardNumber number={cardId} color={card.color} size="medium" />
           <div className={styles.cardName}>{card.name.toUpperCase()}</div>
         </div>
 

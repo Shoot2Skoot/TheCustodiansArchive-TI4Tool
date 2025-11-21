@@ -1,0 +1,61 @@
+/* Strategy Card Number - Chamfered box with glowing number */
+.strategy-card-number {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--strategy-color, var(--color-accent-primary));
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  isolation: isolate;
+  text-shadow:
+    0 0 10px var(--strategy-color, var(--color-accent-primary)),
+    0 0 20px var(--strategy-color, var(--color-accent-primary)),
+    0 0 30px var(--strategy-color, var(--color-accent-primary));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+  padding-bottom: 2px;
+}
+
+/* Inner background layer to create border effect */
+.strategy-card-number::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #000000;
+  z-index: -1;
+  clip-path: polygon(
+    calc(8px - 2px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(8px - 2px)),
+    calc(100% - calc(8px - 2px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(8px - 2px)
+  );
+}
+
+/* Size variants */
+.strategy-card-number.small {
+  width: 32px;
+  height: 32px;
+  font-size: var(--font-size-xl);
+}
+
+.strategy-card-number.medium {
+  width: 52px;
+  height: 52px;
+  font-size: var(--font-size-4xl);
+}
+
+.strategy-card-number.large {
+  width: 72px;
+  height: 72px;
+  font-size: var(--font-size-5xl);
+}

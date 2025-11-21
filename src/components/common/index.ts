@@ -13,3 +13,5 @@ export type { ModalProps } from './Modal';
 
 export { ToastProvider, ToastContainer, useToast } from './Toast';
 export type { Toast, ToastType } from './Toast';
+
+export { StrategyCardNumber } from './StrategyCardNumber';

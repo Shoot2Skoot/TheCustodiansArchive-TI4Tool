@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { STRATEGY_CARDS } from '@/lib/constants';
 import { getFactionImage } from '@/lib/factions';
+import { StrategyCardNumber } from '@/components/common';
 import { AbilityText } from './AbilityText';
 import styles from './StrategyCard.module.css';
 import tradeGood1 from '@/assets/icons/color/trade-good-1.png';
@@ -77,9 +78,7 @@ export function StrategyCard({
         } as React.CSSProperties}
       >
         <div className={styles.cardHeader}>
-          <div className={styles.cardNumber} style={{ borderColor: card.color } as React.CSSProperties}>
-            {cardId}
-          </div>
+          <StrategyCardNumber number={cardId} color={card.color} size="medium" />
           <div className={styles.cardName}>{card.name.toUpperCase()}</div>
           {!isPicked && (
             <button
