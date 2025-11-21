@@ -49,6 +49,7 @@
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Roboto Mono', 'Courier New', monospace;
   --font-space-heading: 'Audiowide', sans-serif;
+  --font-heading: 'Russo One', sans-serif;
 
   /* Font Sizes */
   --font-size-xs: 0.75rem;

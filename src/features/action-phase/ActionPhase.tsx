@@ -619,12 +619,12 @@ export function ActionPhase({
                       <div className={styles.currentPlayerInfo}>
                         <div className={styles.currentPlayerTop}>
                           <div className={styles.currentPlayerNames}>
-                            <div className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
+                            <span className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
                               {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}
-                            </div>
-                            <div className={styles.currentPlayerName}>
-                              ({currentPlayer.displayName})
-                            </div>
+                            </span>
+                            <span className={styles.currentPlayerName}>
+                              {currentPlayer.displayName}
+                            </span>
                           </div>
                           <div className={styles.currentPlayerTacticalCount}>
                             {currentState && currentState.tacticalActionsCount > 0 && `T${currentState.tacticalActionsCount}`}

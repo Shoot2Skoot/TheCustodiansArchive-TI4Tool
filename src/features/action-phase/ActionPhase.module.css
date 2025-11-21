@@ -98,10 +98,11 @@
 
 .currentPlayerNames {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 3px;
+  gap: var(--space-2);
   flex: 1;
+  white-space: nowrap;
 }
 
 .currentPlayerFaction {
@@ -324,15 +325,16 @@
 
 /* Action Panel */
 .actionPanel {
-  padding: var(--space-4) var(--space-3);
+  padding: var(--space-4);
 }
 
 .actionPanelHeading {
-  font-size: var(--font-size-2xl);
-  font-weight: 600;
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
   color: white;
   text-align: center;
   margin-bottom: var(--space-4);
+  font-family: var(--font-heading);
 }
 
 /* End Phase Panel */
@@ -373,11 +375,11 @@
 }
 
 .wideButton {
-  flex: 0 0 85%;
+  flex: 0 0 80%;
 }
 
 .narrowButton {
-  flex: 0 0 15%;
+  flex: 0 0 20%;
 }
 
 .strategyCardButton::after {
