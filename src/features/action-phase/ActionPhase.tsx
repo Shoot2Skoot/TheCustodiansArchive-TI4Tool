@@ -623,7 +623,7 @@ export function ActionPhase({
                               {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}
                             </span>
                             <span className={styles.currentPlayerName}>
-                              ({currentPlayer.displayName})
+                              {currentPlayer.displayName}
                             </span>
                           </div>
                           <div className={styles.currentPlayerTacticalCount}>
