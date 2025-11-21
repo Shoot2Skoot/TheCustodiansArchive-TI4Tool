@@ -36,9 +36,9 @@ export async function createGame(config: GameConfig, userId?: string) {
     .insert({
       room_code: roomCode,
       status: 'setup',
-      config,
+      config: config as any,
       created_by: userId || null,
-    } as any)
+    })
     .select()
     .single();
 

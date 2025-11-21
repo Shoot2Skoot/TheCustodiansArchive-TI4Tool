@@ -155,7 +155,7 @@ export async function advancePhase(gameId: string, currentPhase: GamePhase): Pro
     nextPhase = 'strategy';
     shouldIncrementRound = true;
   } else {
-    nextPhase = phaseOrder[currentIndex + 1];
+    nextPhase = phaseOrder[currentIndex + 1]!;
   }
 
   const currentState = await getGameState(gameId);

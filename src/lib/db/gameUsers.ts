@@ -50,11 +50,18 @@ export async function getGameUsers(gameId: string) {
  * @returns true if successful
  */
 export async function leaveGame(gameId: string): Promise<boolean> {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    console.error('No authenticated user');
+    return false;
+  }
+
   const { error } = await supabase
     .from('game_users')
     .delete()
     .eq('game_id', gameId)
-    .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+    .eq('user_id', user.id);
 
   if (error) {
     console.error('Error leaving game:', error);

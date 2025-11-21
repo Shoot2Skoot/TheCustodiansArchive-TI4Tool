@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../types/database';
+import type { Database } from '../types/database.types';
 
 // Environment variables from Doppler
 const supabaseUrl = import.meta.env.VITE_SUPABASE_PROJECT_URL;

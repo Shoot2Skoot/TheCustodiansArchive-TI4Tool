@@ -1,0 +1,211 @@
+# Complete Audio File List for Processing
+# Target folder structure: public/audio/cornelius/
+
+# ============================================================================
+# FACTIONS (25 files - NO variant numbers)
+# ============================================================================
+cornelius/faction/arborec.mp3
+cornelius/faction/naalu_collective.mp3
+cornelius/faction/barony_of_letnev.mp3
+cornelius/faction/nekro_virus.mp3
+cornelius/faction/clan_of_saar.mp3
+cornelius/faction/sardakk_norr.mp3
+cornelius/faction/embers_of_muaat.mp3
+cornelius/faction/universities_of_jolnar.mp3
+cornelius/faction/emirates_of_hacan.mp3
+cornelius/faction/winnu.mp3
+cornelius/faction/federation_of_sol.mp3
+cornelius/faction/xxcha_kingdom.mp3
+cornelius/faction/ghosts_of_creuss.mp3
+cornelius/faction/yin_brotherhood.mp3
+cornelius/faction/l1z1x_mindnet.mp3
+cornelius/faction/yssaril_tribes.mp3
+cornelius/faction/argent_flight.mp3
+cornelius/faction/empyrean.mp3
+cornelius/faction/mahact_gene_sorcerers.mp3
+cornelius/faction/naaz_rokha_alliance.mp3
+cornelius/faction/nomad.mp3
+cornelius/faction/titans_of_ul.mp3
+cornelius/faction/vuil_raith_cabal.mp3
+cornelius/faction/council_keleres.mp3
+cornelius/faction/mentak_coalition.mp3
+
+# ============================================================================
+# PHASE ENTER (24 files - 4 phases × 6 variants)
+# ============================================================================
+cornelius/phase_enter/strategy_1.mp3
+cornelius/phase_enter/strategy_2.mp3
+cornelius/phase_enter/strategy_3.mp3
+cornelius/phase_enter/strategy_4.mp3
+cornelius/phase_enter/strategy_5.mp3
+cornelius/phase_enter/strategy_6.mp3
+cornelius/phase_enter/action_1.mp3
+cornelius/phase_enter/action_2.mp3
+cornelius/phase_enter/action_3.mp3
+cornelius/phase_enter/action_4.mp3
+cornelius/phase_enter/action_5.mp3
+cornelius/phase_enter/action_6.mp3
+cornelius/phase_enter/status_1.mp3
+cornelius/phase_enter/status_2.mp3
+cornelius/phase_enter/status_3.mp3
+cornelius/phase_enter/status_4.mp3
+cornelius/phase_enter/status_5.mp3
+cornelius/phase_enter/status_6.mp3
+cornelius/phase_enter/agenda_1.mp3
+cornelius/phase_enter/agenda_2.mp3
+cornelius/phase_enter/agenda_3.mp3
+cornelius/phase_enter/agenda_4.mp3
+cornelius/phase_enter/agenda_5.mp3
+cornelius/phase_enter/agenda_6.mp3
+
+# ============================================================================
+# PHASE EXIT (24 files - 4 phases × 6 variants)
+# ============================================================================
+cornelius/phase_exit/strategy_1.mp3
+cornelius/phase_exit/strategy_2.mp3
+cornelius/phase_exit/strategy_3.mp3
+cornelius/phase_exit/strategy_4.mp3
+cornelius/phase_exit/strategy_5.mp3
+cornelius/phase_exit/strategy_6.mp3
+cornelius/phase_exit/action_1.mp3
+cornelius/phase_exit/action_2.mp3
+cornelius/phase_exit/action_3.mp3
+cornelius/phase_exit/action_4.mp3
+cornelius/phase_exit/action_5.mp3
+cornelius/phase_exit/action_6.mp3
+cornelius/phase_exit/status_1.mp3
+cornelius/phase_exit/status_2.mp3
+cornelius/phase_exit/status_3.mp3
+cornelius/phase_exit/status_4.mp3
+cornelius/phase_exit/status_5.mp3
+cornelius/phase_exit/status_6.mp3
+cornelius/phase_exit/agenda_1.mp3
+cornelius/phase_exit/agenda_2.mp3
+cornelius/phase_exit/agenda_3.mp3
+cornelius/phase_exit/agenda_4.mp3
+cornelius/phase_exit/agenda_5.mp3
+cornelius/phase_exit/agenda_6.mp3
+
+# ============================================================================
+# PROMPTS (24 files - choose_strategy: 14, choose_action: 10)
+# ============================================================================
+cornelius/prompt/choose_strategy_1.mp3
+cornelius/prompt/choose_strategy_2.mp3
+cornelius/prompt/choose_strategy_3.mp3
+cornelius/prompt/choose_strategy_4.mp3
+cornelius/prompt/choose_strategy_5.mp3
+cornelius/prompt/choose_strategy_6.mp3
+cornelius/prompt/choose_strategy_7.mp3
+cornelius/prompt/choose_strategy_8.mp3
+cornelius/prompt/choose_strategy_9.mp3
+cornelius/prompt/choose_strategy_10.mp3
+cornelius/prompt/choose_strategy_11.mp3
+cornelius/prompt/choose_strategy_12.mp3
+cornelius/prompt/choose_strategy_13.mp3
+cornelius/prompt/choose_strategy_14.mp3
+cornelius/prompt/choose_action_1.mp3
+cornelius/prompt/choose_action_2.mp3
+cornelius/prompt/choose_action_3.mp3
+cornelius/prompt/choose_action_4.mp3
+cornelius/prompt/choose_action_5.mp3
+cornelius/prompt/choose_action_6.mp3
+cornelius/prompt/choose_action_7.mp3
+cornelius/prompt/choose_action_8.mp3
+cornelius/prompt/choose_action_9.mp3
+cornelius/prompt/choose_action_10.mp3
+
+# ============================================================================
+# STRATEGY CARDS (24 files - 8 cards × 3 variants)
+# ============================================================================
+cornelius/strategy_card/leadership_1.mp3
+cornelius/strategy_card/leadership_2.mp3
+cornelius/strategy_card/leadership_3.mp3
+cornelius/strategy_card/diplomacy_1.mp3
+cornelius/strategy_card/diplomacy_2.mp3
+cornelius/strategy_card/diplomacy_3.mp3
+cornelius/strategy_card/politics_1.mp3
+cornelius/strategy_card/politics_2.mp3
+cornelius/strategy_card/politics_3.mp3
+cornelius/strategy_card/construction_1.mp3
+cornelius/strategy_card/construction_2.mp3
+cornelius/strategy_card/construction_3.mp3
+cornelius/strategy_card/trade_1.mp3
+cornelius/strategy_card/trade_2.mp3
+cornelius/strategy_card/trade_3.mp3
+cornelius/strategy_card/warfare_1.mp3
+cornelius/strategy_card/warfare_2.mp3
+cornelius/strategy_card/warfare_3.mp3
+cornelius/strategy_card/technology_1.mp3
+cornelius/strategy_card/technology_2.mp3
+cornelius/strategy_card/technology_3.mp3
+cornelius/strategy_card/imperial_1.mp3
+cornelius/strategy_card/imperial_2.mp3
+cornelius/strategy_card/imperial_3.mp3
+
+# ============================================================================
+# EVENTS (10 files)
+# ============================================================================
+cornelius/event/combat_1.mp3
+cornelius/event/combat_2.mp3
+cornelius/event/combat_3.mp3
+cornelius/event/combat_4.mp3
+cornelius/event/mecatol_rex_taken_1.mp3
+cornelius/event/mecatol_rex_taken_2.mp3
+cornelius/event/mecatol_rex_taken_3.mp3
+cornelius/event/speaker_change_1.mp3
+cornelius/event/speaker_change_2.mp3
+cornelius/event/speaker_change_3.mp3
+
+# ============================================================================
+# TIME WARNINGS (5 files)
+# ============================================================================
+cornelius/time_warning/time_warning_1.mp3
+cornelius/time_warning/time_warning_2.mp3
+cornelius/time_warning/time_warning_3.mp3
+cornelius/time_warning/time_warning_4.mp3
+cornelius/time_warning/time_warning_5.mp3
+
+# ============================================================================
+# TIME EXPIRED (5 files)
+# ============================================================================
+cornelius/time_expired/time_expired_1.mp3
+cornelius/time_expired/time_expired_2.mp3
+cornelius/time_expired/time_expired_3.mp3
+cornelius/time_expired/time_expired_4.mp3
+cornelius/time_expired/time_expired_5.mp3
+
+# ============================================================================
+# ROUND BEGIN (4 files)
+# ============================================================================
+cornelius/round_begin/round_begin_1.mp3
+cornelius/round_begin/round_begin_2.mp3
+cornelius/round_begin/round_begin_3.mp3
+cornelius/round_begin/round_begin_4.mp3
+
+# ============================================================================
+# ROUND END (4 files)
+# ============================================================================
+cornelius/round_end/round_end_1.mp3
+cornelius/round_end/round_end_2.mp3
+cornelius/round_end/round_end_3.mp3
+cornelius/round_end/round_end_4.mp3
+
+# ============================================================================
+# OBJECTIVES (4 files)
+# ============================================================================
+cornelius/objectives/score_objectives_1.mp3
+cornelius/objectives/score_objectives_2.mp3
+cornelius/objectives/score_objectives_3.mp3
+cornelius/objectives/score_objectives_4.mp3
+
+# ============================================================================
+# AGENDA VOTING (4 files)
+# ============================================================================
+cornelius/agenda_voting/prepare_vote_1.mp3
+cornelius/agenda_voting/cast_votes_1.mp3
+cornelius/agenda_voting/voting_concluded_1.mp3
+cornelius/agenda_voting/agenda_resolved_1.mp3
+
+# ============================================================================
+# TOTAL: 157 files
+# ============================================================================

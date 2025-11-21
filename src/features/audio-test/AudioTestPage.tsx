@@ -16,6 +16,7 @@ import {
   SoundCategory,
   PhaseType,
   EventType,
+  PromptType,
   playFactionPrompt,
 } from '@/lib/audio';
 import { getStrategyCardAudioType } from '@/lib/audioHelpers';
@@ -80,8 +81,8 @@ export function AudioTestPage() {
     const cardType = getStrategyCardAudioType(cardId);
     if (cardType) {
       setLastPlayed(`Strategy Card: ${cardType}`);
-      addLog(`Playing strategy card: ${cardType} (random variant)`);
-      audio.playStrategyCard(cardType, 3);
+      addLog(`Playing strategy card: ${cardType}`);
+      audio.playStrategyCard(cardType);
     }
   };
 
@@ -94,7 +95,7 @@ export function AudioTestPage() {
 
   // Test chained sound (faction + prompt)
   const testChainedSound = (factionFirst: boolean) => {
-    const promptId = factionFirst ? 'choose_strategy' : 'choose_action_prefix';
+    const promptId = factionFirst ? PromptType.CHOOSE_STRATEGY : PromptType.CHOOSE_ACTION;
     setLastPlayed(`Chained: ${selectedFaction} + ${promptId}`);
     addLog(`Playing chained: ${selectedFaction} + ${promptId}`);
     playFactionPrompt(selectedFaction, promptId, factionFirst);

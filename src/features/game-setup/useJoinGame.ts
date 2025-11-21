@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { joinGameByRoomCode } from '@/lib/db/gameUsers';
-import { supabase } from '@/lib/supabase';
+import { getGameById } from '@/lib/db/games';
+import { getGameState } from '@/lib/db/gameState';
+import { getPlayersByGame } from '@/lib/db/players';
 import { useStore } from '@/store';
 
 export function useJoinGame() {
@@ -20,36 +22,18 @@ export function useJoinGame() {
         throw new Error('Failed to join game');
       }
 
-      // Fetch the game details
-      const { data: game, error: gameError } = await supabase
-        .from('games')
-        .select('*')
-        .eq('id', gameId)
-        .single();
-
-      if (gameError || !game) {
+      // Fetch the game details using db layer functions (which handle camelCase conversion)
+      const game = await getGameById(gameId);
+      if (!game) {
         throw new Error('Failed to fetch game details');
       }
 
       // Fetch all players
-      const { data: players, error: playersError } = await supabase
-        .from('players')
-        .select('*')
-        .eq('game_id', gameId)
-        .order('position');
-
-      if (playersError) {
-        throw new Error('Failed to fetch players');
-      }
+      const players = await getPlayersByGame(gameId);
 
       // Fetch game state
-      const { data: gameState, error: gameStateError } = await supabase
-        .from('game_state')
-        .select('*')
-        .eq('game_id', gameId)
-        .single();
-
-      if (gameStateError) {
+      const gameState = await getGameState(gameId);
+      if (!gameState) {
         throw new Error('Failed to fetch game state');
       }
 

@@ -10,6 +10,7 @@ import {
   audioService,
   SoundCategory,
   PhaseType,
+  PromptType,
   playFactionName,
   playPhaseEnter,
   playPhaseExit,
@@ -75,23 +76,11 @@ export function useAudio(options: UseAudioOptions = {}) {
 
   // Play a sound
   const playSound = useCallback(
-    async (category: SoundCategory, id: string, variant?: number) => {
+    async (category: SoundCategory, id: string) => {
       try {
-        await audioService.playSound(category, id, variant);
+        await audioService.playSound(category, id);
       } catch (error) {
         console.error('Error playing sound:', error);
-      }
-    },
-    []
-  );
-
-  // Play a random variant
-  const playRandomVariant = useCallback(
-    async (category: SoundCategory, id: string, variantCount: number) => {
-      try {
-        await audioService.playRandomVariant(category, id, variantCount);
-      } catch (error) {
-        console.error('Error playing random variant:', error);
       }
     },
     []
@@ -119,7 +108,6 @@ export function useAudio(options: UseAudioOptions = {}) {
   return {
     // Core methods
     playSound,
-    playRandomVariant,
     playChainedSounds,
     clearQueue,
     stopCurrentSound,
@@ -165,8 +153,7 @@ export function useActionPhaseAudio(factionIds: string[]) {
       { category: SoundCategory.PHASE_ENTER, id: PhaseType.ACTION },
       { category: SoundCategory.PHASE_EXIT, id: PhaseType.ACTION },
       // Prompts
-      { category: SoundCategory.PROMPT, id: 'choose_action' },
-      { category: SoundCategory.PROMPT, id: 'choose_action_prefix' },
+      { category: SoundCategory.PROMPT, id: PromptType.CHOOSE_ACTION },
       // Factions in this game
       ...factionIds.map(id => ({ category: SoundCategory.FACTION, id })),
     ],
@@ -178,7 +165,7 @@ export function useActionPhaseAudio(factionIds: string[]) {
     (factionId: string, factionFirst: boolean = false) => {
       return playFactionPrompt(
         factionId,
-        factionFirst ? 'choose_action' : 'choose_action_prefix',
+        PromptType.CHOOSE_ACTION,
         factionFirst
       );
     },
@@ -202,8 +189,7 @@ export function useStrategyPhaseAudio(factionIds: string[]) {
       { category: SoundCategory.PHASE_ENTER, id: PhaseType.STRATEGY },
       { category: SoundCategory.PHASE_EXIT, id: PhaseType.STRATEGY },
       // Prompts
-      { category: SoundCategory.PROMPT, id: 'choose_strategy' },
-      { category: SoundCategory.PROMPT, id: 'choose_strategy_prefix' },
+      { category: SoundCategory.PROMPT, id: PromptType.CHOOSE_STRATEGY },
       // Factions in this game
       ...factionIds.map(id => ({ category: SoundCategory.FACTION, id })),
     ],
@@ -215,7 +201,7 @@ export function useStrategyPhaseAudio(factionIds: string[]) {
     (factionId: string, factionFirst: boolean = true) => {
       return playFactionPrompt(
         factionId,
-        factionFirst ? 'choose_strategy' : 'choose_strategy_prefix',
+        PromptType.CHOOSE_STRATEGY,
         factionFirst
       );
     },
@@ -270,7 +256,7 @@ export function usePreloadGameAudio(factionIds: string[]) {
       Promise.all([
         preloadCommonSounds(),
         preloadAllFactions(factionIds),
-        preloadStrategyCards(3), // 3 variants per strategy card
+        preloadStrategyCards(),
       ])
         .then(() => {
           console.log('All game audio preloaded successfully');
