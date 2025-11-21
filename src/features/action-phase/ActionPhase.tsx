@@ -4,6 +4,7 @@ import { STRATEGY_CARDS } from '@/lib/constants';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
+import { StrategyCardActionModal } from './StrategyCardActionModal';
 import styles from './ActionPhase.module.css';
 
 interface Player {
@@ -43,6 +44,9 @@ export function ActionPhase({
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentSpeakerPlayerId, setCurrentSpeakerPlayerId] = useState<string | null>(speakerPlayerId);
+  const [showStrategyCardModal, setShowStrategyCardModal] = useState(false);
+  const [modalCardId, setModalCardId] = useState<number | null>(null);
+  const [modalPlayerName, setModalPlayerName] = useState<string>('');
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
@@ -125,17 +129,32 @@ export function ActionPhase({
     advanceToNextPlayer();
   };
 
-  // Handle strategy card action
+  // Handle strategy card action - open modal
   const handleStrategyCardAction = () => {
-    if (!currentPlayer || !currentUserId || !currentPlayerState) return;
+    if (!currentPlayer || !currentPlayerState) return;
 
     // Can only use strategy card once
     if (currentPlayerState.strategyCardUsed) return;
 
-    // Push current state to undo history BEFORE updating
     const strategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
     if (!strategyCard) return;
 
+    // Open the strategy card modal
+    setModalCardId(strategyCard.strategyCardId);
+    setModalPlayerName(currentPlayer.displayName);
+    setShowStrategyCardModal(true);
+  };
+
+  // Handle strategy card modal close - process the action
+  const handleStrategyCardModalClose = () => {
+    setShowStrategyCardModal(false);
+
+    if (!currentPlayer || !currentUserId) return;
+
+    const strategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
+    if (!strategyCard) return;
+
+    // Push current state to undo history BEFORE updating
     pushHistory({
       type: 'strategyCardAction',
       strategyCardId: strategyCard.strategyCardId,
@@ -450,6 +469,15 @@ export function ActionPhase({
           );
         })}
       </div>
+
+      {/* Strategy Card Action Modal */}
+      {showStrategyCardModal && modalCardId !== null && (
+        <StrategyCardActionModal
+          strategyCardId={modalCardId}
+          playerName={modalPlayerName}
+          onClose={handleStrategyCardModalClose}
+        />
+      )}
     </Panel>
   );
 }
