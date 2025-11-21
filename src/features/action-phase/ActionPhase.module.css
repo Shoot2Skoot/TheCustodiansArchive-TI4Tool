@@ -366,6 +366,20 @@
   flex: 1;
 }
 
+.strategyPassRow {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.wideButton {
+  flex: 0 0 85%;
+}
+
+.narrowButton {
+  flex: 0 0 15%;
+}
+
 .strategyCardButton::after {
   /* Make border 4x thicker (4px instead of 1px) for strategy card button */
   clip-path: polygon(

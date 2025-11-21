@@ -704,32 +704,35 @@ export function ActionPhase({
                   </Button>
                 </div>
 
-                <Button
-                  onClick={handleStrategyCardAction}
-                  variant="primary"
-                  size="large"
-                  disabled={currentPlayerState?.strategyCardUsed}
-                  customColor="#1a1a1a"
-                  customBorderColor={strategyCardData?.color}
-                  className={styles.strategyCardButton}
-                >
-                  Use {strategyCardData?.name || 'Strategy'} Card
-                  {currentPlayerState?.strategyCardUsed && (
-                    <span className={styles.buttonSubtext}>(Already Used)</span>
-                  )}
-                </Button>
+                <div className={styles.strategyPassRow}>
+                  <Button
+                    onClick={handleStrategyCardAction}
+                    variant="primary"
+                    size="large"
+                    disabled={currentPlayerState?.strategyCardUsed}
+                    customColor="#1a1a1a"
+                    customBorderColor={strategyCardData?.color}
+                    className={`${styles.strategyCardButton} ${currentPlayerState?.strategyCardUsed ? styles.narrowButton : styles.wideButton}`}
+                  >
+                    Use {strategyCardData?.name || 'Strategy'} Card
+                    {currentPlayerState?.strategyCardUsed && (
+                      <span className={styles.buttonSubtext}>(Already Used)</span>
+                    )}
+                  </Button>
 
-                <Button
-                  onClick={handlePass}
-                  variant="secondary"
-                  size="large"
-                  disabled={!currentPlayerState?.strategyCardUsed}
-                >
-                  Pass
-                  {!currentPlayerState?.strategyCardUsed && (
-                    <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
-                  )}
-                </Button>
+                  <Button
+                    onClick={handlePass}
+                    variant="secondary"
+                    size="large"
+                    disabled={!currentPlayerState?.strategyCardUsed}
+                    className={!currentPlayerState?.strategyCardUsed ? styles.narrowButton : styles.wideButton}
+                  >
+                    Pass
+                    {!currentPlayerState?.strategyCardUsed && (
+                      <span className={styles.buttonSubtext}>(Must use strategy card first)</span>
+                    )}
+                  </Button>
+                </div>
               </div>
             </Panel>
           )}
