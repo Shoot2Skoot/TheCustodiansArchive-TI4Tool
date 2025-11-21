@@ -256,9 +256,24 @@ export function StrategyPhase({
                 </div>
               </>
             ) : (
-              <div className={styles.completedMessage}>
-                All strategy cards selected!
-              </div>
+              <>
+                {/* Phase End Buttons - Centered */}
+                <div className={styles.phaseEndButtons}>
+                  <Button variant="secondary" onClick={() => setShowPlayEffectModal(true)}>
+                    Play
+                  </Button>
+                  <Button variant="primary" onClick={handleEndPhase} className={styles.endPhaseButton}>
+                    End Phase
+                  </Button>
+                </div>
+
+                {/* Completion Message */}
+                <div className={styles.turnInfo}>
+                  <div className={styles.completedMessage}>
+                    All strategy cards selected!
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
@@ -273,16 +288,6 @@ export function StrategyPhase({
             <Button variant="secondary" onClick={handleReset}>
               Reset
             </Button>
-            {isSelectionComplete && (
-              <>
-                <Button variant="secondary" onClick={() => setShowPlayEffectModal(true)}>
-                  Play
-                </Button>
-                <Button variant="primary" onClick={handleEndPhase} className={styles.endPhaseButton}>
-                  End Phase
-                </Button>
-              </>
-            )}
           </div>
         </div>
       </Panel>

@@ -39,6 +39,16 @@
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Phase End Buttons */
+.phaseEndButtons {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  justify-content: center;
+  align-items: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
 .queueBarItem {
   display: flex;
   align-items: center;
