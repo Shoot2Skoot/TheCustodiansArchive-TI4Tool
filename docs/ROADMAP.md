@@ -1,8 +1,8 @@
 # Feature Roadmap
 
-**Current Status**: 🎉 **Phase 1.1 Complete** - Game setup flow with enhanced visual interface
+**Current Status**: 🎉 **Phase 1.2 Complete** - Strategy Phase with undo/redo system implemented
 
-**Last Updated**: November 19, 2024
+**Last Updated**: November 20, 2024
 
 ## Table of Contents
 - [Development Phases Overview](#development-phases-overview)
@@ -137,29 +137,47 @@ Ongoing: Maintenance & New Features
 
 ---
 
-### 1.2 Strategy Phase (Week 2-3)
+### 1.2 Strategy Phase ✅ (Week 2-3)
 
 #### Features
-- [ ] Display strategy cards (1-8)
-- [ ] Show trade good bonuses on unpicked cards
-- [ ] Player order based on speaker + table order
-- [ ] Click to select strategy card
-- [ ] Validate selections (each card once, each player once)
-- [ ] Calculate and display trade good bonuses
-- [ ] Summary view after all selections
-- [ ] Buttons: Reset Phase, End Phase
+- [x] Display strategy cards (1-8) with bezeled design
+- [x] Show trade good bonuses on unpicked cards (badge with icon)
+- [x] Player order based on speaker + table order
+- [x] Click to select strategy card
+- [x] Validate selections (each card once, each player once)
+- [x] Calculate and display trade good bonuses via helper function
+- [x] Inline End Phase button (replaced summary view)
+- [x] Buttons: Undo, Reset Phase, End Phase
+- [x] **BONUS**: Alternating PRIMARY/SECONDARY abilities (15s timer)
+- [x] **BONUS**: Timer bar with fill/empty animations
+- [x] **BONUS**: Click-to-expand button (+/−) for full card view
+- [x] **BONUS**: Undo/redo system with host/non-host permissions
+- [x] **BONUS**: Ctrl+Z keyboard shortcut for undo
+- [x] **BONUS**: Animated End Phase button with pulse glow
 
 #### Database Integration
-- [ ] Insert strategy_selections records
-- [ ] Update strategy card availability
-- [ ] Track trade good bonuses
+- [x] Calculate trade good bonuses from previous rounds
+- [x] Track selections in local state (DB integration via GamePage)
+- [partial] Insert strategy_selections records (handled by parent component)
 
 #### UI Components
-- [ ] StrategyPhase component
-- [ ] StrategyCard component
-- [ ] StrategySelectionSummary
+- [x] StrategyPhase component
+- [x] StrategyCard component with expand functionality
+- [x] AbilityText component with icon parsing
+- [x] calculateTradeGoodBonuses helper
+- [removed] StrategySelectionSummary (replaced with inline End Phase button)
+- [x] Turn queue bar with player indicators
+- [x] Undo system integrated into strategy phase
 
-**Milestone 1.2**: Can complete strategy phase
+#### Notable Implementation Details
+- Trade goods properly accumulate only on unpicked cards at phase end
+- Text wrapping respects bullet points with proper flexbox layout
+- Numbers and inline icons wrap together as units
+- Expanded cards show both PRIMARY and SECONDARY simultaneously
+- Bottom row cards (5-8) expand upward instead of downward
+- Host can undo any action; non-host players can only undo their own most recent action
+
+**Milestone 1.2**: ✅ **COMPLETE** - Can complete strategy phase with enhanced UX and undo capabilities
 
 ---
 
@@ -404,26 +422,48 @@ Ongoing: Maintenance & New Features
 
 **Duration**: 3-4 weeks
 
-### 3.1 Undo System (Week 10)
+### 3.1 Undo System ⚠️ (Week 10) - PARTIALLY COMPLETE
 
 #### Features
-- [ ] Undo button always visible
-- [ ] Undo last action (e.g., wrong strategy card selected)
-- [ ] Phase rollback (reset entire phase)
+- [x] Undo button always visible (in strategy phase)
+- [x] Undo last action (e.g., wrong strategy card selected)
+- [x] Phase rollback via Reset Phase button
 - [ ] Confirmation for major undos
-- [ ] Action history stack
+- [x] Action history stack (in-memory via undoSlice)
+- [x] **BONUS**: Host/non-host permission system
+- [x] **BONUS**: Ctrl+Z keyboard shortcut
+- [x] **BONUS**: Dynamic button enable/disable based on permissions
 
 #### Database Integration
-- [ ] Use game_events table for history
-- [ ] Mark events as undone
-- [ ] Restore previous game_state snapshots
+- [partial] Using in-memory Zustand store (undoSlice) instead of game_events
+- [ ] Sync undo history to database for persistence
+- [ ] Mark events as undone in database
+- [x] Restore previous state from history stack
 
 #### UI Components
-- [ ] UndoButton
+- [x] UndoButton (integrated into StrategyPhase)
 - [ ] UndoConfirmationModal
 - [ ] ActionHistoryPanel (optional)
+- [x] undoSlice in Zustand store
 
-**Milestone 3.1**: Can undo actions and rollback phases
+#### Implementation Notes
+- ✅ Global undo/redo history with userId tracking
+- ✅ Host can undo any action
+- ✅ Non-host players can only undo their own most recent action
+- ⚠️ Currently only implemented for Strategy Phase
+- ⚠️ Undo history is in-memory only (not persisted to database)
+- ⚠️ No realtime sync of undo history yet (needs Phase 2 implementation)
+
+#### Remaining Work
+- [ ] Extend undo system to other game phases
+- [ ] Persist undo history to database
+- [ ] Add realtime sync for undo/redo actions
+- [ ] Add confirmation modals for destructive undos
+- [ ] Implement redo functionality
+
+**Milestone 3.1**: ⚠️ **PARTIALLY COMPLETE** - Undo system working in Strategy Phase, needs expansion to other phases and database integration
+
+**See Also**: GitHub Issue #3 - Test undo/redo with multiple users/devices
 
 ---
 
@@ -729,7 +769,7 @@ Ongoing: Maintenance & New Features
 |-------|-----------|---------------------|
 | 0 | **Foundation complete** ✅ | **Week 3** ✅ |
 | 1.1 | **Game setup working** ✅ | **Week 2** ✅ |
-| 1.2 | Strategy phase working | Week 3 |
+| 1.2 | **Strategy phase working** ✅ | **Week 3** ✅ |
 | 1.3 | Action phase working | Week 4 |
 | 1.4 | Status phase working | Week 4 |
 | 1.5 | Mecatol & Agenda working | Week 5 |
@@ -739,7 +779,7 @@ Ongoing: Maintenance & New Features
 | 2.2 | Real-time sync working | Week 8 |
 | 2.3 | Player actions from devices | Week 9 |
 | 2.4 | **Multiplayer Complete** | **Week 9** |
-| 3.1 | Undo system working | Week 10 |
+| 3.1 | Undo system working ⚠️ | Week 10 ⚠️ **Partially Complete** |
 | 3.2 | Objectives view complete | Week 11 |
 | 3.3 | Faction sheets viewer | Week 12 |
 | 3.4 | **Enhanced Features Complete** | **Week 12** |
