@@ -511,10 +511,13 @@ export function ActionPhase({
                 const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
                 const isPassed = state.hasPassed;
 
+                // Hide current player from queue - they'll be shown separately below
+                if (isCurrent) return null;
+
                 return (
                   <div
                     key={player.id}
-                    className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${isPassed ? styles.queueBarPassed : ''}`}
+                    className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''}`}
                     style={{
                       borderColor: getPlayerColor(player.color),
                     }}
@@ -556,6 +559,58 @@ export function ActionPhase({
                   </div>
                 );
               })}
+            </div>
+
+            {/* Enlarged Current Player Display */}
+            <div className={styles.currentPlayerDisplay}>
+              {(() => {
+                const currentStrategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
+                const currentState = playerActionStates.find((s) => s.playerId === currentPlayer.id);
+                const currentCardData = currentStrategyCard
+                  ? STRATEGY_CARDS.find((c) => c.id === currentStrategyCard.strategyCardId)
+                  : null;
+
+                return (
+                  <div
+                    className={styles.currentPlayerCard}
+                    style={{
+                      borderColor: getPlayerColor(currentPlayer.color),
+                    }}
+                  >
+                    {currentCardData && (
+                      <StrategyCardNumber
+                        number={currentStrategyCard!.strategyCardId}
+                        color={currentCardData.color}
+                        size="small"
+                        className={currentState?.strategyCardUsed ? styles.cardNumberUsed : ''}
+                      />
+                    )}
+                    <img
+                      src={getFactionImage(currentPlayer.factionId, 'color')}
+                      alt={currentPlayer.factionName}
+                      className={styles.currentPlayerIcon}
+                    />
+                    <div className={styles.currentPlayerInfo}>
+                      <div className={styles.currentPlayerTop}>
+                        <div className={styles.currentPlayerNames}>
+                          <div className={styles.currentPlayerFaction} style={{ color: getPlayerColor(currentPlayer.color) }}>
+                            {FACTIONS[currentPlayer.factionId]?.shortName || currentPlayer.factionName}
+                          </div>
+                          <div className={styles.currentPlayerName}>
+                            ({currentPlayer.displayName})
+                          </div>
+                        </div>
+                        <div className={styles.currentPlayerTacticalCount}>
+                          {currentState && currentState.tacticalActionsCount > 0 && `T${currentState.tacticalActionsCount}`}
+                          {currentState && currentState.tacticalActionsCount > 0 && currentState.componentActionsCount > 0 && ' '}
+                          {currentState && currentState.componentActionsCount > 0 && `C${currentState.componentActionsCount}`}
+                          {currentState && currentState.tacticalActionsCount === 0 && currentState.componentActionsCount === 0 && '—'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Current Turn Indicator */}

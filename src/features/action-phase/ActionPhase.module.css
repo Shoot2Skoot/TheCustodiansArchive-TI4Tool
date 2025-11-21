@@ -51,6 +51,77 @@
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Current Player Display (enlarged, 1.5x) */
+.currentPlayerDisplay {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.currentPlayerCard {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-3) * 1.5);
+  padding: calc(var(--space-3) * 1.5) calc(var(--space-4) * 1.5);
+  background: var(--color-bg-tertiary);
+  border: 3px solid;
+  border-radius: 8px;
+  min-width: fit-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.currentPlayerIcon {
+  width: 52px; /* 1.5x larger than queueBarCurrent */
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.currentPlayerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.currentPlayerTop {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-4) * 1.5);
+  width: 100%;
+}
+
+.currentPlayerNames {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+}
+
+.currentPlayerFaction {
+  font-size: calc(var(--font-size-xl) * 1.5);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.currentPlayerName {
+  font-size: calc(var(--font-size-sm) * 1.5);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1;
+}
+
+.currentPlayerTacticalCount {
+  font-size: calc(var(--font-size-3xl) * 1.5);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  min-width: 60px;
+  text-align: center;
+}
+
 /* Turn Info */
 .turnInfo {
   display: flex;
