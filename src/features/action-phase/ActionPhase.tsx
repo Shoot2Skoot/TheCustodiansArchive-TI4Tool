@@ -602,10 +602,7 @@ export function ActionPhase({
                   onClick={handleTacticalAction}
                   variant="primary"
                   size="large"
-                  style={{
-                    backgroundColor: '#1e88e5',
-                    borderColor: '#1e88e5',
-                  }}
+                  customColor="#1e88e5"
                   className={styles.halfButton}
                 >
                   Tactical
@@ -614,10 +611,7 @@ export function ActionPhase({
                   onClick={handleComponentAction}
                   variant="primary"
                   size="large"
-                  style={{
-                    backgroundColor: '#fb8c00',
-                    borderColor: '#fb8c00',
-                  }}
+                  customColor="#fb8c00"
                   className={styles.halfButton}
                 >
                   Component
@@ -629,10 +623,7 @@ export function ActionPhase({
                 variant="primary"
                 size="large"
                 disabled={currentPlayerState?.strategyCardUsed}
-                style={{
-                  backgroundColor: strategyCardData?.color,
-                  borderColor: strategyCardData?.color,
-                }}
+                customColor={strategyCardData?.color}
               >
                 Use {strategyCardData?.name || 'Strategy'} Card
                 {currentPlayerState?.strategyCardUsed && (
