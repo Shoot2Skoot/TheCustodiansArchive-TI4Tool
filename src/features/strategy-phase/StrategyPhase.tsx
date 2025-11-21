@@ -17,7 +17,7 @@ interface Player {
   factionId: string;
 }
 
-interface StrategySelection {
+interface LocalStrategySelection {
   playerId: string;
   cardId: number;
   tradeGoodBonus: number;
@@ -30,7 +30,7 @@ interface StrategyPhaseProps {
   speakerPosition: number;
   roundNumber: number;
   initialTradeGoodBonuses?: Record<number, number>;
-  onComplete: (selections: StrategySelection[]) => void;
+  onComplete: (selections: LocalStrategySelection[]) => void;
   onReset: () => void;
   onUndoRedoChange?: (handlers: {
     canUndo: boolean;
@@ -50,7 +50,7 @@ export function StrategyPhase({
   onReset,
   onUndoRedoChange,
 }: StrategyPhaseProps) {
-  const [selections, setSelections] = useState<StrategySelection[]>([]);
+  const [selections, setSelections] = useState<LocalStrategySelection[]>([]);
   const [tradeGoodBonuses, setTradeGoodBonuses] = useState<Record<number, number>>({});
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -102,7 +102,7 @@ export function StrategyPhase({
     // Push to undo history BEFORE updating state
     pushHistory({
       type: 'strategySelection',
-      data: selections, // Store the state BEFORE this action
+      data: selections as any, // Store the state BEFORE this action
       userId: currentUserId,
       timestamp: Date.now(),
     });
@@ -121,11 +121,12 @@ export function StrategyPhase({
     if (undoStack.length === 0) return;
 
     const entry = undoStack[undoStack.length - 1];
+    if (!entry) return;
 
     // Manually manage the stacks - push CURRENT state to redo before undoing
     const currentStateEntry = {
       type: 'strategySelection' as const,
-      data: selections,
+      data: selections as any,
       userId: currentUserId,
       timestamp: Date.now(),
     };
@@ -133,13 +134,13 @@ export function StrategyPhase({
     // Pop from undo stack and push current state to redo stack
     useStore.setState((state) => ({
       undoStack: state.undoStack.slice(0, -1),
-      redoStack: [...state.redoStack, currentStateEntry],
+      redoStack: [...state.redoStack, currentStateEntry as any],
     }));
 
     // Restore to the "before" state
     if (entry.type === 'strategySelection') {
-      setSelections(entry.data);
-      setCurrentPlayerIndex(entry.data.length);
+      setSelections(entry.data as any);
+      setCurrentPlayerIndex((entry.data as any).length);
     }
   }, [currentUserId, isHost, canUndo, selections]);
 
@@ -151,11 +152,12 @@ export function StrategyPhase({
     if (redoStack.length === 0) return;
 
     const entry = redoStack[redoStack.length - 1];
+    if (!entry) return;
 
     // Manually manage the stacks - push CURRENT state to undo before redoing
     const currentStateEntry = {
       type: 'strategySelection' as const,
-      data: selections,
+      data: selections as any,
       userId: currentUserId || '',
       timestamp: Date.now(),
     };
@@ -163,13 +165,13 @@ export function StrategyPhase({
     // Pop from redo stack and push current state to undo stack
     useStore.setState((state) => ({
       redoStack: state.redoStack.slice(0, -1),
-      undoStack: [...state.undoStack, currentStateEntry],
+      undoStack: [...state.undoStack, currentStateEntry as any],
     }));
 
     // Restore to the "after" state
     if (entry.type === 'strategySelection') {
-      setSelections(entry.data);
-      setCurrentPlayerIndex(entry.data.length);
+      setSelections(entry.data as any);
+      setCurrentPlayerIndex((entry.data as any).length);
     }
   }, [canRedo, selections, currentUserId]);
 
@@ -217,7 +219,7 @@ export function StrategyPhase({
     // Push current state to undo history BEFORE resetting
     pushHistory({
       type: 'strategySelection',
-      data: selections,
+      data: selections as any,
       userId: currentUserId,
       timestamp: Date.now(),
     });
@@ -255,7 +257,7 @@ export function StrategyPhase({
     // Push current state to undo history BEFORE swapping
     pushHistory({
       type: 'strategySelection',
-      data: selections,
+      data: selections as any,
       userId: currentUserId,
       timestamp: Date.now(),
     });
