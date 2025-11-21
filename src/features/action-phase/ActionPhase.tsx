@@ -623,7 +623,8 @@ export function ActionPhase({
                 variant="primary"
                 size="large"
                 disabled={currentPlayerState?.strategyCardUsed}
-                customColor={strategyCardData?.color}
+                customColor="#1a1a1a"
+                customBorderColor={strategyCardData?.color}
               >
                 Use {strategyCardData?.name || 'Strategy'} Card
                 {currentPlayerState?.strategyCardUsed && (

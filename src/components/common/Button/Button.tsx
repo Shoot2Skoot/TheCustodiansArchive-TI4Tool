@@ -12,6 +12,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconOnly?: boolean;
   children?: ReactNode;
   customColor?: string;
+  customBorderColor?: string;
 }
 
 export function Button({
@@ -24,6 +25,7 @@ export function Button({
   children,
   disabled,
   customColor,
+  customBorderColor,
   style,
   ...props
 }: ButtonProps) {
@@ -38,13 +40,14 @@ export function Button({
     .filter(Boolean)
     .join(' ');
 
-  const buttonStyle = customColor
-    ? {
-        ...style,
-        '--background-color': customColor,
-        '--border-color': customColor,
-      } as React.CSSProperties
-    : style;
+  const buttonStyle =
+    customColor || customBorderColor
+      ? {
+          ...style,
+          ...(customColor && { '--background-color': customColor }),
+          ...(customBorderColor && { '--border-color': customBorderColor }),
+        } as React.CSSProperties
+      : style;
 
   return (
     <button className={classNames} disabled={disabled} style={buttonStyle} {...props}>
