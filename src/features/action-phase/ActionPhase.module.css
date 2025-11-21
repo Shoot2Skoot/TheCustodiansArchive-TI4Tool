@@ -6,6 +6,7 @@
   padding: var(--space-4) var(--space-6);
   max-width: 100%;
   margin: 0 auto;
+  min-height: 100vh;
 }
 
 /* Turn Indicator Panel */
@@ -177,7 +178,7 @@
   font-size: var(--font-size-xs);
 }
 
-/* Content Area - Split into left panels (70%) and right strategy card (30%) */
+/* Content Area - Split into left panels (80%) and right strategy card (20%) */
 .contentArea {
   display: flex;
   gap: var(--space-4);
@@ -191,12 +192,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: 70%;
+  max-width: 80%;
 }
 
 /* Right Column - Strategy card takes full remaining height */
 .rightColumn {
-  width: 30%;
+  width: 20%;
   display: flex;
   flex-direction: column;
 }

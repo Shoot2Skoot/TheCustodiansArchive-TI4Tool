@@ -3,6 +3,9 @@
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .cardContainer {
@@ -14,7 +17,8 @@
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     0 4px 12px rgba(0, 0, 0, 0.5);
-  height: 100%;
+  flex: 1;
+  min-height: 100%;
   isolation: isolate;
   clip-path: polygon(
     16px 0, 100% 0, 100% calc(100% - 16px),

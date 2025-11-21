@@ -519,7 +519,7 @@ export function ActionPhase({
         </div>
       </Panel>
 
-      {/* Content Area: Left panels (70%) + Right strategy card (30%) */}
+      {/* Content Area: Left panels (80%) + Right strategy card (20%) */}
       <div className={styles.contentArea}>
         {/* Left Column - Will contain multiple panels stacked vertically */}
         <div className={styles.leftColumn}>
