@@ -643,7 +643,7 @@ export function ActionPhase({
                           className={styles.currentPlayer}
                           style={{ color: getPlayerColor(currentPlayer.color) }}
                         >
-                          {currentPlayer.factionName}, {currentPlayer.displayName}
+                          {FACTIONS[currentPlayer.factionId]?.name || currentPlayer.factionName}, {currentPlayer.displayName}
                         </div>
                         <div className={styles.turnPrompt}>
                           Choose Your Action <span className={styles.turnCount}>[Turn {currentPlayerTurnCount}]</span>
