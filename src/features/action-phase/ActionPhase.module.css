@@ -65,7 +65,7 @@
   display: flex;
   align-items: center;
   gap: calc(var(--space-3) * 1.5);
-  padding: var(--space-3) calc(var(--space-4) * 1.5);
+  padding: var(--space-2) calc(var(--space-4) * 1.5);
   background: var(--color-bg-tertiary);
   border: 3px solid;
   border-radius: 8px;
