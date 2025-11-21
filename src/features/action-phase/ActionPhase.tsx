@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Panel, Button } from '@/components/common';
+import { Panel, Button, StrategyCardNumber } from '@/components/common';
 import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
@@ -444,6 +444,7 @@ export function ActionPhase({
               {turnOrder.map((selection) => {
                 const player = players.find((p) => p.id === selection.playerId);
                 const state = playerActionStates.find((s) => s.playerId === selection.playerId);
+                const cardData = STRATEGY_CARDS.find((c) => c.id === selection.strategyCardId);
 
                 if (!player || !state) return null;
 
@@ -461,6 +462,13 @@ export function ActionPhase({
                       borderColor: getPlayerColor(player.color),
                     }}
                   >
+                    {cardData && (
+                      <StrategyCardNumber
+                        number={selection.strategyCardId}
+                        color={cardData.color}
+                        size="small"
+                      />
+                    )}
                     <img
                       src={getFactionImage(player.factionId, 'color')}
                       alt={player.factionName}
