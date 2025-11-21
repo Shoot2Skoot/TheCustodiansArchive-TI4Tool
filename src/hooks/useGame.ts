@@ -3,6 +3,7 @@ import { useStore, selectCurrentGame, selectGameState, selectPlayers } from '../
 import { getGameById, getGameByRoomCode } from '../lib/db/games';
 import { getGameState } from '../lib/db/gameState';
 import { getPlayersByGame } from '../lib/db/players';
+import { getStrategySelectionsByRound } from '../lib/db/strategySelections';
 import { subscribeToGame, unsubscribeFromGame } from '../lib/realtime';
 
 /**
@@ -19,6 +20,7 @@ export function useGame(gameId: string | null) {
   const setCurrentGame = useStore((state) => state.setCurrentGame);
   const setGameState = useStore((state) => state.setGameState);
   const setPlayers = useStore((state) => state.setPlayers);
+  const setStrategySelections = useStore((state) => state.setStrategySelections);
   const setGameChannel = useStore((state) => state.setGameChannel);
   const clearGame = useStore((state) => state.clearGame);
 
@@ -47,10 +49,22 @@ export function useGame(gameId: string | null) {
           return;
         }
 
+        if (!gameStateData) {
+          setError('Game state not found');
+          return;
+        }
+
+        // Load strategy selections for current round
+        const strategySelectionsData = await getStrategySelectionsByRound(
+          gameId!,
+          gameStateData.currentRound
+        );
+
         // Update store
         setCurrentGame(gameData);
         setGameState(gameStateData);
         setPlayers(playersData);
+        setStrategySelections(strategySelectionsData);
 
         // Subscribe to real-time updates
         channel = subscribeToGame(gameId!);
@@ -70,7 +84,26 @@ export function useGame(gameId: string | null) {
         unsubscribeFromGame(channel);
       }
     };
-  }, [gameId, setCurrentGame, setGameState, setPlayers, setGameChannel, clearGame]);
+  }, [gameId, setCurrentGame, setGameState, setPlayers, setStrategySelections, setGameChannel, clearGame]);
+
+  // Reload strategy selections when round changes
+  useEffect(() => {
+    if (!gameId || !gameState) return;
+
+    async function reloadStrategySelections() {
+      try {
+        const strategySelectionsData = await getStrategySelectionsByRound(
+          gameId,
+          gameState.currentRound
+        );
+        setStrategySelections(strategySelectionsData);
+      } catch (err) {
+        console.error('Failed to reload strategy selections:', err);
+      }
+    }
+
+    reloadStrategySelections();
+  }, [gameId, gameState?.currentRound, setStrategySelections]);
 
   return {
     game,
