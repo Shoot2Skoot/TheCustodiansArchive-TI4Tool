@@ -36,7 +36,7 @@ export function AudioTestPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [lastPlayed, setLastPlayed] = useState<string>('');
   const [loadedSounds, setLoadedSounds] = useState<string[]>([]);
-  const [selectedFaction, setSelectedFaction] = useState(TEST_FACTIONS[0]);
+  const [selectedFaction, setSelectedFaction] = useState<string>(TEST_FACTIONS[0]!);
   const [log, setLog] = useState<string[]>([]);
 
   // Update queue length periodically

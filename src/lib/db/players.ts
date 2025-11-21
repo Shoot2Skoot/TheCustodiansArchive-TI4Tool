@@ -35,7 +35,7 @@ export async function createPlayer(
       faction_id: factionId,
       display_name: displayName || null,
       victory_points: 0,
-    })
+    } as any)
     .select()
     .single();
 
@@ -88,7 +88,7 @@ export async function updatePlayer(playerId: string, updates: Partial<Player>) {
       display_name: updates.displayName,
       joined_at: updates.joinedAt,
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', playerId)
     .select()
     .single();
@@ -113,7 +113,7 @@ export async function claimPlayerSlot(playerId: string, userId: string) {
       user_id: userId,
       joined_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', playerId)
     .select()
     .single();

@@ -63,7 +63,7 @@ export function useCreateGame() {
         .insert({
           game_id: game.id,
           user_id: userId,
-        });
+        } as any);
 
       if (gameUserError) {
         console.warn('Failed to add creator to game_users (may already exist):', gameUserError);

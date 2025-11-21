@@ -31,6 +31,7 @@ export function useLoadGame(gameId: string | undefined) {
     }
 
     async function loadGameData() {
+      if (!gameId) return; // Type guard for async function
       try {
         setIsLoading(true);
         setError(null);

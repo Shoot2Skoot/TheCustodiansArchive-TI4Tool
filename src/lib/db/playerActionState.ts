@@ -20,7 +20,7 @@ export async function upsertPlayerActionState(
       player_id: playerId,
       round_number: roundNumber,
       ...updates,
-    })
+    } as any)
     .select()
     .single();
 
@@ -110,7 +110,7 @@ export async function initializePlayerActionStates(
     has_passed: false,
   }));
 
-  const { data, error } = await supabase.from('player_action_state').insert(states).select();
+  const { data, error } = await supabase.from('player_action_state').insert(states as any).select();
 
   if (error) throw error;
   return data;

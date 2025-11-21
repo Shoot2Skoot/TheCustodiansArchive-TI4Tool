@@ -91,6 +91,7 @@ export function useGame(gameId: string | null) {
     if (!gameId || !gameState) return;
 
     async function reloadStrategySelections() {
+      if (!gameId || !gameState) return; // Type guard for async function
       try {
         const strategySelectionsData = await getStrategySelectionsByRound(
           gameId,

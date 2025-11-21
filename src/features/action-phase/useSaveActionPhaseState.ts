@@ -51,7 +51,7 @@ export function useSaveActionPhaseState() {
       // Also update the strategy_selections table to mark primary_action_used
       const { error: updateError } = await supabase
         .from('strategy_selections')
-        .update({ primary_action_used: true })
+        .update({ primary_action_used: true } as any)
         .eq('game_id', gameId)
         .eq('round_number', roundNumber)
         .eq('player_id', playerId)

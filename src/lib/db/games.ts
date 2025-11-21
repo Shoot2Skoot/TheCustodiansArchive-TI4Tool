@@ -38,7 +38,7 @@ export async function createGame(config: GameConfig, userId?: string) {
       status: 'setup',
       config,
       created_by: userId || null,
-    })
+    } as any)
     .select()
     .single();
 
@@ -94,7 +94,7 @@ export async function updateGame(gameId: string, updates: Partial<Game>) {
       ended_at: updates.endedAt,
       deleted_at: updates.deletedAt,
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', gameId)
     .select()
     .single();
@@ -134,7 +134,7 @@ export async function deleteGame(gameId: string) {
     .from('games')
     .update({
       deleted_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', gameId);
 
   if (error) {

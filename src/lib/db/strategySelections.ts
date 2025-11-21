@@ -35,7 +35,7 @@ export async function createStrategySelection(
       selection_order: selectionOrder,
       trade_good_bonus: tradeGoodBonus,
       primary_action_used: false,
-    })
+    } as any)
     .select()
     .single();
 
@@ -69,7 +69,7 @@ export async function createStrategySelections(
 
   const { data, error } = await supabase
     .from('strategy_selections')
-    .insert(insertData)
+    .insert(insertData as any)
     .select();
 
   if (error) {
@@ -125,7 +125,7 @@ export async function markPrimaryActionUsed(selectionId: string) {
     .from('strategy_selections')
     .update({
       primary_action_used: true,
-    })
+    } as any)
     .eq('id', selectionId)
     .select()
     .single();

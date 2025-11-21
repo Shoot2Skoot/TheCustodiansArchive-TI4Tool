@@ -27,7 +27,7 @@ export async function createGameState(gameId: string) {
       current_phase: 'setup',
       mecatol_claimed: false,
       last_activity_at: new Date().toISOString(),
-    })
+    } as any)
     .select()
     .single();
 
@@ -50,7 +50,7 @@ export async function initializeGameState(gameId: string, speakerPlayerId: strin
       mecatol_claimed: false,
       last_activity_at: new Date().toISOString(),
       phase_started_at: new Date().toISOString(),
-    })
+    } as any)
     .select()
     .single();
 
@@ -93,7 +93,7 @@ export async function updateGameState(gameId: string, updates: Partial<GameState
 
   const { data, error } = await supabase
     .from('game_state')
-    .update(updateData)
+    .update(updateData as any)
     .eq('game_id', gameId)
     .select()
     .single();
