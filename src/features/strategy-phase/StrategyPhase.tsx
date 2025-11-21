@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Panel, Button } from '@/components/common';
 import { StrategyCard } from './StrategyCard';
+import { PlayPhaseEndEffectModal } from './PlayPhaseEndEffectModal';
 import { STRATEGY_CARDS, getPlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
@@ -46,6 +47,7 @@ export function StrategyPhase({
   const [tradeGoodBonuses, setTradeGoodBonuses] = useState<Record<number, number>>({});
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showPlayEffectModal, setShowPlayEffectModal] = useState(false);
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
@@ -154,6 +156,26 @@ export function StrategyPhase({
     onComplete(selections);
   };
 
+  const handleSwapComplete = (cardId1: number, cardId2: number) => {
+    // Find the selections for these cards
+    const selection1 = selections.find((s) => s.cardId === cardId1);
+    const selection2 = selections.find((s) => s.cardId === cardId2);
+
+    if (!selection1 || !selection2) return;
+
+    // Create new selections array with swapped card IDs
+    const newSelections = selections.map((s) => {
+      if (s.cardId === cardId1) {
+        return { ...s, cardId: cardId2 };
+      } else if (s.cardId === cardId2) {
+        return { ...s, cardId: cardId1 };
+      }
+      return s;
+    });
+
+    setSelections(newSelections);
+  };
+
   const pickedCardIds = new Set(selections.map((s) => s.cardId));
 
   // Create a map of cardId -> player who picked it
@@ -182,60 +204,62 @@ export function StrategyPhase({
           <div className={styles.turnPanelSpacer}></div>
 
           <div className={styles.turnPanelCenter}>
-            {/* Compact Turn Queue Bar */}
-            <div className={styles.turnQueueBar}>
-              {playerOrder.map((player, index) => {
-                const hasSelected = selections.some((s) => s.playerId === player.id);
-                const isCurrent = index === currentPlayerIndex;
-                const isOnDeck = index === currentPlayerIndex + 1;
+            {!isSelectionComplete ? (
+              <>
+                {/* Compact Turn Queue Bar */}
+                <div className={styles.turnQueueBar}>
+                  {playerOrder.map((player, index) => {
+                    const hasSelected = selections.some((s) => s.playerId === player.id);
+                    const isCurrent = index === currentPlayerIndex;
+                    const isOnDeck = index === currentPlayerIndex + 1;
 
-                return (
-                  <div
-                    key={player.id}
-                    className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${hasSelected ? styles.queueBarCompleted : ''}`}
-                    style={{
-                      borderColor: getPlayerColor(player.color),
-                    }}
-                  >
-                    <img
-                      src={getFactionImage(player.factionId, 'color')}
-                      alt={player.factionName}
-                      className={styles.queueBarIcon}
-                    />
-                    <div className={styles.queueBarInfo}>
-                      <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
-                        {FACTIONS[player.factionId]?.shortName || player.factionName}
+                    return (
+                      <div
+                        key={player.id}
+                        className={`${styles.queueBarItem} ${isCurrent ? styles.queueBarCurrent : ''} ${isOnDeck ? styles.queueBarOnDeck : ''} ${hasSelected ? styles.queueBarCompleted : ''}`}
+                        style={{
+                          borderColor: getPlayerColor(player.color),
+                        }}
+                      >
+                        <img
+                          src={getFactionImage(player.factionId, 'color')}
+                          alt={player.factionName}
+                          className={styles.queueBarIcon}
+                        />
+                        <div className={styles.queueBarInfo}>
+                          <div className={styles.queueBarFaction} style={{ color: getPlayerColor(player.color) }}>
+                            {FACTIONS[player.factionId]?.shortName || player.factionName}
+                          </div>
+                          <div className={styles.queueBarPlayer}>
+                            ({player.displayName})
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.queueBarPlayer}>
-                        ({player.displayName})
-                      </div>
-                    </div>
+                    );
+                  })}
+                </div>
+
+                {/* Current Turn Indicator */}
+                <div className={styles.turnInfo}>
+                  <div className={styles.currentTurnText}>
+                    <span
+                      className={styles.currentPlayer}
+                      style={{ color: getPlayerColor(currentPlayer?.color || 'blue') }}
+                    >
+                      {currentPlayer?.factionName} ({currentPlayer?.displayName})
+                    </span>
+                    <span className={styles.turnPrompt}>, Choose Your Strategy...</span>
+                    <span className={styles.turnCount}>
+                      [{selections.length + 1}/{players.length}]
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Current Turn Indicator */}
-            <div className={styles.turnInfo}>
-              {!isSelectionComplete ? (
-                <div className={styles.currentTurnText}>
-                  <span
-                    className={styles.currentPlayer}
-                    style={{ color: getPlayerColor(currentPlayer?.color || 'blue') }}
-                  >
-                    {currentPlayer?.factionName} ({currentPlayer?.displayName})
-                  </span>
-                  <span className={styles.turnPrompt}>, Choose Your Strategy...</span>
-                  <span className={styles.turnCount}>
-                    [{selections.length + 1}/{players.length}]
-                  </span>
                 </div>
-              ) : (
-                <div className={styles.completedMessage}>
-                  All strategy cards selected!
-                </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div className={styles.completedMessage}>
+                All strategy cards selected!
+              </div>
+            )}
           </div>
 
           <div className={styles.turnPanelActions}>
@@ -247,12 +271,17 @@ export function StrategyPhase({
               Undo
             </Button>
             <Button variant="secondary" onClick={handleReset}>
-              Reset Phase
+              Reset
             </Button>
             {isSelectionComplete && (
-              <Button variant="primary" onClick={handleEndPhase} className={styles.endPhaseButton}>
-                End Phase
-              </Button>
+              <>
+                <Button variant="secondary" onClick={() => setShowPlayEffectModal(true)}>
+                  Play
+                </Button>
+                <Button variant="primary" onClick={handleEndPhase} className={styles.endPhaseButton}>
+                  End Phase
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -272,6 +301,14 @@ export function StrategyPhase({
           />
         ))}
       </div>
+
+      <PlayPhaseEndEffectModal
+        isOpen={showPlayEffectModal}
+        onClose={() => setShowPlayEffectModal(false)}
+        selections={selections}
+        players={players}
+        onSwapComplete={handleSwapComplete}
+      />
     </div>
   );
 }
