@@ -6,7 +6,7 @@ import { createPlayer } from '@/lib/db/players';
 import { createGameState } from '@/lib/db/gameState';
 import { supabase } from '@/lib/supabase';
 import { useStore } from '@/store';
-import type { GameConfig } from '@/types';
+import type { GameConfig, GamePhase } from '@/types';
 
 export function RealtimeTest() {
   const [testGameId, setTestGameId] = useState<string | null>(null);
@@ -70,14 +70,13 @@ export function RealtimeTest() {
       addLog('Creating test game...');
       const testConfig: GameConfig = {
         playerCount: 3,
-        vpLimit: 10,
-        showVPMeter: true,
-        fullscreen: false,
-        inactivityTimerMinutes: 15,
+        victoryPointLimit: 10,
+        timerEnabled: false,
         timerMode: 'per-turn',
-        decisionBarEnabled: false,
-        decisionBarSeconds: 90,
-        detailedAgendaMode: true,
+        timerDurationMinutes: 15,
+        showObjectives: true,
+        showTechnologies: true,
+        showStrategyCards: true,
       };
 
       const game = await createGame(testConfig, authData.user?.id);
@@ -124,9 +123,14 @@ export function RealtimeTest() {
       return;
     }
 
-    const phases = ['setup', 'speaker-selection', 'strategy', 'action', 'status', 'agenda'] as const;
-    const currentIndex = phases.indexOf(gameState.currentPhase);
+    const phases: GamePhase[] = ['setup', 'speaker-selection', 'strategy', 'action', 'status', 'agenda'];
+    const currentIndex = phases.indexOf(gameState.currentPhase as any);
     const nextPhase = phases[(currentIndex + 1) % phases.length];
+
+    if (!nextPhase) {
+      addLog('✗ Could not determine next phase');
+      return;
+    }
 
     try {
       addLog(`Changing phase to ${nextPhase}...`);

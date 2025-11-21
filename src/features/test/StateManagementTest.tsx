@@ -36,14 +36,13 @@ export function StateManagementTest() {
       addLog('Creating test game using service layer...');
       const testConfig: GameConfig = {
         playerCount: 4,
-        vpLimit: 10,
-        showVPMeter: true,
-        fullscreen: false,
-        inactivityTimerMinutes: 15,
+        victoryPointLimit: 10,
+        timerEnabled: false,
         timerMode: 'per-turn',
-        decisionBarEnabled: false,
-        decisionBarSeconds: 90,
-        detailedAgendaMode: true,
+        timerDurationMinutes: 15,
+        showObjectives: true,
+        showTechnologies: true,
+        showStrategyCards: true,
       };
 
       const game = await createGame(testConfig, authData.user?.id);
