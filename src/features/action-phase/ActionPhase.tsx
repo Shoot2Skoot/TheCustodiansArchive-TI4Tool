@@ -563,15 +563,13 @@ export function ActionPhase({
         </Panel>
 
         {/* Strategy Card Display */}
-        <Panel className={styles.strategyCardPanel}>
-          {currentStrategyCard && (
-            <ActionStrategyCard
-              cardId={currentStrategyCard.strategyCardId}
-              isUsed={currentPlayerState?.strategyCardUsed || false}
-              usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
-            />
-          )}
-        </Panel>
+        {currentStrategyCard && (
+          <ActionStrategyCard
+            cardId={currentStrategyCard.strategyCardId}
+            isUsed={currentPlayerState?.strategyCardUsed || false}
+            usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
+          />
+        )}
       </div>
 
       {/* Strategy Card Action Modal */}

@@ -180,20 +180,14 @@
 /* Main Content - Two Column Layout */
 .mainContent {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 30%;
   gap: var(--space-4);
-  align-items: start;
+  align-items: stretch;
 }
 
 /* Action Panel */
 .actionPanel {
   padding: var(--space-6);
-}
-
-/* Strategy Card Panel */
-.strategyCardPanel {
-  padding: var(--space-4);
-  min-height: 500px;
 }
 
 .actionButtons {
@@ -231,10 +225,6 @@
   .mainContent {
     grid-template-columns: 1fr;
   }
-
-  .strategyCardPanel {
-    min-height: 400px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -256,9 +246,5 @@
 
   .turnCount {
     font-size: var(--font-size-base);
-  }
-
-  .strategyCardPanel {
-    min-height: 350px;
   }
 }

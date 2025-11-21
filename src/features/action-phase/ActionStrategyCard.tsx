@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { STRATEGY_CARDS } from '@/lib/constants';
 import { AbilityText } from '../strategy-phase/AbilityText';
 import styles from './ActionStrategyCard.module.css';
@@ -15,16 +14,6 @@ export function ActionStrategyCard({
   usedOnTurn,
 }: ActionStrategyCardProps) {
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
-  const [showPrimary, setShowPrimary] = useState(true);
-
-  // Alternate between primary and secondary every 15 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowPrimary((prev) => !prev);
-    }, 15000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!card) {
     return null;
@@ -59,17 +48,16 @@ export function ActionStrategyCard({
             </div>
           ) : (
             <>
-              <div className={styles.timerBar}>
-                <div
-                  key={showPrimary ? 'primary' : 'secondary'}
-                  className={`${styles.timerProgress} ${showPrimary ? styles.timerFill : styles.timerEmpty}`}
-                  style={{ '--strategy-color': card.color } as React.CSSProperties}
-                />
-              </div>
-              <div className={`${styles.actionSection} ${styles.fullHeight}`}>
-                <div className={styles.actionLabel}>{showPrimary ? 'PRIMARY' : 'SECONDARY'}</div>
+              <div className={`${styles.actionSection} ${styles.expandedSection}`}>
+                <div className={styles.actionLabel}>PRIMARY</div>
                 <div className={styles.abilityContent}>
-                  <AbilityText text={showPrimary ? card.primary : card.secondary} />
+                  <AbilityText text={card.primary} />
+                </div>
+              </div>
+              <div className={`${styles.actionSection} ${styles.expandedSection}`}>
+                <div className={styles.actionLabel}>SECONDARY</div>
+                <div className={styles.abilityContent}>
+                  <AbilityText text={card.secondary} />
                 </div>
               </div>
             </>

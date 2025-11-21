@@ -169,58 +169,14 @@
   flex: 1;
 }
 
-/* Timer Bar */
-.timerBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
-.timerProgress {
-  height: 100%;
-  background: var(--strategy-color);
-  box-shadow: 0 0 8px var(--strategy-color);
-}
-
-.timerEmpty {
-  animation: timerEmpty 15s linear forwards;
-}
-
-.timerFill {
-  animation: timerFill 15s linear forwards;
-}
-
-@keyframes timerEmpty {
-  from {
-    width: 100%;
-  }
-  to {
-    width: 0%;
-  }
-}
-
-@keyframes timerFill {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
-}
-
 .actionSection {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.fullHeight {
+.expandedSection {
   flex: 1;
-  justify-content: flex-start;
 }
 
 .abilityContent {
