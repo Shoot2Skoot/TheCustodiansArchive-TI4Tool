@@ -563,7 +563,7 @@ export function ActionPhase({
                       key={player.id}
                       className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''} ${isCondensed ? styles.queueBarCondensed : ''}`}
                       style={{
-                        borderColor: getPlayerColor(player.color),
+                        color: getPlayerColor(player.color as PlayerColor),
                       }}
                     >
                       {cardData && (
