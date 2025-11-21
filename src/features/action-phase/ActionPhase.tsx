@@ -250,6 +250,11 @@ export function ActionPhase({
     advanceToNextPlayer();
   };
 
+  // Handle strategy card cancel button - just close without processing
+  const handleStrategyCardCancel = () => {
+    setIsStrategyCardActionInProgress(false);
+  };
+
   // Handle speaker selection from Politics card
   const handleSelectSpeaker = async (newSpeakerId: string) => {
     if (!currentUserId) return;
@@ -636,6 +641,7 @@ export function ActionPhase({
                 disabled={currentPlayerState?.strategyCardUsed}
                 customColor="#1a1a1a"
                 customBorderColor={strategyCardData?.color}
+                className={styles.strategyCardButton}
               >
                 Use {strategyCardData?.name || 'Strategy'} Card
                 {currentPlayerState?.strategyCardUsed && (
@@ -665,6 +671,7 @@ export function ActionPhase({
               usedOnTurn={currentPlayerState?.strategyCardUsedOnTurn}
               isInProgress={isStrategyCardActionInProgress}
               onDone={handleStrategyCardDone}
+              onCancel={handleStrategyCardCancel}
             />
           )}
         </div>

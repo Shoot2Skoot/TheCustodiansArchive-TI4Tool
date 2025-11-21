@@ -5,6 +5,11 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  z-index: 1;
+}
+
+.cardWrapper:has(.inProgress) {
+  z-index: 100;
 }
 
 .cardContainer {
@@ -151,37 +156,25 @@
   letter-spacing: 0.1em;
 }
 
-/* In Progress State - Glow Effect */
+/* In Progress State - Expand Upward */
 .cardContainer.inProgress {
-  animation: strategyCardGlow 2s ease-in-out infinite;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  min-height: calc(100% + 400px);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-    0 0 30px var(--strategy-color),
-    0 0 60px var(--strategy-color),
-    0 4px 12px rgba(0, 0, 0, 0.5);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.8),
+    0 0 40px var(--strategy-color);
+  transform: scale(1.02);
 }
 
-@keyframes strategyCardGlow {
-  0%,
-  100% {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-      0 0 30px var(--strategy-color),
-      0 0 60px var(--strategy-color),
-      0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-      0 0 40px var(--strategy-color),
-      0 0 80px var(--strategy-color),
-      0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-}
-
-/* Done Button Container */
-.doneButtonContainer {
+/* Button Container */
+.buttonContainer {
   display: flex;
+  gap: var(--space-4);
   justify-content: center;
   margin-top: var(--space-4);
   padding-top: var(--space-4);

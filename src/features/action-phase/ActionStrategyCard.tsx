@@ -9,6 +9,7 @@ interface ActionStrategyCardProps {
   usedOnTurn?: number;
   isInProgress?: boolean;
   onDone?: () => void;
+  onCancel?: () => void;
 }
 
 export function ActionStrategyCard({
@@ -17,6 +18,7 @@ export function ActionStrategyCard({
   usedOnTurn,
   isInProgress = false,
   onDone,
+  onCancel,
 }: ActionStrategyCardProps) {
   const card = STRATEGY_CARDS.find((c) => c.id === cardId);
 
@@ -63,11 +65,30 @@ export function ActionStrategyCard({
                   <AbilityText text={card.secondary} />
                 </div>
               </div>
-              {isInProgress && onDone && (
-                <div className={styles.doneButtonContainer}>
-                  <Button onClick={onDone} variant="primary" size="large" customColor="#22c55e">
-                    Done
-                  </Button>
+              {isInProgress && (
+                <div className={styles.buttonContainer}>
+                  {onCancel && (
+                    <Button
+                      onClick={onCancel}
+                      variant="secondary"
+                      size="large"
+                      style={{ minWidth: '150px', fontSize: 'var(--font-size-xl)' }}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                  {onDone && (
+                    <Button
+                      onClick={onDone}
+                      variant="primary"
+                      size="large"
+                      customColor="#1a1a1a"
+                      customBorderColor="#22c55e"
+                      style={{ minWidth: '150px', fontSize: 'var(--font-size-xl)' }}
+                    >
+                      Done
+                    </Button>
+                  )}
                 </div>
               )}
             </>
