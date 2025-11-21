@@ -422,48 +422,133 @@ Ongoing: Maintenance & New Features
 
 **Duration**: 3-4 weeks
 
-### 3.1 Undo System ⚠️ (Week 10) - PARTIALLY COMPLETE
+### 3.1 Undo/Redo System ⚠️ (Week 10) - PARTIALLY COMPLETE
 
-#### Features
-- [x] Undo button always visible (in strategy phase)
-- [x] Undo last action (e.g., wrong strategy card selected)
-- [x] Phase rollback via Reset Phase button
-- [ ] Confirmation for major undos
+#### Phase 1: MVP Undo (Strategy Phase) - ✅ COMPLETE
+- [x] Undo button always visible
+- [x] Redo button with keyboard shortcuts
+- [x] Undo last action (card selection, reset, swap)
+- [x] Phase rollback via Reset Phase button (undoable)
 - [x] Action history stack (in-memory via undoSlice)
-- [x] **BONUS**: Host/non-host permission system
-- [x] **BONUS**: Ctrl+Z keyboard shortcut
-- [x] **BONUS**: Dynamic button enable/disable based on permissions
+- [x] Host/non-host permission system
+- [x] Keyboard shortcuts:
+  - [x] Ctrl+Z / Cmd+Z for undo
+  - [x] Ctrl+Y / Cmd+Y for redo
+  - [x] Ctrl+Shift+Z / Cmd+Shift+Z for redo
+- [x] Dynamic button enable/disable based on permissions and stack state
+- [x] All Strategy Phase actions undoable:
+  - [x] Card selections
+  - [x] Reset Phase
+  - [x] Card swaps (Play End Phase Effect)
 
-#### Database Integration
-- [partial] Using in-memory Zustand store (undoSlice) instead of game_events
-- [ ] Sync undo history to database for persistence
-- [ ] Mark events as undone in database
-- [x] Restore previous state from history stack
+#### Phase 2: Persistent Cross-Phase Undo (Post-MVP) - ⏳ DEFERRED
+
+**Vision**: Users can undo back to the beginning of the game, across all phases
+
+##### Database Schema
+```sql
+undo_history
+- id (uuid, primary key)
+- game_id (uuid, foreign key)
+- round_number (int)
+- phase (game_phase enum)
+- action_type (text) - 'strategySelection', 'phaseTransition', 'cardSwap', 'actionPhaseAction', etc.
+- before_state (jsonb) - Complete state before action
+- after_state (jsonb) - Complete state after action (for redo)
+- user_id (uuid) - Who performed the action
+- created_at (timestamp)
+- sequence_number (int) - Global ordering within game
+```
+
+##### Features
+- [ ] Database-backed undo history (persisted to Supabase)
+- [ ] Undo persists across page refreshes
+- [ ] Undo works across phase transitions
+- [ ] Phase transitions are undoable actions
+  - [ ] Undoing "End Strategy Phase" returns to Strategy Phase with full state
+  - [ ] Undoing "End Action Phase" returns to Action Phase with full state
+  - [ ] All phase state restored correctly
+- [ ] Cross-phase undo navigation
+  - [ ] Can undo from Action Phase back into Strategy Phase
+  - [ ] Can undo from Status Phase back into Action Phase
+  - [ ] Full game state restoration at each step
+- [ ] Practical limits:
+  - [ ] All history retained until game completion (recommended)
+  - [ ] Alternative: Last 200 actions per game (configurable)
+  - [ ] Alternative: Last 7 days of history
+  - [ ] History cleanup on game deletion
+- [ ] Realtime sync of undo/redo actions across all devices
+- [ ] UndoConfirmationModal for major actions (phase transitions)
+- [ ] Optional: ActionHistoryPanel showing full undo stack
+- [ ] Load undo history when entering/returning to phases
+
+##### Implementation Strategy
+1. Create `undo_history` table in Supabase
+2. Update undoSlice to sync to database on every action
+3. Add `phaseTransition` action type to undo system
+4. Implement cross-phase state restoration logic
+5. Add database queries for loading history by game_id
+6. Implement realtime subscriptions for undo_history changes
+7. Add Row Level Security policies
+8. Performance optimization for large undo stacks
+
+##### Action Types to Support
+- `strategySelection` - Card picks in Strategy Phase
+- `cardSwap` - Play End Phase Effects (Quantum Datahub, Imperial Arbiter)
+- `phaseTransition` - Moving between game phases (undoing returns to previous phase)
+- `resetPhase` - Reset Phase button (already treated as regular action)
+- `actionPhaseAction` - Tactical/Component/Strategy actions (Phase 1.3)
+- `speakerChange` - Politics card speaker selection
+- `victoryPointChange` - VP adjustments
+- `objectiveScored` - Objective completions
+- Future: Any game state modification
+
+##### User Experience
+- Users can undo any action at any time (with permissions)
+- Undoing a phase transition:
+  1. User clicks "End Strategy Phase"
+  2. Game moves to Action Phase
+  3. User realizes mistake, clicks Undo
+  4. Game returns to Strategy Phase with exact state before transition
+  5. All Strategy Phase undo history still available
+- History persists through:
+  - Page refreshes
+  - Device switches
+  - Network disconnections
+  - Multiple game sessions
+
+##### Performance Considerations
+- Lazy load undo history (only load last 50 entries initially)
+- Pagination for ActionHistoryPanel
+- Index on `game_id` and `sequence_number` for fast queries
+- Background cleanup of old undo history after game completion
+- JSONB indexing for state queries if needed
+
+#### Current State (Phase 1.2 Complete)
+- ✅ In-memory undo/redo working in Strategy Phase
+- ✅ All Strategy Phase actions undoable
+- ✅ Host/non-host permissions enforced
+- ✅ Keyboard shortcuts functional
+- ⚠️ Undo history lost on page refresh
+- ⚠️ Undo history lost on phase transition
+- ⚠️ No cross-phase undo yet
 
 #### UI Components
 - [x] UndoButton (integrated into StrategyPhase)
-- [ ] UndoConfirmationModal
-- [ ] ActionHistoryPanel (optional)
+- [x] RedoButton (integrated into StrategyPhase)
 - [x] undoSlice in Zustand store
+- [ ] UndoConfirmationModal (for phase transitions)
+- [ ] ActionHistoryPanel (optional, shows full stack)
 
-#### Implementation Notes
-- ✅ Global undo/redo history with userId tracking
-- ✅ Host can undo any action
-- ✅ Non-host players can only undo their own most recent action
-- ⚠️ Currently only implemented for Strategy Phase
-- ⚠️ Undo history is in-memory only (not persisted to database)
-- ⚠️ No realtime sync of undo history yet (needs Phase 2 implementation)
+**Milestone 3.1 Phase 1**: ✅ **COMPLETE** - Undo/redo system working in Strategy Phase with all actions undoable
 
-#### Remaining Work
-- [ ] Extend undo system to other game phases
-- [ ] Persist undo history to database
-- [ ] Add realtime sync for undo/redo actions
-- [ ] Add confirmation modals for destructive undos
-- [ ] Implement redo functionality
+**Milestone 3.1 Phase 2**: ⏳ **DEFERRED TO POST-MVP** - Persistent cross-phase undo system fully scoped and ready for implementation
 
-**Milestone 3.1**: ⚠️ **PARTIALLY COMPLETE** - Undo system working in Strategy Phase, needs expansion to other phases and database integration
+**See Also**:
+- GitHub Issue #3 - Test undo/redo with multiple users/devices
+- Phase 2.2 - Realtime Synchronization (required for syncing undo history)
 
-**See Also**: GitHub Issue #3 - Test undo/redo with multiple users/devices
+**Implementation Priority**: Implement Phase 2 after Phase 1.7 (MVP Complete) and before or during Phase 2 (Multiplayer)
 
 ---
 
