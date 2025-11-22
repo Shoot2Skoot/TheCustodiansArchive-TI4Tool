@@ -437,6 +437,11 @@ class AudioService {
    * Play a sound with a random variant
    */
   async playSound(category: SoundCategory, id: string): Promise<void> {
+    // Check if audio is enabled
+    if (!voiceSettings.isAudioEnabled()) {
+      return;
+    }
+
     // Check queue size to prevent spam
     if (this.playQueue.length >= this.maxQueueSize) {
       console.warn('Audio queue is full. Skipping sound:', id);
@@ -458,6 +463,11 @@ class AudioService {
    * Play a specific variant of a sound
    */
   async playSoundVariant(category: SoundCategory, id: string, variant: number): Promise<void> {
+    // Check if audio is enabled
+    if (!voiceSettings.isAudioEnabled()) {
+      return;
+    }
+
     // Check queue size to prevent spam
     if (this.playQueue.length >= this.maxQueueSize) {
       console.warn('Audio queue is full. Skipping sound:', id);
@@ -475,6 +485,11 @@ class AudioService {
    * Play multiple sounds in sequence (chained)
    */
   async playChainedSounds(sounds: ChainedSound[]): Promise<void> {
+    // Check if audio is enabled
+    if (!voiceSettings.isAudioEnabled()) {
+      return;
+    }
+
     // Check queue size
     if (this.playQueue.length >= this.maxQueueSize) {
       console.warn('Audio queue is full. Skipping chained sounds');

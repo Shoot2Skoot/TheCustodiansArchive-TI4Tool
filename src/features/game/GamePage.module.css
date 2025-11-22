@@ -61,6 +61,10 @@
   margin-left: var(--space-4);
 }
 
+.volumeButton {
+  margin-left: var(--space-3);
+}
+
 /* Loading State */
 .loadingPanel {
   margin: var(--space-8);

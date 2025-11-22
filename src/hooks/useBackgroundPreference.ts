@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export type BackgroundType = 'solid' | 'space-1' | 'space-2';
+export type BackgroundType = 'solid' | 'space-1' | 'space-2' | 'space-3' | 'space-4' | 'ti-1';
 
 const BACKGROUND_STORAGE_KEY = 'ti4-background-preference';
 const DEFAULT_BACKGROUND: BackgroundType = 'space-1';
@@ -28,6 +28,15 @@ export function useBackgroundPreference() {
       body.style.backgroundColor = 'var(--color-bg-primary)';
     } else if (background === 'space-2') {
       body.style.background = "url('/src/assets/backgrounds/space-2.jpg') center center / cover no-repeat fixed";
+      body.style.backgroundColor = 'var(--color-bg-primary)';
+    } else if (background === 'space-3') {
+      body.style.background = "url('/src/assets/backgrounds/space-3.jpg') center center / cover no-repeat fixed";
+      body.style.backgroundColor = 'var(--color-bg-primary)';
+    } else if (background === 'space-4') {
+      body.style.background = "url('/src/assets/backgrounds/space-4.jpg') center center / cover no-repeat fixed";
+      body.style.backgroundColor = 'var(--color-bg-primary)';
+    } else if (background === 'ti-1') {
+      body.style.background = "url('/src/assets/backgrounds/ti-1.jpg') center center / cover no-repeat fixed";
       body.style.backgroundColor = 'var(--color-bg-primary)';
     }
   }, [background]);

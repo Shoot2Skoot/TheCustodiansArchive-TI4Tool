@@ -152,6 +152,62 @@
   color: var(--color-text-primary);
 }
 
+/* Audio Settings */
+.audioSettings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.audioSetting {
+  display: flex;
+  align-items: center;
+}
+
+.settingLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  width: 100%;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-accent-primary);
+}
+
+.select {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border-primary);
+  border-radius: 8px;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.select:hover:not(:disabled) {
+  border-color: var(--color-accent-primary);
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+}
+
 /* Join Modal Tabs */
 .joinTabs {
   display: flex;

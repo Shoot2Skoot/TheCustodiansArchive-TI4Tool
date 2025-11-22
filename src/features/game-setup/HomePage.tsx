@@ -4,6 +4,7 @@ import { Button, Input, Modal, Panel, useToast } from '@/components/common';
 import { useBackgroundPreference } from '@/hooks/useBackgroundPreference';
 import { useRecentGames } from '@/hooks/useRecentGames';
 import { getFactionImage } from '@/lib/factions';
+import { voiceSettings, type VoiceOption } from '@/lib/voiceSettings';
 import styles from './HomePage.module.css';
 
 export function HomePage() {
@@ -17,12 +18,26 @@ export function HomePage() {
   const { recentGames, isLoading: isLoadingGames, error: gamesError } = useRecentGames();
   const { showToast } = useToast();
 
+  // Audio settings state
+  const [audioEnabled, setAudioEnabled] = useState(voiceSettings.isAudioEnabled());
+  const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(voiceSettings.getSelectedVoice());
+  const [availableVoices] = useState(voiceSettings.getAvailableVoices());
+
   // Show toast notification if there's an error loading recent games
   useEffect(() => {
     if (gamesError) {
       showToast('error', gamesError);
     }
   }, [gamesError, showToast]);
+
+  // Subscribe to voice settings changes
+  useEffect(() => {
+    const unsubscribe = voiceSettings.subscribe(() => {
+      setAudioEnabled(voiceSettings.isAudioEnabled());
+      setSelectedVoice(voiceSettings.getSelectedVoice());
+    });
+    return unsubscribe;
+  }, []);
 
   const handleCreateGame = () => {
     navigate('/setup');
@@ -45,6 +60,14 @@ export function HomePage() {
 
   const handleJoinRecentGame = (gameId: string) => {
     navigate(`/game/${gameId}`);
+  };
+
+  const handleAudioToggle = () => {
+    voiceSettings.toggleAudio();
+  };
+
+  const handleVoiceChange = (voice: VoiceOption) => {
+    voiceSettings.setVoice(voice);
   };
 
   return (
@@ -231,7 +254,7 @@ export function HomePage() {
                   backgroundPosition: 'center',
                 }}
               />
-              <span>Space</span>
+              <span>Space 1</span>
             </div>
             <div
               className={`${styles.backgroundOption} ${background === 'space-2' ? styles.selected : ''}`}
@@ -249,7 +272,92 @@ export function HomePage() {
               />
               <span>Space 2</span>
             </div>
+            <div
+              className={`${styles.backgroundOption} ${background === 'space-3' ? styles.selected : ''}`}
+              onClick={() => setBackground('space-3')}
+              role="button"
+              tabIndex={0}
+            >
+              <div
+                className={styles.backgroundPreview}
+                style={{
+                  backgroundImage: "url('/src/assets/backgrounds/space-3.jpg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <span>Space 3</span>
+            </div>
+            <div
+              className={`${styles.backgroundOption} ${background === 'space-4' ? styles.selected : ''}`}
+              onClick={() => setBackground('space-4')}
+              role="button"
+              tabIndex={0}
+            >
+              <div
+                className={styles.backgroundPreview}
+                style={{
+                  backgroundImage: "url('/src/assets/backgrounds/space-4.jpg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <span>Space 4</span>
+            </div>
+            <div
+              className={`${styles.backgroundOption} ${background === 'ti-1' ? styles.selected : ''}`}
+              onClick={() => setBackground('ti-1')}
+              role="button"
+              tabIndex={0}
+            >
+              <div
+                className={styles.backgroundPreview}
+                style={{
+                  backgroundImage: "url('/src/assets/backgrounds/ti-1.jpg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <span>TI Theme</span>
+            </div>
           </div>
+
+          <h3 style={{ marginTop: 'var(--space-6)' }}>Audio Settings</h3>
+          <p className={styles.modalDescription}>Configure voice-overs and audio feedback</p>
+
+          <div className={styles.audioSettings}>
+            <div className={styles.audioSetting}>
+              <label className={styles.settingLabel}>
+                <input
+                  type="checkbox"
+                  checked={audioEnabled}
+                  onChange={handleAudioToggle}
+                  className={styles.checkbox}
+                />
+                <span>Enable voice-overs</span>
+              </label>
+            </div>
+
+            <div className={styles.audioSetting}>
+              <label className={styles.settingLabel}>
+                <span>Voice:</span>
+                <select
+                  value={selectedVoice}
+                  onChange={(e) => handleVoiceChange(e.target.value as VoiceOption)}
+                  disabled={!audioEnabled}
+                  className={styles.select}
+                >
+                  <option value="random">Random</option>
+                  {availableVoices.map((voice) => (
+                    <option key={voice} value={voice}>
+                      {voice.charAt(0).toUpperCase() + voice.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+
           <div className={styles.modalActions}>
             <Button variant="primary" onClick={() => setShowOptionsModal(false)}>
               Close

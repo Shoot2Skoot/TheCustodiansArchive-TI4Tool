@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Panel, Button } from '@/components/common';
 import { StrategyCard } from './StrategyCard';
 import { PlayPhaseEndEffectModal } from './PlayPhaseEndEffectModal';
@@ -6,7 +6,20 @@ import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constant
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
+import { PhaseType, PromptType } from '@/lib/audio';
+import { playPhaseEnter, playPhaseExit, playFactionPrompt } from '@/lib/audio';
+import { normalizeFactionId } from '@/lib/audioHelpers';
 import styles from './StrategyPhase.module.css';
+
+// Module-level tracking to prevent duplicate sounds across StrictMode remounts
+const audioPlayTracker = {
+  hasPlayedPhaseEntry: false,
+  lastPromptPlayerId: null as string | null,
+  reset() {
+    this.hasPlayedPhaseEntry = false;
+    this.lastPromptPlayerId = null;
+  }
+};
 
 interface Player {
   id: string;
@@ -70,6 +83,19 @@ export function StrategyPhase({
     getCurrentUserId().then(setCurrentUserId);
   }, []);
 
+  // Play Strategy Phase entry sound once on mount and cleanup on unmount
+  useEffect(() => {
+    if (!audioPlayTracker.hasPlayedPhaseEntry) {
+      audioPlayTracker.hasPlayedPhaseEntry = true;
+      playPhaseEnter(PhaseType.STRATEGY);
+    }
+
+    // Reset tracker when component unmounts (when leaving phase)
+    return () => {
+      audioPlayTracker.reset();
+    };
+  }, []);
+
   // Initialize trade good bonuses from prop or default to 0
   useEffect(() => {
     if (initialTradeGoodBonuses) {
@@ -86,6 +112,15 @@ export function StrategyPhase({
   const currentPlayer = playerOrder[currentPlayerIndex];
   const isSelectionComplete = selections.length === players.length;
   const isHost = currentUserId && currentGame?.createdBy === currentUserId;
+
+  // Play faction prompt when turn changes
+  useEffect(() => {
+    if (currentPlayer && !isSelectionComplete && currentPlayer.id !== audioPlayTracker.lastPromptPlayerId) {
+      audioPlayTracker.lastPromptPlayerId = currentPlayer.id;
+      const normalizedFactionId = normalizeFactionId(currentPlayer.factionId);
+      playFactionPrompt(normalizedFactionId, PromptType.CHOOSE_STRATEGY, true);
+    }
+  }, [currentPlayer?.id, isSelectionComplete]);
 
   const handleCardSelect = (cardId: number) => {
     if (!currentPlayer || !currentUserId) return;
@@ -242,6 +277,8 @@ export function StrategyPhase({
   };
 
   const handleEndPhase = () => {
+    // Play phase exit sound
+    playPhaseExit(PhaseType.STRATEGY);
     onComplete(selections);
   };
 

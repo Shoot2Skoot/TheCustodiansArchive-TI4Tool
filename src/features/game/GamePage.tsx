@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useGame } from '@/hooks';
 import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
@@ -8,6 +8,7 @@ import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTr
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
 import { FACTIONS } from '@/lib/factions';
 import { Panel, Button } from '@/components/common';
+import { voiceSettings } from '@/lib/voiceSettings';
 import styles from './GamePage.module.css';
 
 export function GamePage() {
@@ -29,6 +30,22 @@ export function GamePage() {
     onUndo: () => void;
     onRedo: () => void;
   } | null>(null);
+
+  // State for audio control
+  const [audioEnabled, setAudioEnabled] = useState(voiceSettings.isAudioEnabled());
+
+  // Subscribe to voice settings changes
+  useEffect(() => {
+    const unsubscribe = voiceSettings.subscribe(() => {
+      setAudioEnabled(voiceSettings.isAudioEnabled());
+    });
+    return unsubscribe;
+  }, []);
+
+  // Handle volume toggle
+  const handleVolumeToggle = () => {
+    voiceSettings.toggleAudio();
+  };
 
   // Debug logging
   console.log('GamePage render - Phase:', currentPhase, 'GameState:', gameState);
@@ -195,6 +212,15 @@ export function GamePage() {
             </Button>
           </div>
         )}
+        <div className={styles.volumeButton}>
+          <Button
+            variant="secondary"
+            onClick={handleVolumeToggle}
+            title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+          >
+            {audioEnabled ? '🔊' : '🔇'}
+          </Button>
+        </div>
       </div>
 
       {renderPhase()}

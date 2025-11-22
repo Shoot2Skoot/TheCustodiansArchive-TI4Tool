@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Panel, Button, StrategyCardNumber } from '@/components/common';
 import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
@@ -8,7 +8,20 @@ import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSli
 import { PoliticsCardModal } from './PoliticsCardModal';
 import { ActionStrategyCard } from './ActionStrategyCard';
 import { useSaveActionPhaseState } from './useSaveActionPhaseState';
+import { PhaseType, PromptType, EventType } from '@/lib/audio';
+import { playPhaseEnter, playPhaseExit, playFactionPrompt, playStrategyCard, playEvent } from '@/lib/audio';
+import { normalizeFactionId, getStrategyCardAudioType } from '@/lib/audioHelpers';
 import styles from './ActionPhase.module.css';
+
+// Module-level tracking to prevent duplicate sounds across StrictMode remounts
+const audioPlayTracker = {
+  hasPlayedPhaseEntry: false,
+  lastPromptPlayerId: null as string | null,
+  reset() {
+    this.hasPlayedPhaseEntry = false;
+    this.lastPromptPlayerId = null;
+  }
+};
 
 interface Player {
   id: string;
@@ -85,6 +98,19 @@ export function ActionPhase({
     getCurrentUserId().then(setCurrentUserId);
   }, []);
 
+  // Play Action Phase entry sound once on mount and cleanup on unmount
+  useEffect(() => {
+    if (!audioPlayTracker.hasPlayedPhaseEntry) {
+      audioPlayTracker.hasPlayedPhaseEntry = true;
+      playPhaseEnter(PhaseType.ACTION);
+    }
+
+    // Reset tracker when component unmounts (when leaving phase)
+    return () => {
+      audioPlayTracker.reset();
+    };
+  }, []);
+
   // Initialize player action states
   useEffect(() => {
     const initialStates: PlayerActionState[] = players.map((player) => ({
@@ -122,6 +148,15 @@ export function ActionPhase({
     : null;
 
   const isHost = currentUserId && currentGame?.createdBy === currentUserId;
+
+  // Play faction prompt when turn changes
+  useEffect(() => {
+    if (currentPlayer && activePlayers.length > 0 && currentPlayer.id !== audioPlayTracker.lastPromptPlayerId) {
+      audioPlayTracker.lastPromptPlayerId = currentPlayer.id;
+      const normalizedFactionId = normalizeFactionId(currentPlayer.factionId);
+      playFactionPrompt(normalizedFactionId, PromptType.CHOOSE_ACTION, false);
+    }
+  }, [currentPlayer?.id, activePlayers.length]);
 
   // Get current game state snapshot for undo
   const getCurrentStateSnapshot = (): ActionPhaseState => ({
@@ -243,6 +278,12 @@ export function ActionPhase({
       )
     );
 
+    // Play strategy card sound
+    const cardAudioType = getStrategyCardAudioType(strategyCard.strategyCardId);
+    if (cardAudioType) {
+      playStrategyCard(cardAudioType);
+    }
+
     // Save to database
     await saveStrategyCardAction({
       gameId,
@@ -284,6 +325,10 @@ export function ActionPhase({
 
     // Update speaker
     setCurrentSpeakerPlayerId(newSpeakerId);
+
+    // Play speaker change sound
+    playEvent(EventType.SPEAKER_CHANGE);
+
     setShowPoliticsModal(false);
 
     // Save to database
@@ -495,6 +540,8 @@ export function ActionPhase({
   // Handle end phase
   const handleEndPhase = () => {
     if (allPlayersPassed) {
+      // Play phase exit sound
+      playPhaseExit(PhaseType.ACTION);
       onComplete();
     }
   };
@@ -696,6 +743,24 @@ export function ActionPhase({
               </Button>
             </Panel>
           )}
+
+          {/* Spacer to push action buttons to bottom */}
+          <div style={{ flex: 1 }} />
+
+          {/* Game Action Buttons Panel */}
+          <Panel className={styles.gameActionsPanel}>
+            <div className={styles.gameActionButtons}>
+              <Button onClick={() => console.log('Change Speaker clicked')} variant="secondary" size="medium">
+                Change Speaker
+              </Button>
+              <Button onClick={() => console.log('Mecatol Rex clicked')} variant="secondary" size="medium">
+                Mecatol Rex
+              </Button>
+              <Button onClick={() => console.log('Enter Combat clicked')} variant="secondary" size="medium">
+                Enter Combat
+              </Button>
+            </div>
+          </Panel>
         </div>
 
         {/* Right Column - Action buttons + Strategy Card stacked */}
