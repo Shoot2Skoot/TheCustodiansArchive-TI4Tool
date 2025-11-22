@@ -163,7 +163,7 @@ export const VARIANT_COUNTS = {
 
 class AudioService {
   private audioContext: AudioContext | null = null;
-  private loadedSounds: Map<string, AudioBuffer> = new Map();
+  private loadedSounds: Map<string, ArrayBuffer> = new Map();
   private playQueue: Array<() => Promise<void>> = [];
   private isPlaying = false;
   private currentAudio: HTMLAudioElement | null = null;
@@ -285,8 +285,8 @@ class AudioService {
 
       const arrayBuffer = await response.arrayBuffer();
 
-      // We'll use HTML5 Audio for playback, so just mark as loaded
-      this.loadedSounds.set(cacheKey, arrayBuffer as any);
+      // Store the ArrayBuffer - we'll convert to blob URL when playing
+      this.loadedSounds.set(cacheKey, arrayBuffer);
 
       console.log(`Preloaded sound: ${cacheKey}`);
     } catch (error) {
@@ -363,21 +363,37 @@ class AudioService {
     const path = this.getSoundPath(category, id, variant);
 
     // Check if sound is preloaded
-    const isPreloaded = this.loadedSounds.has(cacheKey);
-    if (!isPreloaded) {
+    const preloadedBuffer = this.loadedSounds.get(cacheKey);
+    let audioSrc: string;
+
+    if (preloadedBuffer) {
+      // Use preloaded audio - convert ArrayBuffer to Blob URL
+      const blob = new Blob([preloadedBuffer], { type: 'audio/mpeg' });
+      audioSrc = URL.createObjectURL(blob);
+    } else {
+      // Load from network
       console.warn(`Sound not preloaded: ${cacheKey}. Loading on demand...`);
+      audioSrc = path;
     }
 
     return new Promise((resolve, reject) => {
-      const audio = new Audio(path);
+      const audio = new Audio(audioSrc);
 
       audio.addEventListener('ended', () => {
+        // Clean up blob URL if we created one
+        if (preloadedBuffer && audioSrc.startsWith('blob:')) {
+          URL.revokeObjectURL(audioSrc);
+        }
         this.currentAudio = null;
         resolve();
       });
 
       audio.addEventListener('error', (e) => {
         console.error(`Error playing sound ${cacheKey}:`, e);
+        // Clean up blob URL if we created one
+        if (preloadedBuffer && audioSrc.startsWith('blob:')) {
+          URL.revokeObjectURL(audioSrc);
+        }
         this.currentAudio = null;
         reject(e);
       });
@@ -523,6 +539,20 @@ class AudioService {
     const voice = this.getCurrentVoiceFolder();
     const cacheKey = this.getCacheKey(voice, category, id, variant);
     return this.loadedSounds.has(cacheKey);
+  }
+
+  /**
+   * Get all loaded sound keys
+   */
+  getLoadedSounds(): string[] {
+    return Array.from(this.loadedSounds.keys());
+  }
+
+  /**
+   * Get count of loaded sounds
+   */
+  getLoadedSoundCount(): number {
+    return this.loadedSounds.size;
   }
 }
 

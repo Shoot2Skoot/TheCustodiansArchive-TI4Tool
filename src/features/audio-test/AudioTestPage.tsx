@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { Panel, Button } from '@/components/common';
 import { useAudio } from '@/hooks/useAudio';
 import {
+  audioService,
   SoundCategory,
   PhaseType,
   EventType,
@@ -40,12 +41,16 @@ export function AudioTestPage() {
   const [selectedFaction, setSelectedFaction] = useState<string>(TEST_FACTIONS[0]!);
   const [log, setLog] = useState<string[]>([]);
 
-  // Update queue length periodically
+  // Update queue length and loaded sounds periodically
   useEffect(() => {
     const interval = setInterval(() => {
       const length = audio.getQueueLength();
       setQueueLength(length);
       setIsPlaying(length > 0);
+
+      // Update loaded sounds from audioService
+      const loaded = audioService.getLoadedSounds();
+      setLoadedSounds(loaded);
     }, 100);
 
     return () => clearInterval(interval);
@@ -115,30 +120,17 @@ export function AudioTestPage() {
   const preloadTestSounds = async () => {
     addLog('Preloading test sounds...');
     try {
-      await audio.preloadSounds([
-        { category: SoundCategory.FACTION, id: selectedFaction },
-        { category: SoundCategory.PHASE_ENTER, id: PhaseType.ACTION },
-        { category: SoundCategory.PHASE_EXIT, id: PhaseType.ACTION },
-        { category: SoundCategory.EVENT, id: EventType.COMBAT },
+      // Preload individual sounds with variants
+      await Promise.all([
+        audioService.preloadSound(SoundCategory.FACTION, selectedFaction),
+        audioService.preloadSoundWithAllVariants(SoundCategory.PHASE_ENTER, PhaseType.ACTION),
+        audioService.preloadSoundWithAllVariants(SoundCategory.PHASE_EXIT, PhaseType.ACTION),
+        audioService.preloadSoundWithAllVariants(SoundCategory.EVENT, EventType.COMBAT),
       ]);
 
-      // Check what's loaded
-      const loaded: string[] = [];
-      if (audio.isSoundLoaded(SoundCategory.FACTION, selectedFaction)) {
-        loaded.push(`faction:${selectedFaction}`);
-      }
-      if (audio.isSoundLoaded(SoundCategory.PHASE_ENTER, PhaseType.ACTION)) {
-        loaded.push('phase_enter:action');
-      }
-      if (audio.isSoundLoaded(SoundCategory.PHASE_EXIT, PhaseType.ACTION)) {
-        loaded.push('phase_exit:action');
-      }
-      if (audio.isSoundLoaded(SoundCategory.EVENT, EventType.COMBAT)) {
-        loaded.push('event:combat');
-      }
-
-      setLoadedSounds(loaded);
-      addLog(`Preloaded ${loaded.length} sounds`);
+      // Count will be updated automatically by the polling interval
+      const count = audioService.getLoadedSoundCount();
+      addLog(`Preloaded test sounds (total loaded: ${count})`);
     } catch (error) {
       addLog(`Preload failed: ${error}`);
     }
@@ -149,7 +141,8 @@ export function AudioTestPage() {
     addLog('Preloading all test factions...');
     try {
       await audio.preloadAllFactions(TEST_FACTIONS);
-      addLog('All factions preloaded');
+      const count = audioService.getLoadedSoundCount();
+      addLog(`All ${TEST_FACTIONS.length} factions preloaded (total loaded: ${count})`);
     } catch (error) {
       addLog(`Preload failed: ${error}`);
     }
