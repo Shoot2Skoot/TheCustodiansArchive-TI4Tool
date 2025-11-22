@@ -9,6 +9,8 @@ export type VoiceOption = 'cornelius' | 'random' | string;
 export interface VoiceSettings {
   selectedVoice: VoiceOption;
   availableVoices: string[];
+  audioEnabled: boolean;
+  volume: number; // 0.0 to 1.0
 }
 
 const STORAGE_KEY = 'ti4_voice_settings';
@@ -17,7 +19,10 @@ class VoiceSettingsService {
   private settings: VoiceSettings = {
     selectedVoice: 'cornelius',
     availableVoices: ['cornelius'],
+    audioEnabled: true,
+    volume: 1.0,
   };
+  private listeners: Set<() => void> = new Set();
 
   constructor() {
     this.loadSettings();
@@ -47,9 +52,25 @@ class VoiceSettingsService {
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.settings));
+      this.notifyListeners();
     } catch (error) {
       console.warn('Failed to save voice settings:', error);
     }
+  }
+
+  /**
+   * Notify all listeners of settings change
+   */
+  private notifyListeners() {
+    this.listeners.forEach(listener => listener());
+  }
+
+  /**
+   * Subscribe to settings changes
+   */
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
 
   /**
@@ -122,6 +143,52 @@ class VoiceSettingsService {
     }
 
     this.saveSettings();
+  }
+
+  /**
+   * Check if audio is enabled
+   */
+  isAudioEnabled(): boolean {
+    return this.settings.audioEnabled;
+  }
+
+  /**
+   * Enable or disable audio
+   */
+  setAudioEnabled(enabled: boolean) {
+    this.settings.audioEnabled = enabled;
+    this.saveSettings();
+  }
+
+  /**
+   * Toggle audio enabled/disabled
+   */
+  toggleAudio(): boolean {
+    this.settings.audioEnabled = !this.settings.audioEnabled;
+    this.saveSettings();
+    return this.settings.audioEnabled;
+  }
+
+  /**
+   * Get current volume (0.0 to 1.0)
+   */
+  getVolume(): number {
+    return this.settings.volume;
+  }
+
+  /**
+   * Set volume (0.0 to 1.0)
+   */
+  setVolume(volume: number) {
+    this.settings.volume = Math.max(0, Math.min(1, volume));
+    this.saveSettings();
+  }
+
+  /**
+   * Get all settings
+   */
+  getSettings(): VoiceSettings {
+    return { ...this.settings };
   }
 }
 
