@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/common';
 import { getFactionImage } from '@/lib/factions';
 import type { PlayerColor } from '@/types/enums';
+import { audioService, PhaseType, SoundCategory } from '@/lib/audio';
+import { normalizeFactionId } from '@/lib/audioHelpers';
 import styles from './SpeakerSelection.module.css';
 
 interface PlayerSetup {
@@ -20,6 +22,22 @@ interface SpeakerSelectionProps {
 
 export function SpeakerSelection({ players, onSelect, onBack, isCreating = false }: SpeakerSelectionProps) {
   const [selectedSpeaker, setSelectedSpeaker] = useState<number | null>(null);
+
+  // Preload Strategy Phase entry sound and all selected faction sounds
+  useEffect(() => {
+    // Preload Strategy Phase entry sound (all 6 variants)
+    audioService.preloadSoundWithAllVariants(SoundCategory.PHASE_ENTER, PhaseType.STRATEGY);
+
+    // Preload all selected faction sounds
+    const factionIds = players
+      .map(p => p.factionId)
+      .filter((id): id is string => id !== null)
+      .map(id => normalizeFactionId(id));
+
+    factionIds.forEach(factionId => {
+      audioService.preloadSound(SoundCategory.FACTION, factionId);
+    });
+  }, [players]);
 
   const handleRandomSpeaker = () => {
     if (players.length === 0) return;

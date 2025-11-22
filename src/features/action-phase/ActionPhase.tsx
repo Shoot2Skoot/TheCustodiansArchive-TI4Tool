@@ -13,14 +13,18 @@ import { playPhaseEnter, playPhaseExit, playFactionPrompt, playStrategyCard, pla
 import { normalizeFactionId, getStrategyCardAudioType } from '@/lib/audioHelpers';
 import styles from './ActionPhase.module.css';
 
-// Module-level tracking to prevent duplicate sounds across StrictMode remounts
-const audioPlayTracker = {
-  hasPlayedPhaseEntry: false,
-  lastPromptPlayerId: null as string | null,
-  reset() {
-    this.hasPlayedPhaseEntry = false;
-    this.lastPromptPlayerId = null;
-  }
+// Session storage keys for audio tracking (persists across StrictMode remounts)
+const AUDIO_ENTRY_KEY = 'actionPhase_audioEntry';
+const AUDIO_PROMPT_KEY = 'actionPhase_lastPromptPlayerId';
+
+// Helper functions for audio tracking with sessionStorage
+const hasPlayedPhaseEntry = () => sessionStorage.getItem(AUDIO_ENTRY_KEY) === 'true';
+const setPlayedPhaseEntry = () => sessionStorage.setItem(AUDIO_ENTRY_KEY, 'true');
+const getLastPromptPlayerId = () => sessionStorage.getItem(AUDIO_PROMPT_KEY);
+const setLastPromptPlayerId = (id: string) => sessionStorage.setItem(AUDIO_PROMPT_KEY, id);
+const resetAudioTracking = () => {
+  sessionStorage.removeItem(AUDIO_ENTRY_KEY);
+  sessionStorage.removeItem(AUDIO_PROMPT_KEY);
 };
 
 interface Player {
@@ -98,17 +102,14 @@ export function ActionPhase({
     getCurrentUserId().then(setCurrentUserId);
   }, []);
 
-  // Play Action Phase entry sound once on mount and cleanup on unmount
+  // Play Action Phase entry sound once on mount
   useEffect(() => {
-    if (!audioPlayTracker.hasPlayedPhaseEntry) {
-      audioPlayTracker.hasPlayedPhaseEntry = true;
+    if (!hasPlayedPhaseEntry()) {
+      setPlayedPhaseEntry();
       playPhaseEnter(PhaseType.ACTION);
     }
-
-    // Reset tracker when component unmounts (when leaving phase)
-    return () => {
-      audioPlayTracker.reset();
-    };
+    // Note: No cleanup - sessionStorage persists across StrictMode remounts
+    // It will auto-clear when the browser session ends
   }, []);
 
   // Initialize player action states
@@ -151,10 +152,10 @@ export function ActionPhase({
 
   // Play faction prompt when turn changes
   useEffect(() => {
-    if (currentPlayer && activePlayers.length > 0 && currentPlayer.id !== audioPlayTracker.lastPromptPlayerId) {
-      audioPlayTracker.lastPromptPlayerId = currentPlayer.id;
+    if (currentPlayer && activePlayers.length > 0 && currentPlayer.id !== getLastPromptPlayerId()) {
+      setLastPromptPlayerId(currentPlayer.id);
       const normalizedFactionId = normalizeFactionId(currentPlayer.factionId);
-      playFactionPrompt(normalizedFactionId, PromptType.CHOOSE_ACTION, false);
+      playFactionPrompt(normalizedFactionId, PromptType.CHOOSE_ACTION, true);
     }
   }, [currentPlayer?.id, activePlayers.length]);
 
@@ -247,6 +248,12 @@ export function ActionPhase({
     const strategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
     if (!strategyCard) return;
 
+    // Play strategy card sound
+    const cardAudioType = getStrategyCardAudioType(strategyCard.strategyCardId);
+    if (cardAudioType) {
+      playStrategyCard(cardAudioType);
+    }
+
     // Set strategy card action in progress (will add glow effect)
     setIsStrategyCardActionInProgress(true);
   };
@@ -277,12 +284,6 @@ export function ActionPhase({
           : state
       )
     );
-
-    // Play strategy card sound
-    const cardAudioType = getStrategyCardAudioType(strategyCard.strategyCardId);
-    if (cardAudioType) {
-      playStrategyCard(cardAudioType);
-    }
 
     // Save to database
     await saveStrategyCardAction({

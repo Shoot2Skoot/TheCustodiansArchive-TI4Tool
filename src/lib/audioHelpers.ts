@@ -50,7 +50,7 @@ const FACTION_AUDIO_MAP: Record<string, string> = {
   mentak: 'mentak_coalition',
   muaat: 'embers_of_muaat',
   naalu: 'naalu_collective',
-  naaz: 'naaz_rokha_alliance',
+  'naaz-rokha': 'naaz_rokha_alliance',
   nekro: 'nekro_virus',
   nomad: 'nomad',
   cabal: 'vuil_raith_cabal',

@@ -77,6 +77,8 @@ export async function getGameState(gameId: string) {
 
 // Update game state
 export async function updateGameState(gameId: string, updates: Partial<GameState>) {
+  console.log('🟢 updateGameState called with gameId:', gameId, 'updates:', updates);
+
   // Build update object with only defined values
   const updateData: any = {
     last_activity_at: new Date().toISOString(),
@@ -91,6 +93,8 @@ export async function updateGameState(gameId: string, updates: Partial<GameState
   if (updates.mecatolClaimedRound !== undefined) updateData.mecatol_claimed_round = updates.mecatolClaimedRound;
   if (updates.phaseStartedAt !== undefined) updateData.phase_started_at = updates.phaseStartedAt;
 
+  console.log('🟢 Updating database with:', updateData);
+
   const { data, error } = await supabase
     .from('game_state')
     .update(updateData as any)
@@ -99,9 +103,11 @@ export async function updateGameState(gameId: string, updates: Partial<GameState
     .single();
 
   if (error) {
+    console.error('🔴 Failed to update game state:', error);
     throw new Error(`Failed to update game state: ${error.message}`);
   }
 
+  console.log('🟢 Database updated successfully:', data);
   return toCamelCase(data);
 }
 

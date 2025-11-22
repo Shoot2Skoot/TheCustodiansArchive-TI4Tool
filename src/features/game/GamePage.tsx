@@ -6,6 +6,8 @@ import { StrategyPhase } from '@/features/strategy-phase';
 import { ActionPhase } from '@/features/action-phase';
 import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTradeGoodBonuses';
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
+import { getGameState } from '@/lib/db/gameState';
+import { getStrategySelectionsByRound } from '@/lib/db/strategySelections';
 import { FACTIONS } from '@/lib/factions';
 import { Panel, Button } from '@/components/common';
 import { voiceSettings } from '@/lib/voiceSettings';
@@ -22,6 +24,10 @@ export function GamePage() {
   const gameState = useStore(selectGameState);
   const speaker = useStore(selectSpeaker);
   const strategySelections = useStore(selectStrategySelections);
+
+  // Get store actions
+  const setGameState = useStore((state) => state.setGameState);
+  const setStrategySelections = useStore((state) => state.setStrategySelections);
 
   // State for undo/redo functionality from child phases
   const [undoRedoHandlers, setUndoRedoHandlers] = useState<{
@@ -49,6 +55,16 @@ export function GamePage() {
 
   // Debug logging
   console.log('GamePage render - Phase:', currentPhase, 'GameState:', gameState);
+
+  // Log when phase changes
+  useEffect(() => {
+    console.log('📍 Phase changed to:', currentPhase);
+  }, [currentPhase]);
+
+  // Log when gameState changes
+  useEffect(() => {
+    console.log('📍 GameState updated:', gameState);
+  }, [gameState]);
 
   // Calculate trade good bonuses from previous rounds
   const tradeGoodBonuses = useMemo(() => {
@@ -96,9 +112,27 @@ export function GamePage() {
     });
 
     if (success) {
-      // The game state will be updated via realtime subscription
-      // For now, we could show a success message or navigate somewhere
       console.log('Strategy selections saved successfully');
+
+      // Manually reload game state and strategy selections as a fallback
+      // in case realtime updates don't trigger immediately
+      try {
+        const [newGameState, newSelections] = await Promise.all([
+          getGameState(gameId),
+          getStrategySelectionsByRound(gameId, gameState.currentRound),
+        ]);
+
+        if (newGameState) {
+          console.log('Manually updating game state to:', newGameState.currentPhase);
+          setGameState(newGameState);
+        }
+
+        if (newSelections) {
+          setStrategySelections(newSelections);
+        }
+      } catch (err) {
+        console.error('Failed to reload game state after strategy phase:', err);
+      }
     }
   };
 

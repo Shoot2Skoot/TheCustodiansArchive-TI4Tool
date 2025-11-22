@@ -6,19 +6,23 @@ import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constant
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
-import { PhaseType, PromptType } from '@/lib/audio';
+import { PhaseType, PromptType, SoundCategory, audioService } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt } from '@/lib/audio';
 import { normalizeFactionId } from '@/lib/audioHelpers';
 import styles from './StrategyPhase.module.css';
 
-// Module-level tracking to prevent duplicate sounds across StrictMode remounts
-const audioPlayTracker = {
-  hasPlayedPhaseEntry: false,
-  lastPromptPlayerId: null as string | null,
-  reset() {
-    this.hasPlayedPhaseEntry = false;
-    this.lastPromptPlayerId = null;
-  }
+// Session storage keys for audio tracking (persists across StrictMode remounts)
+const AUDIO_ENTRY_KEY = 'strategyPhase_audioEntry';
+const AUDIO_PROMPT_KEY = 'strategyPhase_lastPromptPlayerId';
+
+// Helper functions for audio tracking with sessionStorage
+const hasPlayedPhaseEntry = () => sessionStorage.getItem(AUDIO_ENTRY_KEY) === 'true';
+const setPlayedPhaseEntry = () => sessionStorage.setItem(AUDIO_ENTRY_KEY, 'true');
+const getLastPromptPlayerId = () => sessionStorage.getItem(AUDIO_PROMPT_KEY);
+const setLastPromptPlayerId = (id: string) => sessionStorage.setItem(AUDIO_PROMPT_KEY, id);
+const resetAudioTracking = () => {
+  sessionStorage.removeItem(AUDIO_ENTRY_KEY);
+  sessionStorage.removeItem(AUDIO_PROMPT_KEY);
 };
 
 interface Player {
@@ -83,17 +87,19 @@ export function StrategyPhase({
     getCurrentUserId().then(setCurrentUserId);
   }, []);
 
-  // Play Strategy Phase entry sound once on mount and cleanup on unmount
+  // Play Strategy Phase entry sound once on mount
   useEffect(() => {
-    if (!audioPlayTracker.hasPlayedPhaseEntry) {
-      audioPlayTracker.hasPlayedPhaseEntry = true;
+    if (!hasPlayedPhaseEntry()) {
+      setPlayedPhaseEntry();
       playPhaseEnter(PhaseType.STRATEGY);
     }
+    // Note: No cleanup - sessionStorage persists across StrictMode remounts
+    // It will auto-clear when the browser session ends
+  }, []);
 
-    // Reset tracker when component unmounts (when leaving phase)
-    return () => {
-      audioPlayTracker.reset();
-    };
+  // Preload all "Choose Your Strategy" prompt variants
+  useEffect(() => {
+    audioService.preloadSoundWithAllVariants(SoundCategory.PROMPT, PromptType.CHOOSE_STRATEGY);
   }, []);
 
   // Initialize trade good bonuses from prop or default to 0
@@ -115,8 +121,8 @@ export function StrategyPhase({
 
   // Play faction prompt when turn changes
   useEffect(() => {
-    if (currentPlayer && !isSelectionComplete && currentPlayer.id !== audioPlayTracker.lastPromptPlayerId) {
-      audioPlayTracker.lastPromptPlayerId = currentPlayer.id;
+    if (currentPlayer && !isSelectionComplete && currentPlayer.id !== getLastPromptPlayerId()) {
+      setLastPromptPlayerId(currentPlayer.id);
       const normalizedFactionId = normalizeFactionId(currentPlayer.factionId);
       playFactionPrompt(normalizedFactionId, PromptType.CHOOSE_STRATEGY, true);
     }
@@ -143,6 +149,16 @@ export function StrategyPhase({
     });
 
     setSelections(newSelections);
+
+    // If this is the last card, preload Action Phase audio
+    if (newSelections.length === players.length) {
+      // Preload Action Phase entry sound
+      audioService.preloadSoundWithAllVariants(SoundCategory.PHASE_ENTER, PhaseType.ACTION);
+      // Preload all "Choose Your Action" prompt variants
+      audioService.preloadSoundWithAllVariants(SoundCategory.PROMPT, PromptType.CHOOSE_ACTION);
+      // Preload Strategy Phase exit sound
+      audioService.preloadSoundWithAllVariants(SoundCategory.PHASE_EXIT, PhaseType.STRATEGY);
+    }
 
     // Move to next player
     setCurrentPlayerIndex(currentPlayerIndex + 1);
@@ -277,8 +293,11 @@ export function StrategyPhase({
   };
 
   const handleEndPhase = () => {
-    // Play phase exit sound
-    playPhaseExit(PhaseType.STRATEGY);
+    // Play chained sounds: Strategy Phase exit -> Action Phase entry
+    audioService.playChainedSounds([
+      { category: SoundCategory.PHASE_EXIT, id: PhaseType.STRATEGY },
+      { category: SoundCategory.PHASE_ENTER, id: PhaseType.ACTION },
+    ]);
     onComplete(selections);
   };
 

@@ -63,7 +63,11 @@ export const createGameSlice: StateCreator<GameSliceState> = (set) => ({
   ...initialState,
 
   setCurrentGame: (game) => set({ currentGame: game }),
-  setGameState: (gameState) => set({ gameState }),
+  setGameState: (gameState) => {
+    console.log('🔵 Store setGameState called with:', gameState);
+    set({ gameState });
+    console.log('🔵 Store gameState updated');
+  },
   setStrategySelections: (selections) => set({ strategySelections: selections }),
   setPlayerActionStates: (states) => set({ playerActionStates: states }),
   setObjectives: (objectives) => set({ objectives }),

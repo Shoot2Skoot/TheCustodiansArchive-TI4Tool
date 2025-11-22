@@ -10,6 +10,74 @@ import type {
   Objective,
 } from '../../types';
 
+// Helper functions to convert snake_case to camelCase
+function gameStateToCamelCase(data: any): GameState {
+  return {
+    gameId: data.game_id,
+    currentRound: data.current_round,
+    currentPhase: data.current_phase,
+    currentTurnPlayerId: data.current_turn_player_id,
+    speakerPlayerId: data.speaker_player_id,
+    mecatolClaimed: data.mecatol_claimed,
+    mecatolClaimedRound: data.mecatol_claimed_round,
+    lastActivityAt: data.last_activity_at,
+    phaseStartedAt: data.phase_started_at,
+    updatedAt: data.updated_at,
+  };
+}
+
+function playerToCamelCase(data: any): Player {
+  return {
+    id: data.id,
+    gameId: data.game_id,
+    userId: data.user_id,
+    position: data.position,
+    factionId: data.faction_id,
+    color: data.color,
+    displayName: data.display_name,
+    isReady: data.is_ready,
+    createdAt: data.created_at,
+  };
+}
+
+function strategySelectionToCamelCase(data: any): StrategySelection {
+  return {
+    id: data.id,
+    gameId: data.game_id,
+    roundNumber: data.round_number,
+    playerId: data.player_id,
+    strategyCardId: data.strategy_card_id,
+    selectionOrder: data.selection_order,
+    tradeGoodBonus: data.trade_good_bonus,
+    createdAt: data.created_at,
+  };
+}
+
+function playerActionStateToCamelCase(data: any): PlayerActionState {
+  return {
+    id: data.id,
+    gameId: data.game_id,
+    roundNumber: data.round_number,
+    playerId: data.player_id,
+    strategyCardUsed: data.strategy_card_used,
+    hasPassed: data.has_passed,
+    tacticalActionsCount: data.tactical_actions_count,
+    componentActionsCount: data.component_actions_count,
+    strategyCardUsedOnTurn: data.strategy_card_used_on_turn,
+  };
+}
+
+function objectiveToCamelCase(data: any): Objective {
+  return {
+    id: data.id,
+    gameId: data.game_id,
+    type: data.type,
+    objectiveId: data.objective_id,
+    revealedRound: data.revealed_round,
+    createdAt: data.created_at,
+  };
+}
+
 // Subscribe to game updates
 export function subscribeToGame(gameId: string): RealtimeChannel {
   const channel = supabase
@@ -40,9 +108,9 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
       (payload) => {
         console.log('🔄 Game state update received:', payload);
         console.log('🔄 Event type:', payload.eventType);
-        console.log('🔄 New game state:', payload.new);
+        console.log('🔄 New game state (raw):', payload.new);
         if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-          const newGameState = payload.new as GameState;
+          const newGameState = gameStateToCamelCase(payload.new);
           console.log('🔄 Setting game state with phase:', newGameState.currentPhase);
           useStore.getState().setGameState(newGameState);
           console.log('🔄 Game state set in store');
@@ -62,10 +130,10 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         const currentPlayers = useStore.getState().players;
 
         if (payload.eventType === 'INSERT') {
-          useStore.getState().setPlayers([...currentPlayers, payload.new as Player]);
+          useStore.getState().setPlayers([...currentPlayers, playerToCamelCase(payload.new)]);
         } else if (payload.eventType === 'UPDATE') {
           const updatedPlayers = currentPlayers.map((p) =>
-            p.id === payload.new.id ? (payload.new as Player) : p
+            p.id === payload.new.id ? playerToCamelCase(payload.new) : p
           );
           useStore.getState().setPlayers(updatedPlayers);
         } else if (payload.eventType === 'DELETE') {
@@ -87,10 +155,10 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         const currentSelections = useStore.getState().strategySelections;
 
         if (payload.eventType === 'INSERT') {
-          useStore.getState().setStrategySelections([...currentSelections, payload.new as StrategySelection]);
+          useStore.getState().setStrategySelections([...currentSelections, strategySelectionToCamelCase(payload.new)]);
         } else if (payload.eventType === 'UPDATE') {
           const updatedSelections = currentSelections.map((s) =>
-            s.id === payload.new.id ? (payload.new as StrategySelection) : s
+            s.id === payload.new.id ? strategySelectionToCamelCase(payload.new) : s
           );
           useStore.getState().setStrategySelections(updatedSelections);
         } else if (payload.eventType === 'DELETE') {
@@ -112,10 +180,10 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         const currentStates = useStore.getState().playerActionStates;
 
         if (payload.eventType === 'INSERT') {
-          useStore.getState().setPlayerActionStates([...currentStates, payload.new as PlayerActionState]);
+          useStore.getState().setPlayerActionStates([...currentStates, playerActionStateToCamelCase(payload.new)]);
         } else if (payload.eventType === 'UPDATE') {
           const updatedStates = currentStates.map((s) =>
-            s.id === payload.new.id ? (payload.new as PlayerActionState) : s
+            s.id === payload.new.id ? playerActionStateToCamelCase(payload.new) : s
           );
           useStore.getState().setPlayerActionStates(updatedStates);
         } else if (payload.eventType === 'DELETE') {
@@ -137,10 +205,10 @@ export function subscribeToGame(gameId: string): RealtimeChannel {
         const currentObjectives = useStore.getState().objectives;
 
         if (payload.eventType === 'INSERT') {
-          useStore.getState().setObjectives([...currentObjectives, payload.new as Objective]);
+          useStore.getState().setObjectives([...currentObjectives, objectiveToCamelCase(payload.new)]);
         } else if (payload.eventType === 'UPDATE') {
           const updatedObjectives = currentObjectives.map((o) =>
-            o.id === payload.new.id ? (payload.new as Objective) : o
+            o.id === payload.new.id ? objectiveToCamelCase(payload.new) : o
           );
           useStore.getState().setObjectives(updatedObjectives);
         } else if (payload.eventType === 'DELETE') {
