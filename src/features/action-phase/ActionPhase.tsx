@@ -11,6 +11,7 @@ import { useSaveActionPhaseState } from './useSaveActionPhaseState';
 import { PhaseType, PromptType, EventType } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt, playStrategyCard, playEvent } from '@/lib/audio';
 import { normalizeFactionId, getStrategyCardAudioType } from '@/lib/audioHelpers';
+import { getPlayerActionStates } from '@/lib/db/playerActionState';
 import styles from './ActionPhase.module.css';
 
 // Session storage keys for audio tracking (persists across StrictMode remounts)
@@ -82,6 +83,7 @@ export function ActionPhase({
   const [currentSpeakerPlayerId, setCurrentSpeakerPlayerId] = useState<string | null>(speakerPlayerId);
   const [isStrategyCardActionInProgress, setIsStrategyCardActionInProgress] = useState(false);
   const [showPoliticsModal, setShowPoliticsModal] = useState(false);
+  const [showChangeSpeakerModal, setShowChangeSpeakerModal] = useState(false);
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
@@ -112,17 +114,41 @@ export function ActionPhase({
     // It will auto-clear when the browser session ends
   }, []);
 
-  // Initialize player action states
+  // Initialize player action states - load from database
   useEffect(() => {
-    const initialStates: PlayerActionState[] = players.map((player) => ({
-      playerId: player.id,
-      strategyCardUsed: false,
-      hasPassed: false,
-      tacticalActionsCount: 0,
-      componentActionsCount: 0,
-    }));
-    setPlayerActionStates(initialStates);
-  }, [players]);
+    const loadPlayerActionStates = async () => {
+      try {
+        const dbStates = await getPlayerActionStates(gameId, roundNumber);
+
+        // Map database format to local state format
+        const loadedStates: PlayerActionState[] = players.map((player) => {
+          const dbState = dbStates.find((s) => s.player_id === player.id);
+          return {
+            playerId: player.id,
+            strategyCardUsed: dbState?.strategy_card_used || false,
+            hasPassed: dbState?.has_passed || false,
+            tacticalActionsCount: dbState?.tactical_actions_count || 0,
+            componentActionsCount: dbState?.component_actions_count || 0,
+          };
+        });
+
+        setPlayerActionStates(loadedStates);
+      } catch (error) {
+        console.error('Error loading player action states:', error);
+        // Fallback to empty states on error
+        const initialStates: PlayerActionState[] = players.map((player) => ({
+          playerId: player.id,
+          strategyCardUsed: false,
+          hasPassed: false,
+          tacticalActionsCount: 0,
+          componentActionsCount: 0,
+        }));
+        setPlayerActionStates(initialStates);
+      }
+    };
+
+    loadPlayerActionStates();
+  }, [gameId, roundNumber, players]);
 
   // Calculate turn order based on strategy card initiative
   const turnOrder = [...strategySelections].sort((a, b) => a.strategyCardId - b.strategyCardId);
@@ -751,7 +777,7 @@ export function ActionPhase({
           {/* Game Action Buttons Panel */}
           <Panel className={styles.gameActionsPanel}>
             <div className={styles.gameActionButtons}>
-              <Button onClick={() => console.log('Change Speaker clicked')} variant="secondary" size="medium">
+              <Button onClick={() => setShowChangeSpeakerModal(true)} variant="secondary" size="medium">
                 Change Speaker
               </Button>
               <Button onClick={() => console.log('Mecatol Rex clicked')} variant="secondary" size="medium">
@@ -850,6 +876,19 @@ export function ActionPhase({
           currentSpeakerId={currentSpeakerPlayerId}
           onSelectSpeaker={handleSelectSpeaker}
           onCancel={handlePoliticsCancel}
+        />
+      )}
+
+      {/* Change Speaker Modal */}
+      {showChangeSpeakerModal && (
+        <PoliticsCardModal
+          players={players}
+          currentSpeakerId={currentSpeakerPlayerId}
+          onSelectSpeaker={(newSpeakerId) => {
+            handleSelectSpeaker(newSpeakerId);
+            setShowChangeSpeakerModal(false);
+          }}
+          onCancel={() => setShowChangeSpeakerModal(false)}
         />
       )}
     </div>

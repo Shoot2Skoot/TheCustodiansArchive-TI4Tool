@@ -219,7 +219,14 @@ export function GamePage() {
   return (
     <div className={styles.container}>
       <div className={styles.gameHeader}>
-        <button className={styles.backButton} onClick={() => navigate('/')}>
+        <button className={styles.backButton} onClick={() => {
+          // Clear audio tracking when leaving
+          sessionStorage.removeItem('strategyPhase_audioEntry');
+          sessionStorage.removeItem('strategyPhase_lastPromptPlayerId');
+          sessionStorage.removeItem('actionPhase_audioEntry');
+          sessionStorage.removeItem('actionPhase_lastPromptPlayerId');
+          navigate('/', { replace: true });
+        }}>
           ← Back to Home
         </button>
         <div className={styles.gameInfo}>
