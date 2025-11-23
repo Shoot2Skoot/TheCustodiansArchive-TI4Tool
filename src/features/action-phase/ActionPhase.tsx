@@ -5,8 +5,10 @@ import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
+import { setObjectiveCompletion } from '@/lib/db/objectives';
 import { PoliticsCardModal } from './PoliticsCardModal';
 import { ActionStrategyCard } from './ActionStrategyCard';
+import { ObjectivesPanel } from './ObjectivesPanel';
 import { useSaveActionPhaseState } from './useSaveActionPhaseState';
 import { PhaseType, PromptType, EventType } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt, playStrategyCard, playEvent } from '@/lib/audio';
@@ -84,12 +86,14 @@ export function ActionPhase({
   const [isStrategyCardActionInProgress, setIsStrategyCardActionInProgress] = useState(false);
   const [showPoliticsModal, setShowPoliticsModal] = useState(false);
   const [showChangeSpeakerModal, setShowChangeSpeakerModal] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState<'tactical' | 'component' | null>(null);
   const hasLoadedInitialState = useRef(false);
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
+  const triggerObjectivesReload = useStore((state) => state.triggerObjectivesReload);
   const currentGame = useStore((state) => state.currentGame);
 
   // Database hooks
@@ -201,9 +205,16 @@ export function ActionPhase({
     speakerPlayerId: currentSpeakerPlayerId,
   });
 
-  // Handle tactical action
-  const handleTacticalAction = async () => {
+  // Handle tactical action - show modal
+  const handleTacticalAction = () => {
+    setActionInProgress('tactical');
+  };
+
+  // Handle tactical action done
+  const handleTacticalActionDone = async () => {
     if (!currentPlayer || !currentUserId) return;
+
+    setActionInProgress(null);
 
     // Push current state to undo history BEFORE updating
     pushHistory({
@@ -237,9 +248,16 @@ export function ActionPhase({
     advanceToNextPlayer();
   };
 
-  // Handle component action
-  const handleComponentAction = async () => {
+  // Handle component action - show modal
+  const handleComponentAction = () => {
+    setActionInProgress('component');
+  };
+
+  // Handle component action done
+  const handleComponentActionDone = async () => {
     if (!currentPlayer || !currentUserId) return;
+
+    setActionInProgress(null);
 
     // Push current state to undo history BEFORE updating
     pushHistory({
@@ -271,6 +289,11 @@ export function ActionPhase({
 
     // Move to next player
     advanceToNextPlayer();
+  };
+
+  // Handle action cancel
+  const handleActionCancel = () => {
+    setActionInProgress(null);
   };
 
   // Handle strategy card action - activate glow effect
@@ -373,8 +396,38 @@ export function ActionPhase({
       newSpeakerId,
     });
 
-    // Now advance to next player
+    // Now advance to next player (Politics card action is complete)
     advanceToNextPlayer();
+  };
+
+  // Handle manual speaker change (from Change Speaker button)
+  const handleManualSpeakerChange = async (newSpeakerId: string) => {
+    if (!currentUserId) return;
+
+    // Push current state to undo history BEFORE updating speaker
+    pushHistory({
+      type: 'speakerChange',
+      newSpeakerId,
+      data: getCurrentStateSnapshot(),
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
+
+    // Update speaker
+    setCurrentSpeakerPlayerId(newSpeakerId);
+
+    // Play speaker change sound
+    playEvent(EventType.SPEAKER_CHANGE);
+
+    setShowChangeSpeakerModal(false);
+
+    // Save to database
+    await changeSpeaker({
+      gameId,
+      newSpeakerId,
+    });
+
+    // Do NOT advance to next player - this is a manual change outside of turn flow
   };
 
   // Handle Politics modal cancel
@@ -439,7 +492,7 @@ export function ActionPhase({
   };
 
   // Handle undo
-  const handleUndo = useCallback(() => {
+  const handleUndo = useCallback(async () => {
     if (!currentUserId || !canUndo(currentUserId, isHost || false)) return;
 
     const undoStack = useStore.getState().undoStack;
@@ -451,7 +504,21 @@ export function ActionPhase({
     // Only process action phase entries, ignore strategy selection entries
     if (entry.type === 'strategySelection') return;
 
-    // Manually manage the stacks
+    // Handle objective toggle separately
+    if (entry.type === 'objectiveToggle') {
+      // Pop from undo stack and push to redo stack
+      useStore.setState((state) => ({
+        undoStack: state.undoStack.slice(0, -1),
+        redoStack: [...state.redoStack, entry],
+      }));
+
+      // Restore to the state BEFORE the toggle
+      await setObjectiveCompletion(entry.objectiveId, entry.playerId, entry.wasScored);
+      triggerObjectivesReload();
+      return;
+    }
+
+    // Manually manage the stacks for action phase entries
     const currentStateEntry = {
       type: entry.type,
       data: getCurrentStateSnapshot(),
@@ -483,10 +550,10 @@ export function ActionPhase({
         setCurrentTurnIndex(restoredPlayerIndex);
       }
     }
-  }, [currentUserId, isHost, canUndo, activePlayers, getCurrentStateSnapshot]);
+  }, [currentUserId, isHost, canUndo, activePlayers, getCurrentStateSnapshot, triggerObjectivesReload]);
 
   // Handle redo
-  const handleRedo = useCallback(() => {
+  const handleRedo = useCallback(async () => {
     if (!canRedo()) return;
 
     const redoStack = useStore.getState().redoStack;
@@ -498,7 +565,21 @@ export function ActionPhase({
     // Only process action phase entries, ignore strategy selection entries
     if (entry.type === 'strategySelection') return;
 
-    // Manually manage the stacks
+    // Handle objective toggle separately
+    if (entry.type === 'objectiveToggle') {
+      // Pop from redo stack and push to undo stack
+      useStore.setState((state) => ({
+        redoStack: state.redoStack.slice(0, -1),
+        undoStack: [...state.undoStack, entry],
+      }));
+
+      // Re-apply the change (opposite of wasScored)
+      await setObjectiveCompletion(entry.objectiveId, entry.playerId, !entry.wasScored);
+      triggerObjectivesReload();
+      return;
+    }
+
+    // Manually manage the stacks for action phase entries
     const currentStateEntry = {
       type: entry.type,
       data: getCurrentStateSnapshot(),
@@ -530,7 +611,7 @@ export function ActionPhase({
         setCurrentTurnIndex(restoredPlayerIndex);
       }
     }
-  }, [canRedo, currentUserId, activePlayers, getCurrentStateSnapshot]);
+  }, [canRedo, currentUserId, activePlayers, getCurrentStateSnapshot, triggerObjectivesReload]);
 
   // Provide undo/redo handlers to parent component
   useEffect(() => {
@@ -779,8 +860,8 @@ export function ActionPhase({
             </Panel>
           )}
 
-          {/* Spacer to push action buttons to bottom */}
-          <div style={{ flex: 1 }} />
+          {/* Public Objectives Panel - fills remaining space */}
+          <ObjectivesPanel gameId={gameId} />
 
           {/* Game Action Buttons Panel */}
           <Panel className={styles.gameActionsPanel}>
@@ -800,8 +881,8 @@ export function ActionPhase({
 
         {/* Right Column - Action buttons + Strategy Card stacked */}
         <div className={styles.rightColumn}>
-          {/* Action Buttons Panel - Hide when strategy card is in progress */}
-          {!isStrategyCardActionInProgress && (
+          {/* Action Buttons Panel - Hide when any action is in progress */}
+          {!isStrategyCardActionInProgress && !actionInProgress && (
             <Panel className={styles.actionPanel}>
               <div className={styles.actionPanelHeading}>
                 Choose Your Action <span className={styles.turnCount}>[Turn {currentPlayerTurnCount}]</span>
@@ -863,6 +944,34 @@ export function ActionPhase({
             </Panel>
           )}
 
+          {/* Action Resolution Panel - Show when tactical or component action is in progress */}
+          {actionInProgress && (
+            <Panel className={styles.actionResolutionPanel} beveled>
+              <div className={styles.actionResolutionHeading}>
+                {actionInProgress === 'tactical' ? 'Tactical Action' : 'Component Action'} in Progress
+              </div>
+              <div className={styles.actionResolutionContent}>
+                <p className={styles.actionResolutionText}>
+                  {actionInProgress === 'tactical'
+                    ? 'Resolve your tactical action. When complete, click Done to advance to the next player.'
+                    : 'Resolve your component action. When complete, click Done to advance to the next player.'}
+                </p>
+                <div className={styles.actionResolutionButtons}>
+                  <Button onClick={handleActionCancel} variant="secondary" size="large">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={actionInProgress === 'tactical' ? handleTacticalActionDone : handleComponentActionDone}
+                    variant="primary"
+                    size="large"
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
+            </Panel>
+          )}
+
           {/* Strategy Card */}
           {currentStrategyCard && (
             <ActionStrategyCard
@@ -892,10 +1001,7 @@ export function ActionPhase({
         <PoliticsCardModal
           players={players}
           currentSpeakerId={currentSpeakerPlayerId}
-          onSelectSpeaker={(newSpeakerId) => {
-            handleSelectSpeaker(newSpeakerId);
-            setShowChangeSpeakerModal(false);
-          }}
+          onSelectSpeaker={handleManualSpeakerChange}
           onCancel={() => setShowChangeSpeakerModal(false)}
         />
       )}

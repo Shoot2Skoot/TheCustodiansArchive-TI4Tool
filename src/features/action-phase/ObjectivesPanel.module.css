@@ -1,0 +1,272 @@
+.objectivesPanel {
+  flex: .5;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--space-4);
+  min-height: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.emptyHint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.carouselContainer {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  overflow: hidden;
+}
+
+.carouselButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  /* Chamfered corners */
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.carouselButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-border-accent);
+  transform: scale(1.05);
+}
+
+.carouselButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.speedButton {
+  flex-shrink: 0;
+  width: 56px;
+  height: 40px;
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  /* Chamfered corners */
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.speedButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-border-accent);
+  transform: scale(1.05);
+}
+
+.speedButton.active {
+  color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  background: rgba(100, 150, 255, 0.1);
+}
+
+.objectivesList {
+  flex: 1;
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.objectivesList::-webkit-scrollbar {
+  display: none;
+}
+
+.objectiveCard {
+  flex-shrink: 0;
+  aspect-ratio: 0.7;
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2);
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  transition: all 0.2s ease;
+  /* Chamfered corners */
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+.objectiveCard:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-border-accent);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.objectiveIcon {
+  width: 20%;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  object-fit: contain;
+  margin: var(--space-2) auto;
+  display: block;
+}
+
+.objectiveContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.objectiveName {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.objectiveCondition {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.objectiveScorers {
+  display: grid;
+  width: 70%;
+  margin: auto auto 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(24px, 1fr));
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-primary);
+}
+
+.factionIcon {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  /* Chamfered corners */
+  clip-path: polygon(
+    6px 0, 100% 0, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 0 100%, 0 6px
+  );
+}
+
+.factionIcon img {
+  width: 100%;
+  height: 100%;
+  padding: var(--space-1);
+  object-fit: cover;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.factionIcon:hover {
+  border-color: var(--color-border-accent);
+  transform: scale(1.05);
+}
+
+.factionIcon:hover img {
+  opacity: 0.6;
+}
+
+.factionIcon.scored {
+  border-color: var(--color-accent-primary);
+  background: rgba(100, 150, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.3);
+}
+
+.factionIcon.scored img {
+  opacity: 1;
+}
+
+.factionIcon.scored::after {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-accent-primary);
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .objectiveCard {
+    width: 220px;
+  }
+
+  .carouselButton {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+
+  .speedButton {
+    width: 44px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .objectiveName {
+    font-size: var(--font-size-lg);
+  }
+}

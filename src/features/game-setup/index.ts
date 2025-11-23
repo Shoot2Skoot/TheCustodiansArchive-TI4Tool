@@ -4,5 +4,6 @@ export { PlayerCountSelector } from './PlayerCountSelector';
 export { PlayerConfiguration } from './PlayerConfiguration';
 export { MapPlayerConfiguration } from './MapPlayerConfiguration';
 export { GameOptionsForm } from './GameOptionsForm';
+export { ObjectiveSelection } from './ObjectiveSelection';
 export { SpeakerSelection } from './SpeakerSelection';
 export { useCreateGame } from './useCreateGame';

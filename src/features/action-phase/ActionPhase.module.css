@@ -428,6 +428,45 @@
   justify-content: center;
 }
 
+/* Action Resolution Panel */
+.actionResolutionPanel {
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.actionResolutionHeading {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+  color: var(--color-text-primary);
+}
+
+.actionResolutionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.actionResolutionText {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.actionResolutionButtons {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.actionResolutionButtons button {
+  flex: 1;
+}
+
 .actionButtons {
   display: flex;
   flex-direction: column;

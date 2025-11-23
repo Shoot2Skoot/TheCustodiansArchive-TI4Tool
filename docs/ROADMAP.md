@@ -184,32 +184,32 @@ Ongoing: Maintenance & New Features
 ### 1.3 Action Phase (Week 3-4)
 
 #### Features
-- [ ] Display current player based on strategy card order
-- [ ] Show player's strategy card
-- [ ] Action buttons:
-  - [ ] Tactical/Component Action (shows "Resolving..." message)
-  - [ ] Strategy Card Primary Action
-  - [ ] Pass (disabled until strategy card used)
-- [ ] Strategy card action modal (shows primary/secondary actions)
-- [ ] Politics card special logic (select new speaker)
-- [ ] Track action state per player:
-  - [ ] Strategy card used
-  - [ ] Has passed
-- [ ] Remove passed players from rotation
-- [ ] Auto-advance when all players passed
+- [x] Display current player based on strategy card order
+- [x] Show player's strategy card
+- [x] Action buttons:
+  - [x] Tactical/Component Action (shows "Resolving..." message)
+  - [x] Strategy Card Primary Action
+  - [x] Pass (disabled until strategy card used)
+- [x] Strategy card action modal (shows primary/secondary actions)
+- [x] Politics card special logic (select new speaker)
+- [x] Track action state per player:
+  - [x] Strategy card used
+  - [x] Has passed
+- [x] Remove passed players from rotation
+- [x] Auto-advance when all players passed (shows End Phase button)
 
 #### Database Integration
-- [ ] Update player_action_state
-- [ ] Update strategy_selections (primary_action_used)
-- [ ] Update game_state (speaker change for Politics)
-- [ ] Log events to game_events
+- [x] Update player_action_state
+- [x] Update strategy_selections (primary_action_used)
+- [x] Update game_state (speaker change for Politics)
+- [ ] Log events to game_events (table exists, not yet implemented)
 
 #### UI Components
-- [ ] ActionPhase component
-- [ ] CurrentPlayerDisplay
-- [ ] ActionButtons
-- [ ] StrategyCardActionModal
-- [ ] PoliticsCardModal (speaker selection)
+- [x] ActionPhase component
+- [x] CurrentPlayerDisplay (integrated into ActionPhase)
+- [x] ActionButtons (integrated into ActionPhase)
+- [x] StrategyCardActionModal (ActionStrategyCard component)
+- [x] PoliticsCardModal (speaker selection)
 
 **Milestone 1.3**: Can complete action phase with all actions
 

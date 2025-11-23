@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createGame } from '@/lib/db/games';
 import { createPlayer } from '@/lib/db/players';
 import { initializeGameState } from '@/lib/db/gameState';
+import { createInitialObjectives } from '@/lib/db/objectives';
 import { ensureAnonymousSession } from '@/lib/auth';
 import { useStore } from '@/store';
 import { supabase } from '@/lib/supabase';
@@ -19,6 +20,7 @@ interface CreateGameParams {
   config: Partial<GameConfig>;
   players: PlayerSetup[];
   speakerPosition: number;
+  initialObjectives?: string[];
 }
 
 export function useCreateGame() {
@@ -26,7 +28,7 @@ export function useCreateGame() {
   const [error, setError] = useState<string | null>(null);
   const { setCurrentGame, setPlayers, setGameState } = useStore();
 
-  const createNewGame = async ({ config, players, speakerPosition }: CreateGameParams) => {
+  const createNewGame = async ({ config, players, speakerPosition, initialObjectives = [] }: CreateGameParams) => {
     setIsCreating(true);
     setError(null);
 
@@ -105,6 +107,15 @@ export function useCreateGame() {
 
       if (!gameState) {
         throw new Error('Failed to initialize game state');
+      }
+
+      // Step 3.5: Create initial objectives if provided
+      if (initialObjectives.length > 0) {
+        const objectivesCreated = await createInitialObjectives(game.id, initialObjectives);
+        if (!objectivesCreated) {
+          console.warn('Failed to create initial objectives');
+          // Don't throw - this is not critical for game creation
+        }
       }
 
       // Step 4: Update the store with the new game data

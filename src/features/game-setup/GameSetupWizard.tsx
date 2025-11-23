@@ -4,6 +4,7 @@ import { Panel, useToast } from '@/components/common';
 import { PlayerCountSelector } from './PlayerCountSelector';
 import { MapPlayerConfiguration } from './MapPlayerConfiguration';
 import { GameOptionsForm } from './GameOptionsForm';
+import { ObjectiveSelection } from './ObjectiveSelection';
 import { SpeakerSelection } from './SpeakerSelection';
 import { useCreateGame } from './useCreateGame';
 import type { GameConfig } from '@/types';
@@ -17,7 +18,7 @@ interface PlayerSetup {
   displayName: string;
 }
 
-type SetupStep = 'player-count' | 'player-config' | 'game-options' | 'speaker-selection';
+type SetupStep = 'player-count' | 'player-config' | 'game-options' | 'objectives-selection' | 'speaker-selection';
 
 export function GameSetupWizard() {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ export function GameSetupWizard() {
     showTechnologies: true,
     showStrategyCards: true,
   });
+  const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
+
   const handlePlayerCountSelect = (count: number) => {
     setPlayerCount(count);
     setGameConfig({ ...gameConfig, playerCount: count });
@@ -59,6 +62,11 @@ export function GameSetupWizard() {
 
   const handleGameOptionsComplete = (config: Partial<GameConfig>) => {
     setGameConfig({ ...gameConfig, ...config });
+    setCurrentStep('objectives-selection');
+  };
+
+  const handleObjectivesComplete = (objectiveIds: string[]) => {
+    setSelectedObjectives(objectiveIds);
     setCurrentStep('speaker-selection');
   };
 
@@ -68,6 +76,7 @@ export function GameSetupWizard() {
       config: gameConfig,
       players,
       speakerPosition,
+      initialObjectives: selectedObjectives,
     });
 
     if (gameId) {
@@ -87,8 +96,11 @@ export function GameSetupWizard() {
       case 'game-options':
         setCurrentStep('player-config');
         break;
-      case 'speaker-selection':
+      case 'objectives-selection':
         setCurrentStep('game-options');
+        break;
+      case 'speaker-selection':
+        setCurrentStep('objectives-selection');
         break;
     }
   };
@@ -104,11 +116,13 @@ export function GameSetupWizard() {
         <div className={styles.stepIndicator}>
           <StepDot step={1} active={currentStep === 'player-count'} completed={currentStep !== 'player-count'} label="Players" />
           <StepLine completed={currentStep !== 'player-count'} />
-          <StepDot step={2} active={currentStep === 'player-config'} completed={currentStep === 'game-options' || currentStep === 'speaker-selection'} label="Config" />
-          <StepLine completed={currentStep === 'game-options' || currentStep === 'speaker-selection'} />
-          <StepDot step={3} active={currentStep === 'game-options'} completed={currentStep === 'speaker-selection'} label="Options" />
+          <StepDot step={2} active={currentStep === 'player-config'} completed={currentStep === 'game-options' || currentStep === 'objectives-selection' || currentStep === 'speaker-selection'} label="Config" />
+          <StepLine completed={currentStep === 'game-options' || currentStep === 'objectives-selection' || currentStep === 'speaker-selection'} />
+          <StepDot step={3} active={currentStep === 'game-options'} completed={currentStep === 'objectives-selection' || currentStep === 'speaker-selection'} label="Options" />
+          <StepLine completed={currentStep === 'objectives-selection' || currentStep === 'speaker-selection'} />
+          <StepDot step={4} active={currentStep === 'objectives-selection'} completed={currentStep === 'speaker-selection'} label="Objectives" />
           <StepLine completed={currentStep === 'speaker-selection'} />
-          <StepDot step={4} active={currentStep === 'speaker-selection'} completed={false} label="Speaker" />
+          <StepDot step={5} active={currentStep === 'speaker-selection'} completed={false} label="Speaker" />
         </div>
       </div>
 
@@ -133,6 +147,13 @@ export function GameSetupWizard() {
           <GameOptionsForm
             initialConfig={gameConfig}
             onComplete={handleGameOptionsComplete}
+            onBack={handleBack}
+          />
+        )}
+
+        {currentStep === 'objectives-selection' && (
+          <ObjectiveSelection
+            onComplete={handleObjectivesComplete}
             onBack={handleBack}
           />
         )}

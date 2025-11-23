@@ -57,18 +57,31 @@ interface SpeakerChangeEntry {
   timestamp: number;
 }
 
+interface ObjectiveToggleEntry {
+  type: 'objectiveToggle';
+  objectiveId: string;
+  playerId: string;
+  wasScored: boolean; // State before the toggle
+  userId: string;
+  timestamp: number;
+}
+
 type HistoryEntry =
   | StrategySelectionEntry
   | ActionPhaseActionEntry
   | StrategyCardActionEntry
   | PassActionEntry
-  | SpeakerChangeEntry;
+  | SpeakerChangeEntry
+  | ObjectiveToggleEntry;
 
 // Undo slice state interface
 export interface UndoSliceState {
   // History stacks
   undoStack: HistoryEntry[];
   redoStack: HistoryEntry[];
+
+  // Reload triggers
+  objectivesReloadCounter: number;
 
   // Actions
   pushHistory: (entry: HistoryEntry) => void;
@@ -77,12 +90,14 @@ export interface UndoSliceState {
   clearHistory: () => void;
   canUndo: (currentUserId: string, isHost: boolean) => boolean;
   canRedo: () => boolean;
+  triggerObjectivesReload: () => void;
 }
 
 // Create undo slice
 export const createUndoSlice: StateCreator<UndoSliceState> = (set, get) => ({
   undoStack: [],
   redoStack: [],
+  objectivesReloadCounter: 0,
 
   pushHistory: (entry) =>
     set((state) => ({
@@ -141,4 +156,9 @@ export const createUndoSlice: StateCreator<UndoSliceState> = (set, get) => ({
   },
 
   canRedo: () => get().redoStack.length > 0,
+
+  triggerObjectivesReload: () =>
+    set((state) => ({
+      objectivesReloadCounter: state.objectivesReloadCounter + 1,
+    })),
 });
