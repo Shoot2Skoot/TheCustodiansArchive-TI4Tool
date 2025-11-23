@@ -84,6 +84,7 @@ export function ActionPhase({
   const [isStrategyCardActionInProgress, setIsStrategyCardActionInProgress] = useState(false);
   const [showPoliticsModal, setShowPoliticsModal] = useState(false);
   const [showChangeSpeakerModal, setShowChangeSpeakerModal] = useState(false);
+  const hasLoadedInitialState = useRef(false);
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
@@ -114,8 +115,11 @@ export function ActionPhase({
     // It will auto-clear when the browser session ends
   }, []);
 
-  // Initialize player action states - load from database
+  // Initialize player action states - load from database ONCE on mount
   useEffect(() => {
+    // Only load once to avoid overwriting local state changes
+    if (hasLoadedInitialState.current) return;
+
     const loadPlayerActionStates = async () => {
       try {
         const dbStates = await getPlayerActionStates(gameId, roundNumber);
@@ -133,6 +137,7 @@ export function ActionPhase({
         });
 
         setPlayerActionStates(loadedStates);
+        hasLoadedInitialState.current = true;
       } catch (error) {
         console.error('Error loading player action states:', error);
         // Fallback to empty states on error
@@ -144,11 +149,15 @@ export function ActionPhase({
           componentActionsCount: 0,
         }));
         setPlayerActionStates(initialStates);
+        hasLoadedInitialState.current = true;
       }
     };
 
     loadPlayerActionStates();
-  }, [gameId, roundNumber, players]);
+    // Intentionally only depend on gameId and roundNumber, NOT players
+    // to avoid reloading and overwriting local state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameId, roundNumber]);
 
   // Calculate turn order based on strategy card initiative
   const turnOrder = [...strategySelections].sort((a, b) => a.strategyCardId - b.strategyCardId);
