@@ -113,9 +113,22 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  animation: custodiansPulse 2s ease-in-out infinite;
+}
+
+@keyframes custodiansPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(100, 150, 255, 0.6));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(100, 150, 255, 0.8));
+    transform: scale(1.03);
+  }
 }
 
 .custodiansToken:hover {
+  animation: none;
   transform: scale(1.1);
   filter: brightness(1.1) drop-shadow(0 0 20px rgba(255, 242, 2, 0.8));
 }
