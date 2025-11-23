@@ -1,0 +1,382 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: relative;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border-accent);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(100, 150, 255, 0.3);
+  animation: slideUp 0.3s ease;
+  /* Beveled corners */
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.header {
+  padding: 1.5rem;
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.content {
+  padding: 1.5rem;
+  background: var(--color-bg-secondary);
+}
+
+.mecatolContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.mecatolImage {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+
+.centerToken {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Custodians Token Styling */
+.custodiansToken {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.custodiansToken:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1) drop-shadow(0 0 20px rgba(255, 242, 2, 0.8));
+}
+
+.custodiansImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+/* Faction Token Styling */
+.factionToken {
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg-elevated);
+  border: 4px solid;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  /* Chamfered corners */
+  clip-path: polygon(
+    20px 0, 100% 0, 100% calc(100% - 20px),
+    calc(100% - 20px) 100%, 0 100%, 0 20px
+  );
+}
+
+.factionToken:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(100, 150, 255, 0.6);
+}
+
+.factionImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+}
+
+/* Fade animations */
+@keyframes fadeInAnim {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOutAnim {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.fadeIn {
+  animation: fadeInAnim 0.3s ease forwards;
+}
+
+.fadeOut {
+  animation: fadeOutAnim 0.3s ease forwards;
+}
+
+.ownerInfo {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+  margin-top: 1rem;
+}
+
+/* Player Selection Grid */
+.playerGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.playerOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem;
+  background: var(--player-color, var(--color-text-secondary));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-align: left;
+  isolation: isolate;
+  border: none;
+  /* Beveled corners */
+  clip-path: polygon(
+    10px 0, 100% 0, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 0 100%, 0 10px
+  );
+}
+
+/* Inner background layer to create border effect */
+.playerOption::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: var(--color-bg-primary);
+  z-index: -1;
+  clip-path: polygon(
+    calc(10px - 2px) 0,
+    calc(100% - 0px) 0,
+    calc(100% - 0px) calc(100% - calc(10px - 2px)),
+    calc(100% - calc(10px - 2px)) calc(100% - 0px),
+    0 calc(100% - 0px),
+    0 calc(10px - 2px)
+  );
+}
+
+.playerOption:hover {
+  transform: translateX(4px);
+  box-shadow: 0 0 20px var(--player-color, var(--color-text-secondary));
+}
+
+.playerOption:hover::before {
+  background: var(--color-bg-elevated);
+}
+
+.playerOption.selected {
+  box-shadow: 0 0 0 3px #6496ff;
+}
+
+.playerOption.currentOwner {
+  opacity: 0.7;
+}
+
+.factionIcon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.playerInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.playerFaction {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.playerName {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ownerBadge {
+  padding: 0.25rem 0.75rem;
+  background: var(--color-accent-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  /* Small beveled corners */
+  clip-path: polygon(
+    4px 0, 100% 0, 100% calc(100% - 4px),
+    calc(100% - 4px) 100%, 0 100%, 0 4px
+  );
+}
+
+.checkmark {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #6496ff;
+  color: white;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.selectionInfo {
+  padding: 0.75rem;
+  background: rgba(100, 150, 255, 0.1);
+  border: 1px solid #6496ff;
+  text-align: center;
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  /* Beveled corners */
+  clip-path: polygon(
+    6px 0, 100% 0, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 0 100%, 0 6px
+  );
+}
+
+.footer {
+  padding: 1rem;
+  background: var(--color-bg-tertiary);
+  border-top: 1px solid var(--color-border-primary);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal {
+    max-width: 100%;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .header h2 {
+    font-size: 1.25rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .mecatolImage {
+    max-width: 100%;
+  }
+
+  .centerToken {
+    width: 140px;
+    height: 140px;
+  }
+
+  .playerOption {
+    padding: 0.5rem;
+  }
+
+  .factionIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer {
+    flex-direction: column-reverse;
+  }
+
+  .footer button {
+    width: 100%;
+  }
+}
