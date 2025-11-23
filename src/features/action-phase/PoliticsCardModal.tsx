@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Button } from '@/components/common';
+import { Button, StrategyCardNumber } from '@/components/common';
 import { getFactionImage } from '@/lib/factions';
 import styles from './PoliticsCardModal.module.css';
+
+const POLITICS_CARD_COLOR = '#fff202';
 
 interface Player {
   id: string;
@@ -36,10 +38,10 @@ export function PoliticsCardModal({
     <div className={styles.overlay} onClick={onCancel}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <div className={styles.cardIcon}>3</div>
-          <div>
-            <h2>Politics - Choose New Speaker</h2>
-            <p>Select a player to become the new speaker</p>
+          <StrategyCardNumber number={3} color={POLITICS_CARD_COLOR} size="medium" />
+          <div className={styles.headerText}>
+            <h2 className={styles.headerTitle}>POLITICS</h2>
+            <p className={styles.headerSubtitle}>Choose New Speaker</p>
           </div>
         </div>
 

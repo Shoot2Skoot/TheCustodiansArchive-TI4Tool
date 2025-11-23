@@ -53,40 +53,30 @@
 .header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #fff202 0%, #f5d800 100%);
-  color: #000;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-.cardIcon {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.2);
-  font-size: 2rem;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
-  /* Beveled corners */
-  clip-path: polygon(
-    8px 0, 100% 0, 100% calc(100% - 8px),
-    calc(100% - 8px) 100%, 0 100%, 0 8px
-  );
+.headerText {
+  flex: 1;
 }
 
-.header h2 {
+.headerTitle {
   margin: 0;
-  font-size: 1.5rem;
+  font-family: var(--font-space-heading);
+  font-size: var(--font-size-3xl);
   font-weight: 700;
+  color: white;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.header p {
+.headerSubtitle {
   margin: 0.25rem 0 0 0;
-  font-size: 0.95rem;
-  opacity: 0.8;
+  font-size: var(--font-size-base);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .content {
@@ -193,7 +183,7 @@
   padding: 0.25rem 0.75rem;
   background: #fff202;
   color: #000;
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -247,17 +237,15 @@
   }
 
   .header {
-    padding: 1rem;
+    padding: var(--space-3);
   }
 
-  .cardIcon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
+  .headerTitle {
+    font-size: var(--font-size-xl);
   }
 
-  .header h2 {
-    font-size: 1.25rem;
+  .headerSubtitle {
+    font-size: var(--font-size-sm);
   }
 
   .content {
