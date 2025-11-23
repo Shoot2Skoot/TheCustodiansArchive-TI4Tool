@@ -657,7 +657,6 @@ export function ActionPhase({
                   if (!player || !state) return null;
 
                   const isCurrent = activeTurnSelection?.playerId === player.id;
-                  const isOnDeck = !state.hasPassed && nextTurnSelection?.playerId === player.id;
                   const isPassed = state.hasPassed;
 
                   // Hide current player from queue - they'll be shown separately below
@@ -670,7 +669,7 @@ export function ActionPhase({
                   return (
                     <div
                       key={player.id}
-                      className={`${styles.queueBarItem} ${isOnDeck ? styles.queueBarCurrent : ''} ${isPassed ? styles.queueBarPassed : ''} ${isCondensed ? styles.queueBarCondensed : ''}`}
+                      className={`${styles.queueBarItem} ${isPassed ? styles.queueBarPassed : ''} ${isCondensed ? styles.queueBarCondensed : ''}`}
                       style={{
                         color: getPlayerColor(player.color as PlayerColor),
                       }}
