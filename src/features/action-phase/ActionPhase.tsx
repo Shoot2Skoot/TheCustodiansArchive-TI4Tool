@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Panel, Button, StrategyCardNumber } from '@/components/common';
 import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
@@ -6,7 +6,9 @@ import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
 import { setObjectiveCompletion } from '@/lib/db/objectives';
+import { claimMecatolRex, getGameState } from '@/lib/db/gameState';
 import { PoliticsCardModal } from './PoliticsCardModal';
+import { MecatolRexModal } from './MecatolRexModal';
 import { ActionStrategyCard } from './ActionStrategyCard';
 import { ObjectivesPanel } from './ObjectivesPanel';
 import { useSaveActionPhaseState } from './useSaveActionPhaseState';
@@ -77,6 +79,9 @@ export function ActionPhase({
   onComplete,
   onUndoRedoChange,
 }: ActionPhaseProps) {
+  // Debug logging - monitor render frequency
+  console.log('🔵 ActionPhase render');
+
   // Local state for action phase
   const [playerActionStates, setPlayerActionStates] = useState<PlayerActionState[]>([]);
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
@@ -86,6 +91,7 @@ export function ActionPhase({
   const [isStrategyCardActionInProgress, setIsStrategyCardActionInProgress] = useState(false);
   const [showPoliticsModal, setShowPoliticsModal] = useState(false);
   const [showChangeSpeakerModal, setShowChangeSpeakerModal] = useState(false);
+  const [showMecatolRexModal, setShowMecatolRexModal] = useState(false);
   const [actionInProgress, setActionInProgress] = useState<'tactical' | 'component' | null>(null);
   const hasLoadedInitialState = useRef(false);
 
@@ -94,7 +100,10 @@ export function ActionPhase({
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
   const triggerObjectivesReload = useStore((state) => state.triggerObjectivesReload);
-  const currentGame = useStore((state) => state.currentGame);
+  const mecatolRexOwnerId = useStore((state) => state.gameState?.mecatolRexOwnerId);
+  const mecatolClaimed = useStore((state) => state.gameState?.mecatolClaimed);
+  const gameCreatedBy = useStore((state) => state.currentGame?.createdBy);
+  const setGameState = useStore((state) => state.setGameState);
 
   // Database hooks
   const {
@@ -164,19 +173,19 @@ export function ActionPhase({
   }, [gameId, roundNumber]);
 
   // Calculate turn order based on strategy card initiative
-  const turnOrder = [...strategySelections].sort((a, b) => a.strategyCardId - b.strategyCardId);
-
-  // Debug logging
-  console.log('ActionPhase - Strategy Selections:', strategySelections);
-  console.log('ActionPhase - Turn Order:', turnOrder);
-  console.log('ActionPhase - Players:', players);
-  console.log('ActionPhase - Player Action States:', playerActionStates);
+  const turnOrder = useMemo(
+    () => [...strategySelections].sort((a, b) => a.strategyCardId - b.strategyCardId),
+    [strategySelections]
+  );
 
   // Get active players (not passed)
-  const activePlayers = turnOrder.filter((selection) => {
-    const state = playerActionStates.find((s) => s.playerId === selection.playerId);
-    return !state?.hasPassed;
-  });
+  const activePlayers = useMemo(
+    () => turnOrder.filter((selection) => {
+      const state = playerActionStates.find((s) => s.playerId === selection.playerId);
+      return !state?.hasPassed;
+    }),
+    [turnOrder, playerActionStates]
+  );
 
   // Get current player
   const currentTurnSelection = activePlayers[currentTurnIndex % activePlayers.length];
@@ -187,7 +196,7 @@ export function ActionPhase({
     ? playerActionStates.find((s) => s.playerId === currentPlayer.id)
     : null;
 
-  const isHost = currentUserId && currentGame?.createdBy === currentUserId;
+  const isHost = currentUserId && gameCreatedBy === currentUserId;
 
   // Play faction prompt when turn changes
   useEffect(() => {
@@ -199,11 +208,11 @@ export function ActionPhase({
   }, [currentPlayer?.id, activePlayers.length]);
 
   // Get current game state snapshot for undo
-  const getCurrentStateSnapshot = (): ActionPhaseState => ({
+  const getCurrentStateSnapshot = useCallback((): ActionPhaseState => ({
     currentTurnPlayerId: currentPlayer?.id || '',
     playerActionStates: [...playerActionStates],
     speakerPlayerId: currentSpeakerPlayerId,
-  });
+  }), [currentPlayer?.id, playerActionStates, currentSpeakerPlayerId]);
 
   // Handle tactical action - show modal
   const handleTacticalAction = () => {
@@ -430,6 +439,46 @@ export function ActionPhase({
     // Do NOT advance to next player - this is a manual change outside of turn flow
   };
 
+  // Handle Mecatol Rex claim
+  const handleMecatolRexClaim = async (playerId: string) => {
+    if (!currentUserId) return;
+
+    const previousOwnerId = mecatolRexOwnerId;
+    const wasClaimed = mecatolClaimed;
+
+    console.log('🏛️ handleMecatolRexClaim called:', { playerId, previousOwnerId, wasClaimed });
+
+    // Push to undo history BEFORE making the change
+    pushHistory({
+      type: 'mecatolRexClaim',
+      newOwnerId: playerId,
+      previousOwnerId,
+      wasClaimed,
+      userId: currentUserId,
+      timestamp: Date.now(),
+    });
+
+    // Claim Mecatol Rex in the database
+    try {
+      await claimMecatolRex(gameId, playerId, roundNumber);
+      console.log('✅ Mecatol Rex claim completed');
+
+      // Play Mecatol Rex taken sound
+      playEvent(EventType.MECATOL_REX_TAKEN);
+
+      // Manually reload game state to ensure immediate UI update
+      const newGameState = await getGameState(gameId);
+      if (newGameState) {
+        console.log('🔄 Manually updating game state after Mecatol Rex claim');
+        setGameState(newGameState);
+      }
+    } catch (error) {
+      console.error('❌ Error claiming Mecatol Rex:', error);
+    }
+
+    setShowMecatolRexModal(false);
+  };
+
   // Handle Politics modal cancel
   const handlePoliticsCancel = () => {
     if (!currentPlayer) return;
@@ -518,6 +567,34 @@ export function ActionPhase({
       return;
     }
 
+    // Handle Mecatol Rex claim separately
+    if (entry.type === 'mecatolRexClaim') {
+      // Pop from undo stack and push to redo stack
+      useStore.setState((state) => ({
+        undoStack: state.undoStack.slice(0, -1),
+        redoStack: [...state.redoStack, entry],
+      }));
+
+      // Restore to the state BEFORE the claim (previous owner or unclaimed)
+      if (entry.wasClaimed && entry.previousOwnerId) {
+        await claimMecatolRex(gameId, entry.previousOwnerId, roundNumber);
+      } else {
+        // Mecatol was unclaimed before, need to revert it
+        // For now just set it back to the previous owner (which is null)
+        // We'd need a separate function to unclaim, but let's keep it simple
+        await claimMecatolRex(gameId, entry.previousOwnerId || '', roundNumber);
+      }
+
+      // Manually reload game state to ensure immediate UI update
+      const newGameState = await getGameState(gameId);
+      if (newGameState) {
+        console.log('🔄 Manually updating game state after Mecatol Rex undo');
+        setGameState(newGameState);
+      }
+
+      return;
+    }
+
     // Manually manage the stacks for action phase entries
     const currentStateEntry = {
       type: entry.type,
@@ -576,6 +653,19 @@ export function ActionPhase({
       // Re-apply the change (opposite of wasScored)
       await setObjectiveCompletion(entry.objectiveId, entry.playerId, !entry.wasScored);
       triggerObjectivesReload();
+      return;
+    }
+
+    // Handle Mecatol Rex claim separately
+    if (entry.type === 'mecatolRexClaim') {
+      // Pop from redo stack and push to undo stack
+      useStore.setState((state) => ({
+        redoStack: state.redoStack.slice(0, -1),
+        undoStack: [...state.undoStack, entry],
+      }));
+
+      // Re-apply the claim (new owner)
+      await claimMecatolRex(gameId, entry.newOwnerId, roundNumber);
       return;
     }
 
@@ -879,7 +969,7 @@ export function ActionPhase({
               <Button onClick={() => setShowChangeSpeakerModal(true)} variant="secondary" size="medium">
                 Change Speaker
               </Button>
-              <Button onClick={() => console.log('Mecatol Rex clicked')} variant="secondary" size="medium">
+              <Button onClick={() => setShowMecatolRexModal(true)} variant="secondary" size="medium">
                 Mecatol Rex
               </Button>
               <Button onClick={() => console.log('Enter Combat clicked')} variant="secondary" size="medium">
@@ -1013,6 +1103,17 @@ export function ActionPhase({
           currentSpeakerId={currentSpeakerPlayerId}
           onSelectSpeaker={handleManualSpeakerChange}
           onCancel={() => setShowChangeSpeakerModal(false)}
+        />
+      )}
+
+      {/* Mecatol Rex Modal */}
+      {showMecatolRexModal && (
+        <MecatolRexModal
+          players={players}
+          mecatolRexOwnerId={mecatolRexOwnerId ?? null}
+          custodiansTaken={mecatolClaimed ?? false}
+          onClaimMecatolRex={handleMecatolRexClaim}
+          onClose={() => setShowMecatolRexModal(false)}
         />
       )}
     </div>

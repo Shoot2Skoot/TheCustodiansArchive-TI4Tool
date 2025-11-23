@@ -10,6 +10,16 @@ export interface GameConfig {
   showObjectives: boolean;
   showTechnologies: boolean;
   showStrategyCards: boolean;
+
+  // Expansion and Codex Configuration
+  expansions?: {
+    prophecyOfKings: boolean;
+    codex1: boolean;  // Codex I - Ordinian (Omega promissory notes, faction techs)
+    codex2: boolean;  // Codex II - Affinity (reference cards only)
+    codex3: boolean;  // Codex III - Vigil (Omega leaders, Council Keleres)
+    codex4: boolean;  // Codex IV - Liberation (relics, galactic events)
+    codex45: boolean; // Codex 4.5 - Double Omega basic techs
+  };
 }
 
 // Database Model - Game
@@ -35,6 +45,7 @@ export interface GameState {
   speakerPlayerId: string | null;
   mecatolClaimed: boolean;
   mecatolClaimedRound: number | null;
+  mecatolRexOwnerId: string | null;
   lastActivityAt: string;
   phaseStartedAt: string | null;
   updatedAt: string;
@@ -123,4 +134,14 @@ export interface TimerTracking {
   turnStartedAt: string | null;
   isCurrentTurn: boolean;
   updatedAt: string;
+}
+
+// Database Model - Leader Unlock
+export interface LeaderUnlock {
+  id: string;
+  gameId: string;
+  playerId: string;
+  leaderType: 'commander' | 'hero';
+  unlockedAt: string;
+  unlockedRound: number;
 }

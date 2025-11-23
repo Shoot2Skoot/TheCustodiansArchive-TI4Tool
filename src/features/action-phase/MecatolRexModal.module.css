@@ -64,6 +64,14 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.subtitle {
+  margin: 0.5rem 0 0 0;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+}
+
 .content {
   padding: 1.5rem;
   background: var(--color-bg-secondary);
@@ -81,11 +89,18 @@
 }
 
 .mecatolContainer {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
 }
 
 .mecatolImage {
@@ -174,33 +189,38 @@
 .factionToken {
   width: 100%;
   height: 100%;
-  background: var(--color-bg-elevated);
-  border: 4px solid;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-  /* Chamfered corners */
-  clip-path: polygon(
-    20px 0, 100% 0, 100% calc(100% - 20px),
-    calc(100% - 20px) 100%, 0 100%, 0 20px
-  );
+  padding: 0;
+}
+
+@keyframes factionPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px var(--player-color, rgba(100, 150, 255, 0.6))) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--player-color, rgba(100, 150, 255, 0.8))) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+    transform: scale(1.03);
+  }
 }
 
 .factionToken:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 24px rgba(100, 150, 255, 0.6);
+  animation: none !important;
+  transform: scale(1.1) !important;
+  filter: brightness(1.1) drop-shadow(0 0 20px var(--player-color, rgba(100, 150, 255, 0.8))) !important;
 }
 
 .factionImage {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
 }
 
 /* Fade animations */

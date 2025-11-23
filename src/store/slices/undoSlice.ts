@@ -66,13 +66,23 @@ interface ObjectiveToggleEntry {
   timestamp: number;
 }
 
+interface MecatolRexClaimEntry {
+  type: 'mecatolRexClaim';
+  newOwnerId: string;
+  previousOwnerId: string | null;
+  wasClaimed: boolean; // Was Mecatol Rex claimed before this action?
+  userId: string;
+  timestamp: number;
+}
+
 type HistoryEntry =
   | StrategySelectionEntry
   | ActionPhaseActionEntry
   | StrategyCardActionEntry
   | PassActionEntry
   | SpeakerChangeEntry
-  | ObjectiveToggleEntry;
+  | ObjectiveToggleEntry
+  | MecatolRexClaimEntry;
 
 // Undo slice state interface
 export interface UndoSliceState {

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Panel } from '@/components/common';
 import { useStore } from '@/store';
+import { shallow } from 'zustand/shallow';
 import { getCurrentUserId } from '@/lib/auth';
 import { getRevealedObjectives, toggleObjectiveCompletion } from '@/lib/db/objectives';
 import { ALL_STAGE_1_OBJECTIVES, ALL_STAGE_2_OBJECTIVES } from '@/lib/objectives';
@@ -37,24 +38,24 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
   const [autoScrollSpeed, setAutoScrollSpeed] = useState<AutoScrollSpeed>('medium');
   const [isHovered, setIsHovered] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const gameState = useStore((state) => state.gameState);
-  const players = useStore((state) => state.players);
-  const pushHistory = useStore((state) => state.pushHistory);
+  const currentRound = useStore((state) => state.gameState?.currentRound);
+  const players = useStore((state) => state.players, shallow);
   const objectivesReloadCounter = useStore((state) => state.objectivesReloadCounter);
 
+  // Debug logging - monitor render frequency
+  console.log('🟡 ObjectivesPanel render - objectives:', objectives.length);
+
+  const loadObjectives = useCallback(async () => {
+    if (currentRound === undefined) return;
+    const revealed = await getRevealedObjectives(gameId, currentRound);
+    setObjectives(revealed);
+  }, [gameId, currentRound]);
+
   useEffect(() => {
-    if (!gameId || !gameState) return;
+    if (!gameId || currentRound === undefined) return;
 
     loadObjectives();
-  }, [gameId, gameState?.currentRound, objectivesReloadCounter]);
-
-  const loadObjectives = async () => {
-    if (!gameState) return;
-    console.log('Loading objectives for round:', gameState.currentRound);
-    const revealed = await getRevealedObjectives(gameId, gameState.currentRound);
-    console.log('Revealed objectives:', revealed);
-    setObjectives(revealed);
-  };
+  }, [gameId, currentRound, objectivesReloadCounter, loadObjectives]);
 
   const handleToggleCompletion = async (objectiveId: string, playerId: string) => {
     const currentUserId = getCurrentUserId();
@@ -66,8 +67,8 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
 
     const wasScored = (objective.scored_by_players || []).includes(playerId);
 
-    // Push to history before making the change
-    pushHistory({
+    // Push to history before making the change - get pushHistory from store here to avoid re-renders
+    useStore.getState().pushHistory({
       type: 'objectiveToggle',
       objectiveId,
       playerId,
@@ -120,29 +121,27 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
   useEffect(() => {
     if (objectives.length === 0) return undefined;
 
-    let timer: NodeJS.Timeout | undefined;
-
-    // When we reach a cloned item at the end, reset to the beginning
+    // Only reset if we're beyond the original objectives
     if (currentIndex >= objectives.length) {
       const actualIndex = currentIndex % objectives.length;
-      // Wait for smooth scroll to complete before resetting
-      timer = setTimeout(() => {
+      // Use a small delay to let the scroll animation complete
+      const timer = setTimeout(() => {
+        scrollToIndex(actualIndex, true); // Instant jump to the real item
         setCurrentIndex(actualIndex);
-        scrollToIndex(actualIndex, true); // Instant jump
-      }, 500);
+      }, 600);
+      return () => clearTimeout(timer);
     }
-    // When we go before the beginning (if allowing reverse), wrap to the end
+    // When we go before the beginning (backwards navigation)
     else if (currentIndex < 0) {
       const actualIndex = objectives.length + (currentIndex % objectives.length);
-      timer = setTimeout(() => {
-        setCurrentIndex(actualIndex);
+      const timer = setTimeout(() => {
         scrollToIndex(actualIndex, true); // Instant jump
-      }, 500);
+        setCurrentIndex(actualIndex);
+      }, 600);
+      return () => clearTimeout(timer);
     }
 
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
+    return undefined;
   }, [currentIndex, objectives.length, scrollToIndex]);
 
   const cycleSpeed = () => {

@@ -1,0 +1,1190 @@
+'''Category:''' [[Official Rules#Additional Rules|Rules]],''' '''[[Player Components]]
+
+Players can use action cards to resolve one-time [[abilities]]. Each action card indicates the timing window within which it may be played at the top of the card.
+
+When an action card is used, the player using it reveals the card, resolves its effect, and discards the card. If an action card begins with the word “Action,” it can be used as a [[Component Action|component action]] during a player’s turn of the [[Action Phase|action phase]].
+
+Each player can have a maximum of seven action cards in their hand.
+
+<br />
+
+== Twilight Imperium Fourth Edition ==
+{| class="article-table"
+!'''Name'''
+!'''Number in Deck'''
+!'''Play'''
+!'''Effect'''
+!'''Flavor Text'''
+|-
+|'''Ancient Burial Sites'''
+|1
+|At the start of the [[Agenda Phase|agenda phase]]:
+|Choose 1 player. Exhaust each [[Planets and Systems#Planet Traits|cultural]] planet owned by that player.
+|''The images depicted a race that Rin had never seen before. Curious. Could it be that this was a race that was exterminated by the Lazax?''
+|-
+|'''Assassinate Representative'''
+|1
+|After an agenda is revealed:
+|Choose 1 player. That player cannot [[Action Phase#Vote|vote]] on this agenda.
+|''With a sickening crunch of bone and metal, unit.desgn.FLAYESH extracted its stinger from the blood-drenched skull of the Jol-Nar councilor.''
+|-
+|'''Bribery'''
+|1
+|After the [[speaker]] votes on an [[Agenda Phase|agenda]]:
+|Spend any number of [[Trade Goods & Commodities|trade goods]]. For each trade good spent, cast 1 additional vote for [[Errata#Bribery|the outcome on which you voted]].
+|''"We think that this initiative would spell disaster for the galaxy, not just the Creuss." Taivra said, quietly slipping Z'eu an envelope. "Don't you agree?"''
+|-
+|'''Bunker'''
+|1
+|At the start of an [[invasion]]:
+|
+During this invasion, apply -4 to the result of each [[Bombardment]] roll against planets you control.
+|''Elder Junn crossed his arms and steadied his breathing. The bombs could not reach them, not this far down. At least, that is what the soldiers had told him.''
+|-
+|'''Confusing Legal Text'''
+|1
+|When you are [[Agenda Cards#Directives|elected]] as the outcome of an [[Agenda Phase|agenda]]:
+|
+Choose 1 player. That player is the elected player instead.
+|''Somehow, even after the Council had adjourned, none of them were any closer to understanding the strange and confusing events of the day.''
+|-
+|'''Construction Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|
+You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, place 1 [[Space Dock|space dock]] from your [[reinforcements]] on a planet you control.
+|''The vote was nearly unanimous. The council would provide funding for the restoration. Ciel was furious.''
+|-
+|'''Courageous to the End'''
+|1
+|After 1 of your ships is destroyed during a [[Space Combat|space combat]]:
+|
+Roll 2 dice. For each result equal to or greater than that ship's combat value, your opponent must choose and destroy 1 of their ships.
+|''Coughing up blood and covered in burns, Havvat collapsed against the rapidly overheating ship core. She smiled. She would be remembered.''
+|-
+|'''Cripple Defenses'''
+|1
+|Action: Choose 1 planet.
+|
+Destroy each [[PDS]] on that planet.
+|''Titanic vines burst forth from the ground, wrapping themselves around the system's primary firing cylinder, breaking it free from its moorings, and bringing it crashing down upon the installation below.''
+|-
+|'''Diplomacy Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|
+You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, choose 1 system that contains a planet you control. Each other player places a [[Command Tokens|command token]] from their [[reinforcements]] in that system.
+|''Ciel evaluated the other senators. Weak, all of them. This was his game to win.''
+|-
+|'''Direct Hit'''
+|4
+|After another player's ship uses [[Sustain Damage]] to cancel a hit produced by your units [[Errata#Direct Hit|or abilities]]
+|
+Destroy that ship.
+|
+# ''There it was! An opening! Neekuaq gestured wildly, a rare display for one normally quite reserved. "Fire the main battery!"''
+# ''The Loncara Ssodu's main battery flared to life, firing a volley directly into the flickering starboard shield of the Letnev dreadnought.''
+# ''For a moment, it looked as if the dreadnought's shield would hold, but a moment later, the ship began to come apart where the attack had pierced its hull.''
+# ''Neekuaq watched, satisfied, as the ship was wracked by a series of explosions from within, huge armored plates and other debris hurtling off into the darkness.''
+|-
+|'''Disable'''
+|1
+|At the start of an [[invasion]] in a system that contains 1 or more of your opponents' [[PDS]] units:
+|
+Your opponents' PDS units lose [[Planetary Shield]] and Space Cannon during this invasion.
+|''"Ssruu has met their systems and fixed them." Ssruu dropped a handful of ripped wires and broken circuitry on the pedestal before Q'uesh Sish. "He will await his next task aboard his ship."''
+|-
+|'''Distinguished Councilor'''
+|1
+|After you cast [[Agenda Phase|votes]] on an outcome of an agenda:
+| Cast 5 additional votes for that outcome.
+|''Elder Junn was a wonder to behold. He knew the name of every senator, made small talk effortlessly, and commanded attention when he spoke. Magmus hated everything about him.''
+|-
+|'''Economic Initiative'''
+|1
+|As an [[Action Phase|Action]]:
+|[[Readied and Exhausted|Ready]] each [[Planets and Systems#Planet Traits|cultural]] planet you control.
+|''Large sum of Hacan currency flowed freely into the project, and somehow, defying all logic, the returns were even greater.''
+|-
+|'''Emergency Repairs'''
+|1
+|At the start or end of a [[combat]] round:
+|Repair all of your units that have [[Sustain Damage]] in the active system.
+|''"What do you mean 'It's fine!?'" Dahla said, nearly tripping over a damaged bulkhead as the ship rocked from the explosive barrage.''
+|-
+|'''Experimental Battlestation'''
+|1
+|After another player [[Movement|moves]] ships into a system during a [[Tactical Action|tactical action]]:
+|Choose 1 of your [[Space Dock|space docks]] that is either in or [[Planets and Systems#Adjacency|adjacent]] to that system. That space dock uses [[Space Cannon]] 5 (x3) against ships in the active system.
+|''"Arm the relay!" Mendosa bared his fangs. "The Saar will not submit!"''
+|-
+|'''Fighter Prototype'''
+|1
+|At the start of the first round of a [[Space Combat|space combat]]:
+|Apply +2 to the result of each of your [[fighter]]s' combat rolls during this combat round.
+|''Suffi vaulted excitedly off the prototype's sleek, azure wing, landing effortlessly in its cockpit. "Let's see those damn snakes keep up with us now!"''
+|-
+|'''Fire Team'''
+|1
+|After your [[Ground Forces|ground forces]] make combat rolls during a round of [[Ground Combat|ground combat]]:
+|Reroll any number of your dice.
+|''Grinning, Jael spun towards the familiar noise of heavy boots hitting the ground. Backup had arrived.''
+|-
+|'''Flank Speed'''
+|4
+|After you [[Activation|activate]] a system:
+|Apply +1 to the move value of each of your ships during this [[Tactical Action|tactical action]].
+|
+# ''Mendosa smirked. "Don't ye fret now, girl. It sounds like ye've got somewhere ta be in a hurry, and it just se happens that I ken get ye there right quick."''
+# ''There was a low-pitched hum throughout the station and the gigantic, bulky constructions on the hull spat blue flame. Massive ion thrusters! So this was how the Saar moved the damned things.''
+# ''Mendosa grinned at the young Mentak pilot's astonishment. "Mobility-the Clan's greatest strength. Ye'd be amazed at how fast this thing ken go."''
+# ''With a sound like thunder and a flash of neon blue light, the thrusters accelerated full bore, nearly knocking Suffi off her feet.''
+|-
+|'''Focused Research'''
+|1
+|As an Action:
+|Spend 4 [[Trade Goods & Commodities|trade goods]] to research 1 [[technology]].
+|''Stunned, Rin looked over the data, scarcely able to believe what he was seeing. It was nothing short of a major breakthrough. The Headmaster would be pleased.''
+|-
+|'''Frontline Deployment'''
+|1
+|As an [[Action Phase|Action]]:
+|Place 3 [[infantry]] from your [[reinforcements]] on 1 planet you control.
+|''The soldiers poured fire on the writhing mass, but as each tendril vaporized, two more took its place. Panic wormed into the troopers' minds; was the creature growing?''
+|-
+|'''Ghost Ship'''
+|1
+|As an [[Action Phase|Action]]:
+|Place 1 [[destroyer]] from your [[reinforcements]] in a non-home system that contains a wormhole and does not contain other players' ships.
+|''Reports of Creuss vessels sighted in the area had surely been exaggerated. After all, the Creuss had no business this far from the Shaleri passage, and usually kept to themselves.''
+|-
+|'''Imperial Rider'''
+|1
+|After an agenda is revealed:
+|You cannot [[Agenda Phase|vote]] on this [[Agenda Cards|agenda]]. Predict aloud an outcome of this agenda. If your prediction is correct, gain 1 victory point.
+|''In a sweeping victory that surprised absolutely no one, the Winnu representative singlehandedly elected himself to oversee the analysis of a recently uncovered Lazax data cache.''
+|-
+|'''In The Silence Of Space'''
+|1
+|After you [[Activation|activate]] a system:
+|Choose 1 system. During this [[Tactical Action|tactical action]], your ships in the chosen system can [[Movement|move]] through systems that contain other players' ships.
+|''The Barony ships seemed to defy reality, bending light around them at impossible angles - naught but inky-black contours could be seen.''
+|-
+|'''Industrial Initiative'''
+|1
+|As an Action:
+|Gain 1 [[Trade Goods & Commodities|trade good]] for each [[Planets and Systems#Planet Traits|industrial]] planet you control.
+|''The Gashlai reactors proved to be extremely effective. With the conversion rate practically doubled, the factories' output was immense.''
+|-
+|'''Infiltrate'''
+|1
+|When you [[Invasion|gain control]] of a planet:
+|Replace each [[PDS]] and [[Space Dock|space dock]] that is on that planet with a matching unit from your [[reinforcements]].
+|''The 1X had scarcely interfaced with the mainframe before it belonged to them completely.''
+|-
+|'''Insubordination '''
+|1
+|As an Action:
+|Remove 1 [[Command Tokens|token]] from another player's [[Command Sheet|tactic pool]] and return it to their [[reinforcements]].
+|''Kilik had never been particularly good at following orders. It only seemed natural to get paid for exercising that trait, as long as she didn't think to hard about where the money was coming from.''
+|-
+|'''Intercept'''
+|1
+|After your opponent declares a retreat during a [[Space Combat|space combat]]:
+|Your opponent cannot retreat during this round of space combat.
+|''The space before the fleeing ship shimmered and warped, revealing the bow of the Y'sia Yssrila bearing down on its position. There would be no escape today.''
+|-
+|'''Leadership Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|You cannot [[Agenda Phase|vote]] on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, gain 3 [[Command Tokens|command tokens]].
+|''Rev's impassioned speech stunned the other councilors. Perhaps there was more to these humans than they had initially thought.''
+|-
+|'''Lost Star Chart'''
+|1
+|After you [[Activation|activate]] a system:
+|During this [[Tactical Action|tactical action]], systems that contain alpha and beta wormholes are [[Planets and Systems#Adjacency|adjacent]] to each other.
+|''The ship's sensors showed that the ancient star-map had somehow led them beyond the Mahact plateau.''
+|-
+|'''Lucky Shot'''
+|1
+|As an Action:
+|Destroy 1 [[dreadnought]], [[cruiser]], or [[destroyer]] in a system that contains a planet you control.
+|''The missile - an insignificant spark against the darkness - struck the hull of the dreadnought. Moments later, the starboard flank erupted in flames.''
+|-
+|'''Maneuvering Jets'''
+|4
+|Before you assign hits produced by another player's [[Space Cannon]] roll:
+|Cancel 1 hit.
+|
+# ''Something was wrong. T'esla sensed a flicker of movement on the planet's surface, followed by a faint glint of light. Reflexively, she veered her fighter to the side - an action that saved her life.''
+# ''The fighter's thruster boosted her just out of the cannon's firing solution, and a metal slug the size of a building rocketed past her crystalline ship.''
+# ''T'esla breathed a sigh of relief as the massive slug disappeared into the distance. A touch slower and she would have been annihilated.''
+# ''The flickering red warning lights on her control panel reflected in her scales as she regained her composure. "Well," she said aloud. "Zat was close."''
+|-
+|'''Mining Initiative '''
+|1
+|As an Action:
+|Gain [[Trade Goods & Commodities|trade goods]] equal to the [[Spending Resources and Influence|resource]] value of 1 planet you control.
+|''To support its voracious war machine, the N'orr empire cracked the planet's crust and began mining its very core.''
+|-
+|'''Morale Boost'''
+|4
+|At the start of a [[combat]] round:
+|Apply +1 to the result of each of your unit's combat rolls during this combat round.
+|
+# ''Harrugh stood before his warriors, searching for the words that would express the pride that swelled within him.''
+# ''"We have done the impossible. I am proud to call you my brothers. My equals. My betters." Harrugh's whiskers bristled with energy as he spoke.''
+# ''"Today we turn these invaders to ash and take back what is ours!" Harrugh paused, noting the murmurs of approval rippling through the ranks.''
+# ''The whispering gradually died down and his warriors watched Harrugh expectantly. Every muscle in his body tensed, and he thrust his gyro-spear skyward. "For Kenara!"''
+|-
+|'''Parley'''
+|1
+|After another player [[Invasion|commits units]] to land on a planet you control:
+|Return the committed units to the [[Planets and Systems#Placing Units on a System Tile|space area]].
+|''The human admiral returned to his ship, struggling to remember precisely how his meeting with the Collective had gone.''
+|-
+|'''Plague'''
+|1
+|Action: Choose 1 planet that is controlled by another player.
+|Roll 1 die for each [[infantry]] on that planet. For each result of 6 or greater, destroy 1 of those units.
+|''The letani dipped a mossy limb beneath the surface of the reservoir, feeling the flow of the particles within, shifting them, changing them into something different. Something dangerous.''
+|-
+|'''Political Stability'''
+|1
+|When you would return your [[Strategy Cards|strategy card]](s) during the [[Status Phase|status phase]]:
+|Do not return your strategy card(s). You do not choose strategy cards during the next strategy phase.
+|''The Winnu councilor breathed a sigh of relief. This opportunity would not be wasted. The peace of the Lazax was within grasp.''
+|-
+|'''Politics Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|You cannot [[Agenda Phase|vote]] on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, draw 3 action cards and gain the [[speaker]] token.
+|''The Dirzuga had managed to negotiate themselves into a position of power amongst the other councilors, all of whom still looked terribly uncomfortable in their presence.''
+|-
+|'''Public Disgrace'''
+|1
+|When another player chooses a [[Strategy Cards|strategy card]] during the strategy phase:
+|That player must choose a different strategy card instead, if able.
+|''In the months that followed the report, the Council was quick to censure the Jol-Nar for their unethical practices.''
+|-
+|'''Reactor Meltdown'''
+|1
+|As an Action:
+|Destroy 1 [[Space Dock|space dock]] in a non-home system.
+|''Flames engulfed the shipyard, a vortex of fire and shrapnel that left nothing untouched.''
+|-
+|'''Reparations'''
+|1
+|After another player [[Invasion|gains control]] of a planet you control:
+|[[Readied and Exhausted|Exhaust]] 1 planet that player controls and [[Readied and Exhausted|ready]] 1 planet you control.
+|''Gila oversaw the reconstruction of the Hacan outpost, but neglected to inform the N'orr representative that the damage was not nearly as severe as he was led to believe.''
+|-
+|'''Repeal Law'''
+|1
+|As an Action:
+|Discard 1 [[Agenda Cards#Laws|law]] from play.
+|''Eventually, the N'orr diplomat came to an agreement with Hacan Garrus, and the embargo was repealed. Still, he couldn't shake the feeling that Garrus had gotten the better end of the deal.''
+|-
+|'''Rise of a Messiah'''
+|1
+|As an Action:
+|Place 1 [[infantry]] from your [[reinforcements]] on each planet you control.
+|''Harrugh stood atop the dunes, looking down at the thousands of Hacan warriors mustered below. Gathering his strength, he let loose a mighty roar, the will of his people throughout the galaxy echoing forth from within.''
+|-
+|'''Sabotage'''
+|4
+|When another player plays an action card other than "Sabotage":
+|Cancel that action card.
+|
+# ''Q'uesh Sish tapped her claws impatiently. "You were sssaying?" But the confused Jol-Nar envoy stood silent. It was as if the words had escaped his thoughts entirely.''
+# ''trjn.desgn.ALIZARIN introduced itself to each data nodes, incorporating them into its platform, expunging any data it deemed a threat to the Virus.''
+# ''unit.desgn.BEELZEBUL followed the group of men through the winding hallways until they stopped at an intersection. Investigators would later find its cracked oculus at the center of a smoking crater, singed, but still functional.''
+# ''Unlenn smashed a clenched fist into the bulkhead, green eyes ablaze with rage. The entire plan had been turned on its head. Such incompetence was unfathomable.''
+|-
+|'''Salvage'''
+|1
+|After you win a [[Space Combat|space combat]]:
+|Your opponent gives you all of their [[Trade Goods & Commodities|commodities]].
+|''When the Coalition raiders had finally returned to their ships, scarcely a bolt remained to salvage from the destroyed vessel.''
+|-
+|'''Shields Holding'''
+|4
+|Before you assign hits to your ships during a [[Space Combat|space combat]]:
+|Cancel up to 2 hits.
+|
+# ''T'ro stared unflinching at the incoming barrage through the bridge's observation deck. The shield would hold.''
+# ''The blast from the enemy's main cannon slammed into the space in front of the warship, splitting into two streams across the bow.''
+# ''The ship's shields sizzled and sparked but remained active despite the heavy assault.''
+# ''As the assault died down and it became clear that the ship sustained no major damage, T'ro clicked his mandibles in anticipation. "Return fire!"''
+|-
+|'''Signal Jamming'''
+|1
+|As an Action:
+|Chose 1 non-home system that contains or is [[Planets and Systems#Adjacency|adjacent]] to 1 of your ships. Place a [[Command Tokens|command token]] from another player's [[reinforcements]] in that system.
+|''Meian was practically aglow, wisps of her ether crackling with delight. It was amazing what could be achieved with a well-timed electromagnetic discharge.''
+|-
+|'''Skilled Retreat'''
+|4
+|At the start of a [[Space Combat|combat]] round:
+|Move all of your ships from the active system into an [[Planets and Systems#Adjacency|adjacent]] system that does not contain another player's ships; the space combat ends in a draw. Then, place a [[Command Tokens|command token]] from your [[reinforcements]] in that system.
+|
+# ''In an instant, the Sol fleet vanished from the Barony's scanners.''
+# ''The Creuss fleet was gone. No trace remained of their passage.''
+# ''T'ro gave the order, and the entire fleet withdrew without question.''
+# ''"We have no choice, captain." Ciel looked nervous."We must retreat."''
+|-
+|'''Spy'''
+|1
+|As an Action:
+|Choose 1 player. That player gives you 1 random action card from their hand.
+|''"I'm no spy," Connor said, casually stuffing the data drives into his pack. "Now, how can I get out of here without being seen?"''
+|-
+|'''Summit'''
+|1
+|At the start of the strategy phase:
+|Gain 2 [[Command Tokens|command tokens]].
+|''At the end of the twelfth day, Rev returned home from the summit in New Moscow feeling physically exhausted and mentally drained. But she was also satisfied. They had a plan - finally - and it was a good plan.''
+|-
+|'''Tactical Bombardment'''
+|1
+|As an Action:
+|Choose 1 system that contains 1 or more of your units that have [[Bombardment]]. [[Readied and Exhausted|Exhaust]] each planet controlled by other players in that system.
+|''A6's red eyes flickered with activity and a string of numbers flashed briefly across the screen before he spoke. "Bombardment complete. All enemy installations have been neutralized."''
+|-
+|'''Technology Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|You cannot [[Agenda Phase|vote]] on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, [[Technology#research|research]] 1 technology.
+|''The Council granted the Yin funding to research an effective countermeasure to combat the virus. After all, keeping the Yin occupied with the virus meant killing two birds with one stone.''
+|-
+|'''Trade Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|You cannot [[Agenda Phase|vote]] on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, gain 5 [[Trade Goods & Commodities|trade goods]].
+|''The Letnev councilor begrudgingly accepted the N'orr's core mining contract, if only so that the "gracious" Hacan senator didn't secure yet another source of income for his clan.''
+|-
+|'''Unexpected Action'''
+|1
+|As an Action:
+|Remove 1 of your [[Command Tokens|command tokens]] from the game board and return it to your [[reinforcements]].
+|''M'aban's voice was barely a whisper, cracking as hundreds of flashing lights appeared on her scanner. "We've been tricked."''
+|-
+|'''Unstable Planet'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose 1 hazardous planet. [[Readied and Exhausted|Exhaust]] that planet and destroy [[Errata#Unstable Planet|up to]] 3 [[infantry]] on it.
+|''Another quake shook the planet, and a wave of dirt and rock rose up to swallow the Tekklar legion.''
+|-
+|'''Upgrade'''
+|1
+|After you [[Activation|activate]] a system that contains 1 or more of your ships:
+|Replace one of your [[cruiser]]s in that system with one of your [[dreadnought]]s from your [[reinforcements]].
+|''"More guns?" Connor shook his head. "Not more guns. Let's try something bigger."''
+|-
+|'''Uprising'''
+|1
+|As an Action:
+|[[Readied and Exhausted|Exhaust]] 1 non-home planet controlled by another player. Then gain [[Trade Goods & Commodities|trade goods]] equal to its [[Spending Resources and Influence|resource]] value.
+|''Harrugh leapt down from the ledge, gyro-spear blazing in the sunlight. In front, the L1Z1X began to take notice. Behind his warriors stood at the ready. Win or lose, this would be the end.''
+|-
+|'''Veto'''
+|1
+|[[Errata#Veto|When]] an [[Agenda Cards|agenda]] is revealed:
+|Discard that agenda and reveal 1 agenda from the top of the deck. Players [[Agenda Phase|vote]] on this agenda instead.
+|''Magmus batted the now charred corpse aside with the back of his golden gauntlet. "The Muuat reject your proposal."''
+|-
+|'''War Effort'''
+|1
+|As an [[Action Phase|Action]]:
+|Place 1 [[cruiser]] from your [[reinforcements]] in a system that contains 1 or more of your ships.
+|''The N'orr may not be the most proficient shipwrights, but the willingness of their citizens to do their part far exceeds that of the other great races.''
+|-
+|'''Warfare Rider'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|You cannot [[Agenda Phase|vote]] on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, place 1 [[dreadnought]] from your [[reinforcements]] in a system that contains 1 or more of your ships.
+|''Elder Junn sighed. "Disarmament, it seems, has fallen out of fashion in these dark days."''
+|}<br />
+
+=== [[Codex I - IV (Fourth Edition Expansion)#Volume I (Ordinian)|Codex I]] ===
+Codex I introduced 20 new Action Cards, which may be added to improve gameplay 
+{| class="article-table"
+!'''Name'''
+!'''Number in Deck'''
+!'''Play'''
+!'''Effect'''
+!'''Flavor Text'''
+|-
+|'''Blitz'''
+|1
+|At the start of an [[invasion]]:
+|Each of your [[Units#Ships|non-fighter]] ships in the active system that do not have [[Bombardment|BOMBARDMENT]] gain BOMBARDMENT 6 until the end of the invasion.
+|''"T-these weren't meant to be used like this. T-this is a t-terrible idea." Tai mumbled, wringing his hands. "Well 'course it is," Dart grinned, slamming his fist down on the release lock. "But we've got about sixty kilotons of 'surprise' and nothing to lose!"''
+|-
+|'''Counterstroke'''
+|1
+|After a player [[Activation|activates]] a system that contains 1 of your [[Command Tokens|command tokens]]:
+|Return that command token to your [[Command Sheet|tactic pool]].
+|''"That's the thing about loyalty - " Viktor mused, turning one of the pieces backward, facing its own side. "It can be bought."''
+|-
+|'''Fighter Conscription'''
+|1
+|As an Action:
+|Place 1 [[fighter]] from your [[reinforcements]] in each system that contains 1 or more of your [[Space Dock|space docks]] or units that have [[capacity]]; they cannot be placed in systems that contain other players' ships.
+|''T'esla grinned as her shimmering vessel lifted off the flight deck - at last, that damned Viscount would experience the superiority of Naalu dogfighting. "Get ready," she hissed into the comms.''
+|-
+|'''Forward Supply Base'''
+|1
+|After another player [[Activation|activates]] a system that contains your units:
+|Gain 3 [[Trade Goods & Commodities|trade goods]]. Then, choose another player to gain 1 trade good.
+|''All eyes turned toward the darkening skies as the only surviving supply truck rolled through the gates. "Get these checked in and send the last shipment to our allies!" Harrugh yelled over the din of the engines.''
+|-
+|'''Ghost Squad'''
+|1
+|After a player [[Invasion|commits]] units to land on a planet you control:
+|Move any number of [[Ground Forces|ground forces]] from any planet you control in the active system to any other planet you control in the active system.
+|''The L1 advance team was expecting to find the outpost abandoned. What they found - unfortunately for them - was Connor.''
+|-
+|'''Hack Election'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|During this agenda, [[Agenda Phase|voting]] begins with the player to the right of the [[speaker]] and continues counterclockwise.
+|''YOUR [NULL ID] STATELY GAME WILL BE FOR NAUGHT<< [VAR:42687] ORDER WILL ARISE FROM [VAR:89001] CHAOS<< IT IS OUR HAND THAT CONTROLS THE OUTCOME''
+|-
+|'''Harness Energy'''
+|1
+|After you [[Activation|activate]] an [[Planets and Systems#Anomalies|anomaly]]:
+|Replenish your [[Trade Goods & Commodities|commodities]].
+|''"Manipulating the cosmos was a power reserved for the gods." Rowl spat at the ground as his contraption whirred to life. "Not anymore."''
+|-
+|'''Impersonation'''
+|1
+|As an Action:
+|Spend 3 [[Spending Resources and Influence|influence]] to draw 1 [[Objectives#Secret Objectives|secret objective]].
+|''"Also," Connor continued, bemused. "Someone just handed me this as I was leaving. I think it was meant for our dear friend Sucaban. We should be able to put it to good use."''
+|-
+|'''Insider Information'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|Look at the top card of the agenda deck.
+|''M'aban yawned. Another filibuster. Politics could be so flavorless at times. Besides, she already knew how this one was going to turn out. Not well. Not well at all...''
+|-
+|'''Master Plan'''
+|1
+|After you perform an [[Action Phase|action]]:
+|You may perform an additional action this turn.
+|''Viktor laced his long fingers with a wicked smile. Unlenn would be proud. The tactician's reputation was well-earned; even pawns could unseat kings.''
+|-
+|'''Plagiarize'''
+|1
+|As an [[Action Phase|Action]]:
+|Spend 5 [[Spending Resources and Influence|influence]] and choose a non-faction [[technology]] owned by 1 of your neighbors; [[Technology#Gain|gain]] that technology.
+|''The Yssaril spies handed over their prize to Connor, who in turn passed it to the Sol engineers with a grim smile. "Now then, boys," he said, one hand on his rifle, "about those loose ends..."''
+|-
+|'''Rally'''
+|1
+|After you [[Activation|activate]] a system that contains another player's ships:
+|Place 2 [[Command Tokens|command tokens]] from your [[reinforcements]] in your [[Command Sheet|fleet pool]].
+|''The Federation advance would not be halted - not today. Claire set her broadcast to play on all open channels. She began, her voice fierce and unwavering "Friends! On this day, our names shall be inscribed in the pages of legend!"''
+|-
+|'''Reflective Shielding'''
+|1
+|When one of your ships uses [[Sustain Damage|SUSTAIN DAMAGE]] during combat:
+|Produce 2 hits against your opponent's ships in the active system.
+|''Prit scrambled up Hesh's shoulder, gleefully clapping as the entropic shielding tore the mercenary cruisers apart.''
+|-
+|'''Sanction'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|You cannot [[Agenda Phase|vote]] on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, each player that voted for that outcome returns 1 [[Command Tokens|command token]] from their [[Command Sheet|fleet supply]] to their [[reinforcements]].
+|''Two can play at this game.''
+|-
+|'''Scramble Frequency'''
+|1
+|After another player makes a [[Bombardment|BOMBARDMENT]], [[Space Cannon|SPACE CANNON]], or [[Anti-Fighter Barrage|ANTI-FIGHTER BARRAGE]] roll:
+|That player rerolls all of their dice.
+|''"I will not accept this from that worthless scum!" Feng growled as his enigmatic companion interfaced with the ship's nav suite. The Memoria's position flickered and shifted, and the blast flashed harmlessly by.''
+|-
+|'''Solar Flare'''
+|1
+|After you [[Activation|activate]] a system:
+|During this [[movement]], other players cannot use [[Space Cannon|SPACE CANNON]] against your ships.
+|''Meian braced for combat as the fleet entered the Ordinian system, but there were no Valefar droneships waiting to meet them. The solar flare gambit had succeeded - they were completely undetected.''
+|-
+|'''War Machine'''
+|4
+|When 1 or more of your units use [[Production|PRODUCTION]]:
+|Apply +4 to the total PRODUCTION value of your units and reduce the combined cost of the produced units by 1.
+|
+# ''"This would take weeks to replace if you had run it backwards," Varish called as she rotated the massive capacitor bank. "Okay, fire it up."''
+# ''The station vibrated as the device sputtered to life, emitting a high-pitched buzz to Varish's ears. "Micro-wormholes are cycling at 19 kilohertz," Cole read. "The entropic field tap's stable."''
+# ''The station's production facilities spooled up to new intensities, lights flaring as the assembly line drones increased their speeds to keep up.''
+# ''"Varish, let the Commanders know they can contact the Tetrarchy. Tell them the fighter squadron assembly will be done ahead of schedule, and under budget."''
+|}<br />
+
+=== [[Prophecy of Kings]] ===
+The Expansion introduced 20 additional Action Cards, bringing the total up to 120 
+{| class="article-table"
+!'''Name'''
+!'''Number in Deck'''
+!'''Play'''
+!'''Effect'''
+!'''Flavor Text'''
+|-
+|'''Archaeological Expedition'''
+|1
+|As an [[Action Phase|Action]]:
+|Reveal the top 3 cards of an [[exploration]] deck that matches a planet you control; gain any relic fragments that you reveal and discard the rest.
+|''Hiari pressed the activation glyphs, and the ancient door hissed open. As she stepped into the pitch-black interior of the Mahact tomb, she felt a shiver of anticipation. Perhaps, finally, she would find the Codex.''
+|-
+|'''Confounding Legal Text'''
+|1
+|When another player is [[Agenda Phase|elected]] as the outcome of an [[Agenda Cards|agenda]]:
+|You are the elected player instead.
+|''"Unfortunately," Cinnabian said in a level voice, "the Galactic Council requires the dispute be arbitrated by a truly neutral party. As the Titans were still slumbering when your war began, we will oversee your negotiations... instead of your friends on Jord."''
+|-
+|'''Coup d'Etat'''
+|1
+|When another player would perform a [[Strategic Action|strategic action]]:
+|End that player's turn; the strategic action is not resolved and the [[Strategy Cards|strategy card]] is not [[Readied and Exhausted|exhausted]]. 
+|''Artuno shoved the slug pistol into Huro's face as armored mercenaries stormed into the office. "I'm afraid the station's undergoing a change in management."''
+|-
+|'''Deadly Plot'''
+|1
+|During the [[Agenda Phase|agenda phase]], when an outcome would be resolved:
+|If you voted for or predicted another outcome, discard the [[Agenda Cards|agenda]] instead; the agenda is resolved with no effect and it is not replaced. 
+Then, [[Readied and Exhausted|exhaust]] all of your planets.
+|''The hooded envoy erupted into a nightmare of black metal, lunging at the shocked diplomats.''
+|-
+|'''Decoy Operation'''
+|1
+|After another player [[Activation|activates]] a system that contains 1 or more of your [[Units#Structures|structures]]:
+|Remove up to 2 of your [[Ground Forces|ground forces]] from the game board and place them on a planet you control in the active system.
+|''Enemy fire lashed the abandoned positions on the ridgeline as Trilossa's flock slipped unseen around their flanks.''
+|-
+|'''Diplomatic Pressure'''
+|4
+|When an [[Agenda Cards|agenda]] is revealed:
+|Choose another player; that player must give you 1 [[Promissory Notes|promissory note]] from their hand.
+|
+# ''The Arborec emissary leaned close, and Brother Milor flinched at the faint whiff of decay. "You do not understand," Dirzuga Ohao rasped. "You must support this measure."''
+# ''Brother Milor shook his head. "The Brotherhood cannot support your war against this extra-dimensional threat." Dirzuga Ohao raised an eyebrow. "Are you certain?"''
+# ''"It would be unfortunate," the Arborec Dirzuga said, "if your supplies of diraxium were to dry up. How would your fleet defend you if we stopped supplying its fuel?"''
+# ''"Damn you!" Brother Milor hissed. "You leave us no choice but to fight in your war." Dirzuga Ohao smiled, dead skin stretching over her teeth.''
+|-
+|'''Divert Funding'''
+|1
+|As an [[Action Phase|Action]]: 
+|Return a non-[[Unit Upgrades|unit upgrade]], non-[[Faction Technologies|faction technology]] that you own to your technology deck. Then, [[Technology#Research|research]] another technology.
+|''"I am sorry, Academician," Arbiter Berekon shrugged. "I am sure psychoarchaeology is an interesting subject, but the supreme leader feels your budget would be better spent on more militaristic research."''
+|-
+|'''Exploration Probe'''
+|1
+|As an [[Action Phase|Action]]:
+|[[Exploration|Explore]] a frontier token that is in or [[Planets and Systems#Adjacency|adjacent]] to a system that contains 1 or more of your ships. 
+|''With a dull thud, the probe shot from the cruiser and accelerated into the writhing maelstrom of the gravity rift. Admiral DeLouis paced on the bridge. Hopefully, this time the probe would return.''
+|-
+|'''Manipulate Investments'''
+|1
+|At the start of the [[Strategy Phase]]:
+|Place a total of 5 [[Trade Goods & Commodities|trade goods]] from the supply on [[Strategy Cards|strategy cards]] of your choice; you must place these tokens on at least 3 different cards. 
+|''"But my good fellow," the envoy sputtered. "Surely you can't expect me to agree to those prices!" Durruq leaned in close. "Check again. You may find your goods are trading for less than you think."''
+|-
+|'''Nav Suite'''
+|1
+|After you [[Activation|activate]] a system:
+|During the "[[Movement]]" step of this [[Tactical Action|tactical action]], ignore the effects of [[Planets and Systems#Anomalies|anomalies]].
+|''"The field is too thick!" Sikosk gasped. Trrakan's plume flared. "Not for me, and not for Iruth." A flick of his talon, and the destroyer flipped and dove for the asteroid field.''
+|-
+|'''Refit Troops'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose 1 or 2 of your [[infantry]] on the game board; replace each of those infantry with [[mechs]]. 
+|''Sek'kus leapt from the trenches, the plasma projectors on her Valkyrie ekoskeleton howling as they scoured the field ahead of her.''
+|-
+|'''Reveal Prototype'''
+|1
+|At the start of a [[combat]]:
+|Spend 4 [[Spending Resources and Influence|resources]] to [[Technology#Research|research]] a [[Unit Upgrades|unit upgrade]] technology of the same type as 1 of your units that is participating in this combat.
+|''Varish and Cole completed the final linkages, activating the field harvester. The cruiser's beams roared with renewed power, cutting through the enemy ship.''
+|-
+|'''Reverse Engineer'''
+|1
+|When another player discards an action card that has a [[Component Action|component action]]:
+|Take that action card from the discard pile.
+|''Xuange spread their hands over the captured harvester. Mirroring their careful gestures, dark energy fields unfolded and began delicately disassembling the device.''
+|-
+|'''Rout'''
+|1
+|At the start of the "Announce Retreats" step of [[Space Combat|space combat]], if you are the defender:
+|Your opponent must announce a retreat, if able.
+|''Vuil'raith fleshships swarmed the weary defenders, sending unease and sweeping through the telepathic links. But Z'eu projected a powerful feeling of calm, and the Naalu fighters began to drive the Cabal back toward the rift.''
+|-
+|'''Scuttle'''
+|1
+|As an Action:
+|Choose 1 or 2 of your [[Units#Ships|non-fighter]] ships on the game board and return them to your [[reinforcements]]; gain [[Trade Goods & Commodities|trade goods]] equal to the combined cost of those ships.
+|''Rear Admiral Farran saluted as he watched the blasted starship being towed to the scrap yard. "You served me well," he whispered. "Now you can serve the Barony once more."''
+|-
+|'''Seize Artifact'''
+|1
+|As an Action:
+|Choose 1 of your [[neighbors]] that has 1 or more [[Exploration|relic fragments]]. That player must give you 1 relic fragment of your choice. 
+|''Armored dropships crashed into the main dock. Hatches blew open, and Captain Mentarion and her commando raider charged into the facility's heart.''
+|-
+|'''Waylay'''
+|1
+|Before you roll dice for [[Anti-Fighter Barrage|ANTI-FIGHTER BARRAGE]]:
+|Hits from this roll are produced against all ships (not just fighters). 
+|''The destroyers sprayed fire with their secondary batteries as they advanced. The Mahact dreadnought began to list, fire and atmosphere gushing from a thousand tiny wounds.''
+|}
+
+=== [[Thunder's Edge]] ===
+The Expansion introduced 20 additional Action Cards, bringing the total up to 140 
+{| class="article-table"
+!'''Name'''
+!'''Number in Deck'''
+!'''Play'''
+!'''Effect'''
+!'''Flavor Text'''
+|-
+|'''Black Market Dealings'''
+|1
+|When you are negotiating a transaction:
+|You and the other player can include relics, action cards, and unscored secret objectives as part of the transaction. This card cannot be cancelled.
+|''A chill went up Riod's spine as the Empyrean extended a clawed hand, a small black box floating in their palm,, sucking up all the light and life in the room.''
+|-
+|'''Brillance'''
+|1
+|As an [[Action Phase|Action]]:
+|Ready 1 of your planets that has a technology speciality or choose 1 player to gain their breakthrough.
+|''Crocoan gently stroked the bloodied feathers of the screeching cir-le-sh. Such a beautiful song. At last, he'd cracked the code. Soon, Garanthis would be filled with a chorus of such soulful music.''
+|-
+|'''Crash Landing'''
+|1
+|When your last ship in the active system is destroyed: 
+|Place 1 of your [[Ground Forces|ground forces]] from the space area of the active system onto a planet in that system other than Mecatol Rex; if the planet contains other players' units, place your ground force into coexistence.
+|''The Long Fall spiraled toward the surface of the rocky planet. Living up to its name, Connor thought dryly.''
+|-
+|'''Crisis'''
+|1
+|At the end of any player's turn, if there are at least 2 players who have not [[Action Phase#Pass|passed]]:
+|Skip the next player's turn.
+|''4X41A "Apollo" shrieked in the skies of Ordinian. Blazing shards of metal and fire rained down upon the planet's surface - the remains of Nekro whose atoms were undergoing a rapid and violent disintegration.''
+|-
+|'''Exchange Program'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose another player. You and the player may agree to place 1 infantry from each of your reinforcements into coexistence on a planet the other player controls that contains their ground forces; if no agreement is reached, you each discard 1 token from your fleet pool.
+|Madness. ''Magmus thought to himself. A city. Under water.'' Absurd
+|-
+|'''Extreme Duress'''
+|1
+|At the start of another player's turn, if they have a readied [[Strategy Cards|strategy card]]:
+|If that player's next action is not a strategic action, they discard all of their action cards, gives you all of their trade goods, and shows you all of their secret objectives.
+|''Kan Kip Rel tugged nervously at his collar, fingering the explosive device he knew was there.''
+|-
+|'''Lie in Wait'''
+|1
+|After 2 of your neighbours resolve a [[Transactions & Deals|transaction]]:
+|Look at each of those player's hands of action cards, then choose and take 1 action card from each.
+|''Suffi sauntered towards the huddle of paralyzed Hylar, whistling and twirling her pistols as she walked.'' 
+''"I'll be taking these," she said, flashing a grin, and snatched the humming data drives from each of them in turn.''
+|-
+|'''Mercenary Contract'''
+|1
+|As an [[Action Phase|Action]]:
+|Spend 2 trade goods to place 2 neutral infantry on any non-home planet that contains no units; if that planet was owned by another player, they return its planet card to the planet card deck.
+|''"Just sign right 'here---yep, right below the smeared blood. You got it, champ, get at 'em."''
+|-
+|'''Pirate Contract'''
+|4
+|As an [[Action Phase|Action]]:
+|Place 1 neutral [[destroyer]] in a non-home system that contains no non-neutral ships.
+|
+# ''Suffi accepted the contract, swearing her solemn vow that she would see the viceroy's daugfhter kidnapped and held for ransom by the day's end.''
+# ''Suffi accepted the contract, swearing her solemn vow as one of Mogar's Raiders that she would be loyal to the crew above all else.''
+# ''Suffi accepted the contract, swearing her solemn vow as a member of the Shadowscald that the job would be completed, one way or another.''
+# ''Satisfied, Suffi cashed in her contracts, wondering how long it would take any of them to notice she was gone. After all, it was much too late, with any luck.''
+# 
+#
+|-
+|'''Pirate Fleet'''
+|1
+|As an [[Action Phase|Action]]:
+|Spend 3 [[Spending Resources and Influence|resources]] to place 1 neutral carrier, 1 neutral cruiser, 1 neutral destroyer, and 2 neutral fighters in a non-home system that contains no ships.
+|''Felix rubbed his temples as the pirtaes - well, the other pirates - blipped one by one on the ship's scanner. It was going to be a very long day.''
+|-
+|'''Puppets on a String'''
+|1
+|At the end of any player's turn, if you have [[Action Phase#Pass|passed]]: 
+|Perform 1 action.
+|''A red light flashed as the pile that was once thought to be destroyed remains of unit..dsgn.ASTAROTH came once more to life. "YOU THOUGHT. YOU BELIEVED YOUR VICTORY SECURE. BUT YOU WERE WRONG."''
+|-
+|'''Rescue'''
+|1
+|After another player moves ships into a system that contains your ships:
+|You may move 1 of your ships into the active system from any system that does not contain one of your command tokens.
+|''"Hold on..." Tuck pleaded. "We are coming. Hold on, please..."''
+|-
+|'''Strategize'''
+|4
+|As an [[Action Phase|Action]]:
+|Perform the secondary ability of any readied or unchosen strategy card
+|
+# ''Sweat dripped down Mathis' brow. To show weakness now would mean defeat. Death would be preferable to that. But then, as if the divine providence of the Lazax were within her, she saw something she had overlooked. An opening! Her hand darted forward as she made her play. She smirked.''
+# ''Strategy. What meaning could be derived from the word, what flesh could be sucked clean off its bones? There was a spark, almost like remembering, but it faded. Violently.''
+# ''No, there would be no strategy here, only hunder. Life, blood, love, life, fear, fear, fear. Let the ants mill about with their strategies. No strategy would avail them today.''
+# ''Kyver stared at Mathis in the eye, unblinking. For a time, niether made a move. The greens and browns of Kyver's eyes were impassive. They betrayed nothing of his intent. Nothing of his past or his future. They were but windows to the wild, unforgiving jungles of Retillion.''
+#
+#
+#
+|-
+|'''Overrule'''
+|1
+|As an [[Action Phase|Action]]:
+|Perform the primary ability of any readied or unchosen strategy card
+|''Treilla absentmindedly smiled at the audacity of the newly promoted commander. Making waves like this–he'd likely be dead or demoted within a day or two. Still, she found the posturing...amusing.''
+|}
+
+==== Thunder's Edge Updated ====
+Thunder's Edge included all of the action cards from the Codices. The following cards received wording updates.
+{| class="article-table"
+!'''Name'''
+!'''Number in Deck'''
+!'''Play'''
+!'''Effect'''
+!'''Flavor Text'''
+|-
+|'''Master PlanΩ'''
+|1
+|After you perform an [[Action Phase|action]]:
+|Perform an additional action.
+|''Viktor laced his long fingers with a wicked smile. Unlenn would be proud. The tactician's reputation was well-earned; even pawns could unseat kings.''
+|-
+|'''Fighter ConscriptionΩ'''
+|1
+|As an Action:
+|Place 1 [[fighter]] from your [[reinforcements]] in each system that contains 1 or more of your [[Space Dock|space docks]] or ships that have a [[capacity]] value; they cannot be placed in systems that contain other players' ships.
+|''T'esla grinned as her shimmering vessel lifted off the flight deck - at last, that damned Viscount would experience the superiority of Naalu dogfighting. "Get ready," she hissed into the comms.''
+|-
+|'''BlitzΩ'''
+|1
+|At the start of an [[invasion]]:
+|Each of your [[Units#Ships|non-fighter]] ships in the active system that does not have [[Bombardment|BOMBARDMENT]] gains BOMBARDMENT 6 until the end of the invasion.
+|''"T-these weren't meant to be used like this. T-this is a t-terrible idea." Tai mumbled, wringing his hands. "Well 'course it is," Dart grinned, slamming his fist down on the release lock. "But we've got about sixty kilotons of 'surprise' and nothing to lose!"''
+|-
+|'''Hack ElectionΩ'''
+|1
+|After an [[Agenda Cards|agenda]] is revealed:
+|During this agenda, you vote last.
+|''YOUR [NULL ID] STATELY GAME WILL BE FOR NAUGHT<< [VAR:42687] ORDER WILL ARISE FROM [VAR:89001] CHAOS<< IT IS OUR HAND THAT CONTROLS THE OUTCOME''
+|-
+|'''Solar FlareΩ'''
+|1
+|After you [[Activation|activate]] a system:
+|During the [[movement|"Movement]]" step of this tactical action, other players cannot use [[Space Cannon|SPACE CANNON]] against your ships.
+|''Meian braced for combat as the fleet entered the Ordinian system, but there were no Valefar droneships waiting to meet them. The solar flare gambit had succeeded - they were completely undetected.''
+|-
+|'''CounterstrokeΩ'''
+|1
+|After another player [[Activation|activates]] a system that contains 1 of your [[Command Tokens|command tokens]]:
+|Return that command token to your [[Command Sheet|tactic pool]].
+|''"That's the thing about loyalty - " Viktor mused, turning one of the pieces backward, facing its own side. "It can be bought."''
+|-
+|'''Ghost SquadΩ'''
+|1
+|After another player [[Invasion|commits]] units to land on a planet you control:
+|Move any number of [[Ground Forces|ground forces]] from any planet you control in the active system to any other planet you control in the active system.
+|''The L1 advance team was expecting to find the outpost abandoned. What they found - unfortunately for them - was Connor.''
+|-
+|'''War MachineΩ'''
+|4
+|When 1 or more of your units use [[Production|PRODUCTION]]:
+|Apply +4 to the total PRODUCTION value of those units and reduce the combined cost of the produced units by 1.
+|
+# ''"This would take weeks to replace if you had run it backwards," Varish called as she rotated the massive capacitor bank. "Okay, fire it up."''
+# ''The station vibrated as the device sputtered to life, emitting a high-pitched buzz to Varish's ears. "Micro-wormholes are cycling at 19 kilohertz," Cole read. "The entropic field tap's stable."''
+# ''The station's production facilities spooled up to new intensities, lights flaring as the assembly line drones increased their speeds to keep up.''
+# ''"Varish, let the Commanders know they can contact the Tetrarchy. Tell them the fighter squadron assembly will be done ahead of schedule, and under budget."''
+|}
+
+== [[Twilight's Fall|Twilight's Fall Variant]] ==
+The Twilight's Fall Game Variant of Fourth Edition utilises its own Action Card deck. These cards are only used for this mode and aren't used for a regular game of Twilight Imperium
+{| class="article-table"
+!'''Name'''
+!'''Number in Deck'''
+!'''Play'''
+!'''Effect'''
+!'''Flavor Text'''
+|-
+|'''Atomize'''
+|1
+|When your flagship is destroyed: 
+|purge your flagship to destroy all other units in its system.
+|
+|-
+|'''Cloak'''
+|1
+|After you activate a system:
+|Your ships can move through systems that contain other players' ships during this action, and space cannon cannot be used against them.
+| rowspan="1" |''The Ruby Monarch turned from the Eidolon, savaged in Cormund's shattered orbit, to address its pair of captured pilots. "Your union has proven more resilient than anticipated," they crackled. "Your species will make a fine addition to my collection."''
+|-
+|'''Coerce'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose a player. That player must give you one of their abilities.
+| rowspan="1" |''Tizona slid from the Kuiper belt like a sword unsheathed, sweeping toward the inner system with her flotilla trailing in a glittering arc.''
+|-
+|'''Command'''
+|2
+|After you activate a system:
+|Apply +1 to the move value of each of your ships during this tactical action. Additionally, you ships may move through and into asteroid fields during this movement.
+| rowspan="1" |''Il Na Viroset led the fleet in a deadly ballet above Perimeter, each delicate turn through the perpendicular orbital rings leaving the Winnu defenders flat-footed.''
+|-
+|'''Converge'''
+|1
+|Before you roll dice for '''SPACE CANNON''':
+|Your hits must be applied to non-fighter ships during SPACE CANNON OFFENSE, or mechs during SPACE CANNON DEFENSE, if able.
+|
+|-
+|'''Create'''
+|1
+|As an [[Action Phase|Action]]:
+|Gain 1 relic.
+|
+|-
+|'''Divinity'''
+|1
+|When 1 of your units would be destroyed:
+|It is not destroyed instead.
+| rowspan="1" |''The Airo Shir Rex emerged from the inferno unscathed, the corona a radiant halo about it, and all who beheld it were in awe.''
+|-
+|'''Elevate'''
+|1
+|As an [[Action Phase|Action]]:
+|Draw 1 paradigm.
+| rowspan="1" |
+|-
+|'''Engineer'''
+|1
+|When you draw cards for a splice that you initiated:
+|Add 2 additional cards to the splice; after you choose your card, choose and discard 2 of the spliced cards before passing them to the next player.
+| rowspan="1" |''"It seems that Zel Tol Mosin did not intend his heir to receive his estate," rumbled Tyrolian the Gatekeeper, "but instead, to provide a vessel for his mond."''
+|-
+|'''Entangle'''
+|1
+|After you activate a system:
+|All systems that contain alpha wormholes, beta wormholes, gamma wormholes, and gravity rifts are adjacent during this movement.
+|
+|-
+|'''Evolve'''
+|1
+|As an [[Action Phase|Action]]:
+|Draw 1 card from any splice deck.
+|
+|-
+|'''Feint'''
+|1
+|When you announce a retreat:
+|You units immediately retreat to an eligible system; do not place a command token in that system.
+|
+|-
+|'''Fluxx'''
+|1
+|As an [[Action Phase|Action]]:
+|Either remove any player's command token from the board, or place a command token from any player's reinforcements in a system that contains or is adjcant to one of your ships.
+|
+|-
+|'''Genophage'''
+|1
+|As an [[Action Phase|Action]]:
+|Discard 1 of your neighbours genomes.
+| rowspan="1" |''"You mean, after all this time," whispered Brother Omar in horror, "the Greyfire...it was a Mahact test?"''
+''"Yes," lied the Herald of Thorns, "And now, you have passed."''
+|-
+|'''Hardlight'''
+|2
+|Before hits are assigned to your units:
+|Cancel up to 2 hits.
+|
+|-
+|'''Helix'''
+|1
+|As an [[Action Phase|Action]]:
+|Initiate a splice of any type, including all players.
+|
+|-
+|'''Ignis'''
+|1
+|As an [[Action Phase|Action]]:
+|Place a command token from your tactic pool in any non-home system; choose and destroy 1 unit in that system.
+|
+|-
+|'''Irradiate'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose 1 unit type other than flagship; reveal cards from the unit upgrade deck until you reveal a card of that type, if able. Then, gain that card and shuffle the rest back into the unit upgrade deck.
+|
+|-
+|'''Lash'''
+|1
+|When 1 of your units is destroyed:
+|Destroy a unit in its system that has an equal or lower cost.
+|
+|-
+|'''Locust'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose 1 infantry in a system adjacet to your units and roll 1 die. On a result of 3 or higher, destroy that infantry and choose an infantry in the same or an adjacent system to repeat this roll; for each new roll, choose an infantry owned by a different player than the previous infantry, if able.
+|
+|-
+|'''Magnificence'''
+|1
+|As an [[Action Phase|Action]]:
+|Move all units from the space area of any system into an adjacent system that contains a different player's ships. Space combat is resolved in that system; neither player can retreat or resolve abilities that would move their ships.
+|
+|-
+|'''Manafest'''
+|1
+|As an [[Action Phase|Action]]:
+|Resovle the PRODUCITON ability of 1 of your units; reduce the combined cost of the produced units by 3.
+|
+|-
+|'''Manipulate'''
+|1
+|After cards are drawn for a splice that you are not participating in:
+|Take the cards and choose which card each participating player will take.
+| rowspan="1" |''The other had always thought Jae Mir Kan a mere courier. They failed to appreciate how much a message's reception depended on the manner of its delivery.''
+|-
+|'''Meddle'''
+|1
+|When any die is rolled:
+|Add or subtract 1 from its result.
+|
+|-
+|'''Meld'''
+|1
+|When a die is rolled by any player:
+|Roll two dice instead, and add the results together (max 10).
+|
+|-
+|'''Meteor'''
+|1
+|When you would remove ground forces due to insufficient capacity:
+|Commit those ground forces to a planet instead; resolve an invasion on that planet using only those ground forces.
+| rowspan="1" |''As her escape pod plummeted down the gravity well, II Gacyn Klar repeated her liege's parting words with a sneer, "Nothing personal."''
+|-
+|'''Mutate'''
+|2
+|As an [[Action Phase|Action]]:
+|Discard 1 of your abilities, then draw 1 ability.
+| rowspan="1" |''"Very well," growled Vesh Nil Qor. "When we meet again, I shall reduce your bodies to wizened and twisted husks. And you shall be fully aware to experience the horror of your fate."''
+|-
+|'''Pax'''
+|1
+|After another player commits units to land on a planet you control:
+|Return the committed units to the space area; choose 1 of them to destroy.
+| rowspan="1" |''A Sickening Lurch knew that to move forward, they must leave something behind. That their so-called "peers" were aghast at their choice was of little consequence.''
+|-
+|'''Reflect'''
+|1
+|As an [[Action Phase|Action]]:
+|For each trade good you have, either gain 1 commodity or convert 1 of your commodities to a trade good.
+|
+|-
+|'''Reverse'''
+|1
+|When a splice begins:
+|Reverse the order the spliced cards are passed.
+|
+|-
+|'''Rise'''
+|1
+|As an [[Action Phase|Action]]:
+|Either place 1 infantry on each planet you control or place 1 fighter in each system that contains your ships or space docks and no other players' ships.
+|
+|-
+|'''Scarab'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose a spliced card you own, gain 2 Trade Goods for each card you own with a faction origin that matches that card.
+|
+|-
+|'''Shatter'''
+|2
+|When another player exhausts a genome or plays an action card other than "'''Shatter'''":
+|That genome is exhausted without effect, or that action card is canceled.
+|
+# ''"No!" gasped Zel Tol Mosin, the neural link to his thralls severed by one of the Saint's suspended blades. But now that his thralls had been freed, the outcome was, in fact, inevitable.''
+#
+|-
+|'''Spark'''
+|2
+|After another player's unit uses '''SUSTAIN DAMAGE''' to cancel a hit produced by your units or abilities
+|Destroy that unit.
+|
+# ''Though outmassed by several orders of magnitude, the valiant destroyer's final salvo found its mark admist the flagship's engine array, leaving the Arvicon Rex stranded deep in the gravity well.''
+# ''For a moment, the starlancer strode on, heedless of the sting of a single sliver missile. Then, the fires of its fusion heart erupted from the wound, consuming it from within.''
+|-
+|'''Starflare'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose a supernova; each player destroys 3 of their units in that supernova and each adjacent system.
+|
+|-
+|'''Stasis'''
+|1
+|At the start of another player's turn:
+|Immediately end that player's turn.
+|
+|-
+|'''Tartarus'''
+|1
+|At the start of the strategy phase:
+|Choose a strategy card; that card cannot be picked unless there is no other option
+| rowspan="1" |''The bindings snapped tight, one after another, tethering the corrupted king's limbs to the earth. Roars of earsplitting rage echoed throughout the valley, but it remained immobilized. For a time, at least.''
+|-
+|'''Thieve'''
+|1
+|When a splice ends, if you did not participate:
+|Take all of the remaining spliced cards.
+| rowspan="1" |''The other Mahact had dismissed the system as inferior, its inhabitants unsuited even for enthrallment. That did not deter A Sickening Lurch from picking their bones clean.''
+|-
+|'''Timestop'''
+|1
+|When a player activates a system that contains your units:
+|Immediately perform an action, during which you are the active player.
+| rowspan="1" |''"It must be done," whispered the Thundarian, "it is the only way."''
+|-
+|'''Transpose'''
+|2
+|As an [[Action Phase|Action]]:
+|Give 1 of your abilities to one of your neighbours, then take 1 of their abilities.
+| rowspan="1" |
+# ''So accustomed had the Mahact become to their unending struggle, they had forgotten that power need not always be seized by force. From the lesser beings of the galaxy, Avarice Rex had seen that it could be bought, or even freely given. Was an effortless victory not, in fact, the truest display of power?''
+# ''Aelo An Goldos cared not when the thralls came, or who they had once been, only that they served. The Dominus Orb ensured that.''
+|-
+|'''Trine'''
+|1
+|During the "Space Cannon Offense" step of a tactical action:
+|Your units up to 2 systems away can use their SPACE CANNON abilities against ships in the active system.
+| rowspan="1" |
+|-
+|'''Twinning'''
+|1
+|After another player resolves the component action of an action card:
+|Immediately resolve that action card as if you played it.
+|
+|-
+|'''Unravel'''
+|1
+|As an [[Action Phase|Action]]:
+|Choose and purge a relic. If that relic belonged to another player, that player gains a victory point. If that relic belonged to you, put The Fracture into play and place an additional ingress token in a system that contains your units.
+|
+|-
+|'''Vault'''
+|1
+|After you activate a system:
+|You may ignore the effects of anomalies during this movement.
+|
+|}
+
+==[[FAQ]]==
+'''Q:''' Is the “Skilled Retreat” action card considered to be a [[Space Combat#Retreat|retreat]] and can it be canceled by the action card “Intercept?”?
+
+'''A: '''No, “Skilled Retreat” is not a retreat and cannot be canceled in this way.
+
+
+'''Q:''' The "Skilled Retreat" action card specifies "At the start of a combat round"; does this mean it may be used at the start of a ground combat or space combat?
+
+'''A:''' No. The "Skilled Retreat" action card may only be played at the Start of a Space Combat round 
+
+
+
+'''Q: '''Can “[[Sustain Damage]]” be used against the “Courageous to the End” action card?
+
+'''A: '''No, “Courageous to the End” does not produce hits.
+
+
+'''Q: '''During [[Space Combat|space combat]], can each player play a “Shields Holding” action card to cancel hits against their [[units]], even though they are being played during the same timing window?
+
+'''A: '''Yes. Because each of the “Shields Holding” cards are targeting different sets of hits (one set against player A and one set against player B), it is legal to play both cards.
+
+
+'''Q:''' Can the “Shields Holding” action card be used to cancel hits from abilities that occur during [[combat]], such as [[The Mentak Coalition#Faction Abilities|Ambush]], [[Warfare Technologies#The Ghosts of Creuss|Dimensional Splicer]] and [[The Yin Brotherhood#Faction Abilities|Devotion]]?
+
+'''A:''' Yes. "Shields Holding" may be used to cancel hits that are produced by these abilities.
+
+
+'''Q:''' Can two “Direct Hit” action cards be played by the same player on the same round of [[combat]] against different targets?
+
+'''A:''' Yes. Because the two “Direct Hit” cards are targeting different targets, this is allowed.
+
+
+'''Q''': Can the “Direct Hit” action cards be played when a ship uses “[[Sustain Damage]]” to cancel a hit produced by one of your abilities?
+
+'''A''': Yes. “Direct Hit” can be used to follow up hits that are assigned by “[[The Mentak Coalition#Faction Abilities|Ambush]],” “[[The Ghosts of Creuss#Faction Technologies|Dimensional Splicer]],” “[[The Yin Brotherhood#Faction Abilities|Devotion]],” and other similar abilities.
+
+
+'''Q''': Does an effect that casts “additional votes,” such as the “Bribery” action card, create a timing window for playing the “Distinguished Councilor” action card?
+
+'''A:''' No. The “Distinguished Councilor” action card can only be played after you vote during the “[[Agenda Phase|Vote]]” step of resolving an [[Agenda Cards|agenda]].
+
+
+'''Q''': When during the action card playing process is a “Sabotage” card played?
+
+'''A''': The “Sabotage” action can be played after card targets (such as units, planets, systems, cards, outcomes, or players) have been decided on, but must be played before any effects have been resolved, votes have been cast, or any dice have been rolled.
+
+
+'''Q''': Can abilities that destroy units, such as the “Lucky Shot” action card, be used by a player against their own [[units]] or [[Planets and Systems|planets]]?
+
+'''A:''' No. “Lucky Shot” and other similar effects can only be used against other player’s units and planets.
+
+
+'''Q''': Can multiple rider action cards be played by the same player on a single [[Agenda Phase|agenda]]? If so, can they be played on different outcomes?
+
+'''A''': Yes to both. A player may play multiple rider action cards on a single agenda, and they may be played on opposing outcomes.
+
+
+'''Q''': When playing the “Upgrade” action card, does the [[cruiser]] already have to be present in the active system?
+
+'''A''': Yes. The cruiser must already be in the activated system.
+
+
+'''Q''': Can the “Experimental Battlestation” action card be used if no ships move into the active system, or against ships that do not belong to the active player?
+
+'''A:''' No. “Experimental Battlestation” operates in the same timing window as “[[Space Cannon|Space Cannon Offense]],” can only target the active player’s ships, and can only be resolved if ships actually move into the active system.
+
+
+'''Q''': Can a player who cannot vote (such as the [[The Nekro Virus|Nekro Virus]]) play "rider" action cards?
+
+'''A''': Yes. The Nekro player, or a player who cannot vote due to another effect, can still play "rider" action cards.
+
+
+'''Q''': If the [[speaker]] does not vote, can the “Bribery” action card still be played?
+
+'''A:''' Yes, even if the speaker cannot vote, or chooses not to vote, the “Bribery” action card (or any effect with the timing window of “after the speaker votes”) can still be played after the timing window in which the speaker would have cast votes.
+
+
+'''Q:''' Can the action cards "Bribery" or "Distinguished Councillor" be played after abstaining from voting?
+
+'''A:''' No. Once you abstain you lose your ability to vote until the next agenda.
+
+
+'''Q:''' Can "Reveal Prototype" be used to gain [[Unit Upgrades|unit upgrades]] if the player lacks the tech [[Technology|prerequisites]] to research it normally?
+
+'''A:''' No. Whenever a game effect instructs a player to "research" a technology they must fulfill the prerequisites. Researching a technology without considering prerequisites would only be possible if it instructed the player to "gain" the technology.
+
+
+'''Q:''' Can "Ghost Ship" be used to place a [[Destroyer]] in the Asteroid/Alpha system if the player lacks the Antimass Deflectors technology? 
+
+'''A:''' Yes. You are placing the destroyer in that system, not moving it. The same would apply if the Ghosts of Creuss placed a wormhole token into a supernova 
+
+<br />
+__FORCETOC__
+
+{{Action Phase}}
+
+{{Player Components}}

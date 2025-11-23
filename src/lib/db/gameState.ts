@@ -11,6 +11,7 @@ function toCamelCase(data: any): GameState {
     speakerPlayerId: data.speaker_player_id,
     mecatolClaimed: data.mecatol_claimed,
     mecatolClaimedRound: data.mecatol_claimed_round,
+    mecatolRexOwnerId: data.mecatol_rex_owner_id,
     lastActivityAt: data.last_activity_at,
     phaseStartedAt: data.phase_started_at,
     updatedAt: data.updated_at,
@@ -91,6 +92,7 @@ export async function updateGameState(gameId: string, updates: Partial<GameState
   if (updates.speakerPlayerId !== undefined) updateData.speaker_player_id = updates.speakerPlayerId;
   if (updates.mecatolClaimed !== undefined) updateData.mecatol_claimed = updates.mecatolClaimed;
   if (updates.mecatolClaimedRound !== undefined) updateData.mecatol_claimed_round = updates.mecatolClaimedRound;
+  if (updates.mecatolRexOwnerId !== undefined) updateData.mecatol_rex_owner_id = updates.mecatolRexOwnerId;
   if (updates.phaseStartedAt !== undefined) updateData.phase_started_at = updates.phaseStartedAt;
 
   console.log('🟢 Updating database with:', updateData);
@@ -140,11 +142,29 @@ export async function setCurrentTurnPlayer(gameId: string, playerId: string | nu
   });
 }
 
-// Claim Mecatol Rex
-export async function claimMecatolRex(gameId: string, round: number) {
-  return updateGameState(gameId, {
+// Claim Mecatol Rex (initial claim or change ownership)
+export async function claimMecatolRex(gameId: string, playerId: string, round: number) {
+  console.log('🏛️ Claiming Mecatol Rex:', { gameId, playerId, round });
+
+  const currentState = await getGameState(gameId);
+  if (!currentState) {
+    throw new Error('Game state not found');
+  }
+
+  const result = await updateGameState(gameId, {
     mecatolClaimed: true,
-    mecatolClaimedRound: round,
+    mecatolClaimedRound: currentState.mecatolClaimedRound || round,
+    mecatolRexOwnerId: playerId,
+  });
+
+  console.log('✅ Mecatol Rex claimed successfully:', result);
+  return result;
+}
+
+// Change Mecatol Rex ownership
+export async function changeMecatolOwner(gameId: string, newOwnerId: string) {
+  return updateGameState(gameId, {
+    mecatolRexOwnerId: newOwnerId,
   });
 }
 

@@ -33,6 +33,7 @@ export function MecatolRexModal({
   const [modalState, setModalState] = useState<ModalState>('display');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [ownershipChanged, setOwnershipChanged] = useState(false);
 
   const currentOwner = mecatolRexOwnerId ? players.find(p => p.id === mecatolRexOwnerId) : null;
 
@@ -55,6 +56,7 @@ export function MecatolRexModal({
       onClaimMecatolRex(selectedPlayerId);
       setSelectedPlayerId(null);
       setIsTransitioning(false);
+      setOwnershipChanged(true);
     }, 300);
   };
 
@@ -74,49 +76,63 @@ export function MecatolRexModal({
           <>
             <div className={styles.header}>
               <h2>Mecatol Rex</h2>
+              <p className={styles.subtitle}>
+                {!custodiansTaken
+                  ? "Under the protection of the custodians"
+                  : `Under the control of ${currentOwner?.factionName || 'Unknown'}`
+                }
+              </p>
             </div>
 
             <div className={styles.content}>
-              {!custodiansTaken && (
-                <div className={styles.instructionText}>
-                  Click the Custodians token to claim Mecatol Rex (and gain one victory point)
-                </div>
-              )}
+              <div className={styles.instructionText}>
+                {!custodiansTaken
+                  ? "Click the Custodians token to claim Mecatol Rex (and gain one victory point)"
+                  : "Click the faction icon to claim Mecatol Rex"
+                }
+              </div>
 
               <div className={styles.mecatolContainer}>
-                <img src={mecatolImage} alt="Mecatol Rex" className={styles.mecatolImage} />
+                {/* Image wrapper for proper absolute positioning */}
+                <div className={styles.imageWrapper}>
+                  <img src={mecatolImage} alt="Mecatol Rex" className={styles.mecatolImage} />
 
-                {/* Custodians Token or Faction Icon */}
-                <div className={styles.centerToken}>
-                  {!custodiansTaken ? (
-                    <button
-                      className={`${styles.custodiansToken} ${isTransitioning ? styles.fadeOut : ''}`}
-                      onClick={handleClaimClick}
-                    >
-                      <img
-                        src={custodiansImage}
-                        alt="Custodians Token"
-                        className={styles.custodiansImage}
-                      />
-                      <div className={styles.tooltip}>Claim Mecatol Rex</div>
-                    </button>
-                  ) : currentOwner ? (
-                    <button
-                      className={`${styles.factionToken} ${isTransitioning ? styles.fadeOut : ''} ${styles.fadeIn}`}
-                      onClick={handleClaimClick}
-                      style={{ borderColor: currentOwner.color }}
-                    >
-                      <img
-                        src={getFactionImage(currentOwner.factionId, 'color')}
-                        alt={currentOwner.factionName}
-                        className={styles.factionImage}
-                      />
-                      <div className={styles.tooltip}>
-                        Controlled by {currentOwner.displayName}<br/>
-                        Click to change owner
-                      </div>
-                    </button>
-                  ) : null}
+                  {/* Custodians Token or Faction Icon */}
+                  <div className={styles.centerToken}>
+                    {!custodiansTaken ? (
+                      <button
+                        className={`${styles.custodiansToken} ${isTransitioning ? styles.fadeOut : ''}`}
+                        onClick={handleClaimClick}
+                      >
+                        <img
+                          src={custodiansImage}
+                          alt="Custodians Token"
+                          className={styles.custodiansImage}
+                        />
+                        <div className={styles.tooltip}>Claim Mecatol Rex</div>
+                      </button>
+                    ) : currentOwner ? (
+                      <button
+                        className={`${styles.factionToken} ${isTransitioning ? styles.fadeOut : ''} ${styles.fadeIn}`}
+                        onClick={handleClaimClick}
+                        style={{
+                          // @ts-ignore - CSS custom property
+                          '--player-color': currentOwner.color,
+                          animation: 'factionPulse 2s ease-in-out infinite'
+                        }}
+                      >
+                        <img
+                          src={getFactionImage(currentOwner.factionId, 'color')}
+                          alt={currentOwner.factionName}
+                          className={styles.factionImage}
+                        />
+                        <div className={styles.tooltip}>
+                          Controlled by {currentOwner.displayName}<br/>
+                          Click to change owner
+                        </div>
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
 
                 {currentOwner && (
@@ -130,7 +146,7 @@ export function MecatolRexModal({
 
             <div className={styles.footer}>
               <Button onClick={onClose} variant="secondary">
-                Close
+                {ownershipChanged ? 'Close' : 'Cancel'}
               </Button>
             </div>
           </>

@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMemo, useState, useEffect } from 'react';
+import { shallow } from 'zustand/shallow';
 import { useGame } from '@/hooks';
 import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
@@ -22,10 +23,11 @@ export function GamePage() {
   const { saveSelections } = useSaveStrategySelections();
 
   const currentPhase = useStore(selectCurrentPhase);
-  const players = useStore(selectPlayers);
-  const gameState = useStore(selectGameState);
+  const players = useStore(selectPlayers, shallow);
+  const currentRound = useStore((state) => state.gameState?.currentRound);
+  const speakerPlayerId = useStore((state) => state.gameState?.speakerPlayerId);
   const speaker = useStore(selectSpeaker);
-  const strategySelections = useStore(selectStrategySelections);
+  const strategySelections = useStore(selectStrategySelections, shallow);
 
   // Get store actions
   const setGameState = useStore((state) => state.setGameState);
@@ -55,24 +57,27 @@ export function GamePage() {
     voiceSettings.toggleAudio();
   };
 
-  // Debug logging
-  console.log('GamePage render - Phase:', currentPhase, 'GameState:', gameState);
+  // Debug logging - monitor render frequency
+  console.log('🟢 GamePage render');
 
-  // Log when phase changes
+  // Log when critical state changes
   useEffect(() => {
-    console.log('📍 Phase changed to:', currentPhase);
-  }, [currentPhase]);
-
-  // Log when gameState changes
-  useEffect(() => {
-    console.log('📍 GameState updated:', gameState);
-  }, [gameState]);
+    console.log('📍 Phase/Round changed:', currentPhase, currentRound);
+  }, [currentPhase, currentRound]);
 
   // Calculate trade good bonuses from previous rounds
   const tradeGoodBonuses = useMemo(() => {
-    if (!gameState) return {};
-    return calculateTradeGoodBonuses(strategySelections, gameState.currentRound);
-  }, [strategySelections, gameState]);
+    if (!currentRound) return {};
+    return calculateTradeGoodBonuses(strategySelections, currentRound);
+  }, [strategySelections, currentRound]);
+
+  // Map players to include faction names and handle null displayName - memoize to prevent re-renders
+  // MUST be before early returns to avoid hooks order violation
+  const playersWithFactions = useMemo(() => players.map((player) => ({
+    ...player,
+    factionName: FACTIONS[player.factionId]?.name || player.factionId,
+    displayName: player.displayName || `Player ${player.position}`,
+  })), [players]);
 
   if (isLoading) {
     return (
@@ -87,7 +92,7 @@ export function GamePage() {
     );
   }
 
-  if (error || !gameId || !gameState) {
+  if (error || !gameId || currentRound === undefined) {
     return (
       <div className={styles.container}>
         <Panel className={styles.errorPanel}>
@@ -99,17 +104,10 @@ export function GamePage() {
     );
   }
 
-  // Map players to include faction names and handle null displayName
-  const playersWithFactions = players.map((player) => ({
-    ...player,
-    factionName: FACTIONS[player.factionId]?.name || player.factionId,
-    displayName: player.displayName || `Player ${player.position}`,
-  }));
-
   const handleStrategyComplete = async (selections: any[]) => {
     const success = await saveSelections({
       gameId,
-      roundNumber: gameState.currentRound,
+      roundNumber: currentRound,
       selections,
     });
 
@@ -121,7 +119,7 @@ export function GamePage() {
       try {
         const [newGameState, newSelections] = await Promise.all([
           getGameState(gameId),
-          getStrategySelectionsByRound(gameId, gameState.currentRound),
+          getStrategySelectionsByRound(gameId, currentRound),
         ]);
 
         if (newGameState) {
@@ -152,7 +150,7 @@ export function GamePage() {
     try {
       const [newGameState, newSelections] = await Promise.all([
         getGameState(gameId),
-        getStrategySelectionsByRound(gameId, gameState.currentRound),
+        getStrategySelectionsByRound(gameId, currentRound),
       ]);
 
       if (newGameState) {
@@ -193,7 +191,7 @@ export function GamePage() {
             gameId={gameId}
             players={playersWithFactions}
             speakerPosition={speaker?.position ?? 1}
-            roundNumber={gameState.currentRound}
+            roundNumber={currentRound}
             initialTradeGoodBonuses={tradeGoodBonuses}
             onComplete={handleStrategyComplete}
             onReset={handleStrategyReset}
@@ -206,9 +204,9 @@ export function GamePage() {
           <ActionPhase
             gameId={gameId}
             players={playersWithFactions}
-            roundNumber={gameState.currentRound}
+            roundNumber={currentRound}
             strategySelections={strategySelections}
-            speakerPlayerId={gameState.speakerPlayerId}
+            speakerPlayerId={speakerPlayerId ?? null}
             onComplete={handlePhaseComplete}
             onUndoRedoChange={setUndoRedoHandlers}
           />
@@ -218,7 +216,7 @@ export function GamePage() {
         return (
           <StatusPhase
             gameId={gameId}
-            roundNumber={gameState.currentRound}
+            roundNumber={currentRound}
             onComplete={handlePhaseComplete}
           />
         );
@@ -227,7 +225,7 @@ export function GamePage() {
         return (
           <AgendaPhase
             gameId={gameId}
-            roundNumber={gameState.currentRound}
+            roundNumber={currentRound}
             onComplete={handlePhaseComplete}
           />
         );
@@ -258,7 +256,7 @@ export function GamePage() {
           ← Back to Home
         </button>
         <div className={styles.gameInfo}>
-          <span className={styles.gameTitle}>Round {gameState.currentRound}</span>
+          <span className={styles.gameTitle}>Round {currentRound}</span>
         </div>
         <div className={styles.phaseInfo}>
           <span className={styles.phaseName}>{currentPhase.charAt(0).toUpperCase() + currentPhase.slice(1)}</span>
