@@ -74,13 +74,12 @@ export function MecatolRexModal({
           <>
             <div className={styles.header}>
               <h2>Mecatol Rex</h2>
-              <p>Central system tile - Control grants 1 Victory Point</p>
             </div>
 
             <div className={styles.content}>
               {!custodiansTaken && (
                 <div className={styles.instructionText}>
-                  Click the Custodians token to claim Mecatol Rex
+                  Click the Custodians token to claim Mecatol Rex (and gain one victory point)
                 </div>
               )}
 
