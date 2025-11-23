@@ -74,6 +74,17 @@
   background: var(--color-bg-secondary);
 }
 
+.instructionText {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(100, 150, 255, 0.1);
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  border-radius: 8px;
+}
+
 .mecatolContainer {
   position: relative;
   display: flex;
@@ -138,6 +149,30 @@
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+/* Tooltip Styling */
+.tooltip {
+  position: absolute;
+  bottom: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.custodiansToken:hover .tooltip,
+.factionToken:hover .tooltip {
+  opacity: 1;
 }
 
 /* Faction Token Styling */

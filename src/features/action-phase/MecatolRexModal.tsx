@@ -78,6 +78,12 @@ export function MecatolRexModal({
             </div>
 
             <div className={styles.content}>
+              {!custodiansTaken && (
+                <div className={styles.instructionText}>
+                  Click the Custodians token to claim Mecatol Rex
+                </div>
+              )}
+
               <div className={styles.mecatolContainer}>
                 <img src={mecatolImage} alt="Mecatol Rex" className={styles.mecatolImage} />
 
@@ -87,19 +93,18 @@ export function MecatolRexModal({
                     <button
                       className={`${styles.custodiansToken} ${isTransitioning ? styles.fadeOut : ''}`}
                       onClick={handleClaimClick}
-                      title="Claim Mecatol Rex"
                     >
                       <img
                         src={custodiansImage}
                         alt="Custodians Token"
                         className={styles.custodiansImage}
                       />
+                      <div className={styles.tooltip}>Claim Mecatol Rex</div>
                     </button>
                   ) : currentOwner ? (
                     <button
                       className={`${styles.factionToken} ${isTransitioning ? styles.fadeOut : ''} ${styles.fadeIn}`}
                       onClick={handleClaimClick}
-                      title={`Controlled by ${currentOwner.displayName} - Click to change`}
                       style={{ borderColor: currentOwner.color }}
                     >
                       <img
@@ -107,6 +112,10 @@ export function MecatolRexModal({
                         alt={currentOwner.factionName}
                         className={styles.factionImage}
                       />
+                      <div className={styles.tooltip}>
+                        Controlled by {currentOwner.displayName}<br/>
+                        Click to change owner
+                      </div>
                     </button>
                   ) : null}
                 </div>
