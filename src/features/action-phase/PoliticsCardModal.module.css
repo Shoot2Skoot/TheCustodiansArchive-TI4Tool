@@ -47,12 +47,12 @@
   background: var(--color-bg-secondary);
   z-index: -1;
   clip-path: polygon(
-    calc(16px - 3px) 0,
-    calc(100% - 0px) 0,
-    calc(100% - 0px) calc(100% - calc(16px - 3px)),
-    calc(100% - calc(16px - 3px)) calc(100% - 0px),
-    0 calc(100% - 0px),
-    0 calc(16px - 3px)
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
   );
 }
 
