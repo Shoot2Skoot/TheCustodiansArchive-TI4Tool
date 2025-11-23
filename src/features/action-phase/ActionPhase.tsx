@@ -860,8 +860,18 @@ export function ActionPhase({
             </Panel>
           )}
 
-          {/* Public Objectives Panel - fills remaining space */}
-          <ObjectivesPanel gameId={gameId} />
+          {/* Middle Panels Container - 50/50 split */}
+          <div className={styles.middlePanelsContainer}>
+            {/* Public Objectives Panel */}
+            <ObjectivesPanel gameId={gameId} />
+
+            {/* Placeholder Panel */}
+            <Panel className={styles.placeholderPanel}>
+              <div className={styles.placeholderContent}>
+                <p>Future content will go here</p>
+              </div>
+            </Panel>
+          </div>
 
           {/* Game Action Buttons Panel */}
           <Panel className={styles.gameActionsPanel}>

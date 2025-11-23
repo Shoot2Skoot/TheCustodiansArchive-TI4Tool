@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/common';
+import { getFactionImage } from '@/lib/factions';
 import styles from './PoliticsCardModal.module.css';
 
 interface Player {
@@ -7,6 +8,7 @@ interface Player {
   displayName: string;
   color: string;
   factionName: string;
+  factionId: string;
 }
 
 interface PoliticsCardModalProps {
@@ -54,12 +56,13 @@ export function PoliticsCardModal({
                   onClick={() => !isCurrentSpeaker && setSelectedPlayerId(player.id)}
                   disabled={isCurrentSpeaker}
                   style={{
-                    borderColor: player.color,
-                  }}
+                    '--player-color': player.color,
+                  } as React.CSSProperties}
                 >
-                  <div
-                    className={styles.playerColorDot}
-                    style={{ backgroundColor: player.color }}
+                  <img
+                    src={getFactionImage(player.factionId, 'color')}
+                    alt={player.factionName}
+                    className={styles.factionIcon}
                   />
                   <div className={styles.playerInfo}>
                     <div className={styles.playerFaction} style={{ color: player.color }}>

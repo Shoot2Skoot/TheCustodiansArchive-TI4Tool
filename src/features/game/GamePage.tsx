@@ -4,6 +4,8 @@ import { useGame } from '@/hooks';
 import { useStore, selectCurrentPhase, selectPlayers, selectGameState, selectSpeaker, selectStrategySelections } from '@/store';
 import { StrategyPhase } from '@/features/strategy-phase';
 import { ActionPhase } from '@/features/action-phase';
+import { StatusPhase } from '@/features/status-phase';
+import { AgendaPhase } from '@/features/agenda-phase';
 import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTradeGoodBonuses';
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
 import { getGameState } from '@/lib/db/gameState';
@@ -141,6 +143,31 @@ export function GamePage() {
     // Could refresh the page or reload the data
   };
 
+  // Handle phase completion for action, status, and agenda phases
+  const handlePhaseComplete = async () => {
+    console.log('Phase complete, reloading game state...');
+
+    // Manually reload game state and strategy selections as a fallback
+    // in case realtime updates don't trigger immediately
+    try {
+      const [newGameState, newSelections] = await Promise.all([
+        getGameState(gameId),
+        getStrategySelectionsByRound(gameId, gameState.currentRound),
+      ]);
+
+      if (newGameState) {
+        console.log('Manually updating game state to:', newGameState.currentPhase, 'Round:', newGameState.currentRound);
+        setGameState(newGameState);
+      }
+
+      if (newSelections) {
+        setStrategySelections(newSelections);
+      }
+    } catch (err) {
+      console.error('Failed to reload game state after phase completion:', err);
+    }
+  };
+
   // Render the appropriate phase component
   const renderPhase = () => {
     switch (currentPhase) {
@@ -182,28 +209,27 @@ export function GamePage() {
             roundNumber={gameState.currentRound}
             strategySelections={strategySelections}
             speakerPlayerId={gameState.speakerPlayerId}
-            onComplete={() => {
-              console.log('Action phase complete');
-              // TODO: Transition to next phase (Status)
-            }}
+            onComplete={handlePhaseComplete}
             onUndoRedoChange={setUndoRedoHandlers}
           />
         );
 
       case 'status':
         return (
-          <Panel>
-            <h2>Status Phase</h2>
-            <p>Status phase (not yet implemented)</p>
-          </Panel>
+          <StatusPhase
+            gameId={gameId}
+            roundNumber={gameState.currentRound}
+            onComplete={handlePhaseComplete}
+          />
         );
 
       case 'agenda':
         return (
-          <Panel>
-            <h2>Agenda Phase</h2>
-            <p>Agenda phase (not yet implemented)</p>
-          </Panel>
+          <AgendaPhase
+            gameId={gameId}
+            roundNumber={gameState.currentRound}
+            onComplete={handlePhaseComplete}
+          />
         );
 
       default:
@@ -225,6 +251,8 @@ export function GamePage() {
           sessionStorage.removeItem('strategyPhase_lastPromptPlayerId');
           sessionStorage.removeItem('actionPhase_audioEntry');
           sessionStorage.removeItem('actionPhase_lastPromptPlayerId');
+          sessionStorage.removeItem('statusPhase_audioEntry');
+          sessionStorage.removeItem('agendaPhase_audioEntry');
           navigate('/', { replace: true });
         }}>
           ← Back to Home

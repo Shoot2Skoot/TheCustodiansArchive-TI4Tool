@@ -34,7 +34,7 @@ const SPEED_LABELS: Record<AutoScrollSpeed, string> = {
 export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
   const [objectives, setObjectives] = useState<ObjectiveRecord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [autoScrollSpeed, setAutoScrollSpeed] = useState<AutoScrollSpeed>('off');
+  const [autoScrollSpeed, setAutoScrollSpeed] = useState<AutoScrollSpeed>('medium');
   const [isHovered, setIsHovered] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const gameState = useStore((state) => state.gameState);
@@ -90,31 +90,60 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
     );
   };
 
-  const scrollToIndex = useCallback((index: number) => {
+  const scrollToIndex = useCallback((index: number, instant = false) => {
     if (!scrollRef.current) return;
     const cardWidth = 280; // Match CSS width
     const gap = 16; // var(--space-4)
     const scrollPosition = index * (cardWidth + gap);
-    scrollRef.current.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+    scrollRef.current.scrollTo({ left: scrollPosition, behavior: instant ? 'auto' : 'smooth' });
   }, []);
 
   const handlePrevious = useCallback(() => {
     if (objectives.length === 0) return;
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? objectives.length - 1 : prevIndex - 1;
+      const newIndex = prevIndex - 1;
       scrollToIndex(newIndex);
       return newIndex;
     });
-  }, [objectives.length, scrollToIndex]);
+  }, [scrollToIndex]);
 
   const handleNext = useCallback(() => {
     if (objectives.length === 0) return;
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex === objectives.length - 1 ? 0 : prevIndex + 1;
+      const newIndex = prevIndex + 1;
       scrollToIndex(newIndex);
       return newIndex;
     });
-  }, [objectives.length, scrollToIndex]);
+  }, [scrollToIndex]);
+
+  // Handle infinite scroll wrap-around
+  useEffect(() => {
+    if (objectives.length === 0) return undefined;
+
+    let timer: NodeJS.Timeout | undefined;
+
+    // When we reach a cloned item at the end, reset to the beginning
+    if (currentIndex >= objectives.length) {
+      const actualIndex = currentIndex % objectives.length;
+      // Wait for smooth scroll to complete before resetting
+      timer = setTimeout(() => {
+        setCurrentIndex(actualIndex);
+        scrollToIndex(actualIndex, true); // Instant jump
+      }, 500);
+    }
+    // When we go before the beginning (if allowing reverse), wrap to the end
+    else if (currentIndex < 0) {
+      const actualIndex = objectives.length + (currentIndex % objectives.length);
+      timer = setTimeout(() => {
+        setCurrentIndex(actualIndex);
+        scrollToIndex(actualIndex, true); // Instant jump
+      }, 500);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [currentIndex, objectives.length, scrollToIndex]);
 
   const cycleSpeed = () => {
     const speeds: AutoScrollSpeed[] = ['off', 'slow', 'medium', 'fast'];
@@ -148,6 +177,9 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
     );
   }
 
+  // Create extended list with clones for infinite scroll effect
+  const extendedObjectives = [...objectives, ...objectives];
+
   return (
     <Panel className={styles.objectivesPanel} beveled>
       <div
@@ -172,7 +204,7 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
         </button>
 
         <div className={styles.objectivesList} ref={scrollRef}>
-          {objectives.map((objective) => {
+          {extendedObjectives.map((objective, index) => {
           const details = getObjectiveDetails(objective.objective_id || '');
           if (!details) return null;
 
@@ -180,7 +212,7 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
           const scoredByPlayers = objective.scored_by_players || [];
 
           return (
-            <div key={objective.id} className={styles.objectiveCard}>
+            <div key={`${objective.id}-${index}`} className={styles.objectiveCard}>
               <img
                 className={styles.objectiveIcon}
                 src={isStage2 ? publicIcon2 : publicIcon1}
