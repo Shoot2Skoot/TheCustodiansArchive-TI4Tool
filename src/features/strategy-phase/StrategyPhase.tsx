@@ -1,14 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Panel, Button } from '@/components/common';
+import { Panel, Button, PlayerTimer, PauseGameButton } from '@/components/common';
 import { StrategyCard } from './StrategyCard';
 import { PlayPhaseEndEffectModal } from './PlayPhaseEndEffectModal';
 import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
+import type { TimerTracking } from '@/types';
 import { PhaseType, PromptType, SoundCategory, audioService } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt } from '@/lib/audio';
 import { normalizeFactionId } from '@/lib/audioHelpers';
+import { startPlayerTurn, endPlayerTurn, getTimerTracking, getPlayerTimerData } from '@/lib/db/timers';
 import styles from './StrategyPhase.module.css';
 
 // Session storage keys for audio tracking (persists across StrictMode remounts)
@@ -67,17 +69,29 @@ export function StrategyPhase({
   onReset,
   onUndoRedoChange,
 }: StrategyPhaseProps) {
+  const gameId = _gameId;
+  const roundNumber = _roundNumber;
+
   const [selections, setSelections] = useState<LocalStrategySelection[]>([]);
   const [tradeGoodBonuses, setTradeGoodBonuses] = useState<Record<number, number>>({});
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showPlayEffectModal, setShowPlayEffectModal] = useState(false);
 
+  // Timer tracking state
+  const [timerTracking, setTimerTracking] = useState<TimerTracking[]>([]);
+  const [currentPlayerTimer, setCurrentPlayerTimer] = useState<TimerTracking | null>(null);
+  const previousPlayerIdRef = useRef<string | null>(null);
+
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
   const currentGame = useStore((state) => state.currentGame);
+  const isPaused = useStore((state) => state.gameState?.isPaused ?? false);
+  const timerEnabled = useStore((state) => state.currentGame?.config?.timerEnabled ?? false);
+  const gameCreatedBy = useStore((state) => state.currentGame?.createdBy);
+  const isHost = currentUserId && gameCreatedBy === currentUserId;
 
   // Calculate player order based on speaker
   const playerOrder = getPlayerOrder(players, speakerPosition);
@@ -117,7 +131,6 @@ export function StrategyPhase({
 
   const currentPlayer = playerOrder[currentPlayerIndex];
   const isSelectionComplete = selections.length === players.length;
-  const isHost = currentUserId && currentGame?.createdBy === currentUserId;
 
   // Play faction prompt when turn changes
   useEffect(() => {
@@ -127,6 +140,59 @@ export function StrategyPhase({
       playFactionPrompt(normalizedFactionId, PromptType.CHOOSE_STRATEGY, true);
     }
   }, [currentPlayer?.id, isSelectionComplete]);
+
+  // Load timer tracking data
+  useEffect(() => {
+    if (!timerEnabled) return;
+
+    const loadTimerData = async () => {
+      try {
+        const timers = await getTimerTracking(gameId);
+        setTimerTracking(timers);
+      } catch (error) {
+        console.error('Error loading timer tracking:', error);
+      }
+    };
+
+    loadTimerData();
+
+    // Reload every 10 seconds to keep data fresh
+    const interval = setInterval(loadTimerData, 10000);
+    return () => clearInterval(interval);
+  }, [gameId, timerEnabled]);
+
+  // Handle player turn changes (start/end timers)
+  useEffect(() => {
+    if (!timerEnabled || !currentPlayer || isPaused || isSelectionComplete) return;
+
+    const handleTurnChange = async () => {
+      const previousPlayerId = previousPlayerIdRef.current;
+
+      // If the current player has changed
+      if (previousPlayerId !== currentPlayer.id) {
+        try {
+          // End previous player's turn if there was one
+          if (previousPlayerId) {
+            await endPlayerTurn(gameId, previousPlayerId, roundNumber);
+          }
+
+          // Start current player's turn
+          await startPlayerTurn(gameId, currentPlayer.id);
+
+          // Update current player timer data
+          const timerData = await getPlayerTimerData(gameId, currentPlayer.id);
+          setCurrentPlayerTimer(timerData);
+
+          // Update ref
+          previousPlayerIdRef.current = currentPlayer.id;
+        } catch (error) {
+          console.error('Error handling turn change:', error);
+        }
+      }
+    };
+
+    handleTurnChange();
+  }, [currentPlayer?.id, gameId, roundNumber, timerEnabled, isPaused, isSelectionComplete]);
 
   const handleCardSelect = (cardId: number) => {
     if (!currentPlayer || !currentUserId) return;
@@ -356,7 +422,25 @@ export function StrategyPhase({
       {/* Combined Turn Panel */}
       <Panel className={styles.turnIndicator}>
         <div className={styles.turnPanelLayout}>
-          <div className={styles.turnPanelSpacer}></div>
+          <div className={styles.turnPanelSpacer}>
+            {/* Timer and Pause Button */}
+            {timerEnabled && currentPlayer && !isSelectionComplete && (
+              <div className={styles.timerSection}>
+                <PlayerTimer
+                  timerData={currentPlayerTimer}
+                  playerName={currentPlayer.displayName}
+                  isPaused={isPaused}
+                  compact={true}
+                />
+                <PauseGameButton
+                  gameId={gameId}
+                  isPaused={isPaused}
+                  isHost={isHost || false}
+                  compact={true}
+                />
+              </div>
+            )}
+          </div>
 
           <div className={styles.turnPanelCenter}>
             {!isSelectionComplete ? (

@@ -73,18 +73,23 @@ export function useCreateGame() {
       }
 
       // Step 2: Create all player records
+      // Assign the creator to the first player (position 1)
       const createdPlayers = await Promise.all(
         players.map(async (player) => {
           if (!player.color || !player.factionId) {
             throw new Error(`Player ${player.position} is missing color or faction`);
           }
 
+          // Assign creator's userId to the first player
+          const playerUserId = player.position === 1 ? userId : undefined;
+
           return await createPlayer(
             game.id,
             player.position,
             player.color,
             player.factionId,
-            player.displayName
+            player.displayName,
+            playerUserId
           );
         })
       );

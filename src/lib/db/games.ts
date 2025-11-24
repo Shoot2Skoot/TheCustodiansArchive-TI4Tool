@@ -160,6 +160,8 @@ export async function getGamesByUser(userId: string) {
 
 // Get games where user is a player (with player details)
 export async function getGamesByPlayer(userId: string) {
+  console.log('🔍 getGamesByPlayer called with userId:', userId);
+
   const { data, error } = await supabase
     .from('games')
     .select(`
@@ -178,19 +180,28 @@ export async function getGamesByPlayer(userId: string) {
     .order('updated_at', { ascending: false })
     .limit(10);
 
+  console.log('🔍 getGamesByPlayer raw response:', { data, error, dataLength: data?.length });
+
   if (error) {
+    console.error('❌ getGamesByPlayer error:', error);
     throw new Error(`Failed to get user games: ${error.message}`);
   }
 
-  return data.map((game: any) => ({
-    game: toCamelCase(game),
-    players: game.players.map((p: any) => ({
-      id: p.id,
-      userId: p.user_id,
-      factionId: p.faction_id,
-      color: p.color,
-      displayName: p.display_name,
-      position: p.position,
-    })),
-  }));
+  const result = data.map((game: any) => {
+    console.log('🔍 Processing game:', { gameId: game.id, roomCode: game.room_code, playersCount: game.players?.length });
+    return {
+      game: toCamelCase(game),
+      players: game.players.map((p: any) => ({
+        id: p.id,
+        userId: p.user_id,
+        factionId: p.faction_id,
+        color: p.color,
+        displayName: p.display_name,
+        position: p.position,
+      })),
+    };
+  });
+
+  console.log('✅ getGamesByPlayer returning:', result.length, 'games');
+  return result;
 }

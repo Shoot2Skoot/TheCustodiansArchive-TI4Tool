@@ -24,7 +24,8 @@ export async function createPlayer(
   position: number,
   color: PlayerColor,
   factionId: string,
-  displayName?: string
+  displayName?: string,
+  userId?: string
 ) {
   const { data, error } = await supabase
     .from('players')
@@ -35,6 +36,8 @@ export async function createPlayer(
       faction_id: factionId,
       display_name: displayName || null,
       victory_points: 0,
+      user_id: userId || null,
+      joined_at: userId ? new Date().toISOString() : null,
     } as any)
     .select()
     .single();

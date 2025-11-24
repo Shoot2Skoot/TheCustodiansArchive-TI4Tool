@@ -30,8 +30,10 @@ export function useRecentGames() {
 
         // Get current user
         const { data: { user } } = await supabase.auth.getUser();
+        console.log('🔍 useRecentGames: current user:', user?.id);
 
         if (!user) {
+          console.log('⚠️ useRecentGames: No user found');
           if (mounted) {
             setRecentGames([]);
             setIsLoading(false);
@@ -40,7 +42,9 @@ export function useRecentGames() {
         }
 
         // Get games where user is a player
+        console.log('🔍 useRecentGames: Fetching games for user:', user.id);
         const gamesData = await getGamesByPlayer(user.id);
+        console.log('🔍 useRecentGames: Received gamesData:', gamesData.length, 'games');
 
         if (mounted) {
           // Transform to RecentGame format
