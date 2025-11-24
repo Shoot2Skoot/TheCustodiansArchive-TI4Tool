@@ -141,6 +141,35 @@
     0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
+.overlayBonus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: rgba(252, 228, 76, 0.15);
+  border: 2px solid rgba(252, 228, 76, 0.5);
+  border-radius: 8px;
+  box-shadow:
+    0 0 12px rgba(252, 228, 76, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.overlayBonusImage {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.overlayBonusText {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: #fce44c;
+  text-shadow:
+    0 0 8px rgba(252, 228, 76, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
 /* Bonus Badge */
 .bonusBadge {
   position: absolute;

@@ -10,7 +10,7 @@ import { AgendaPhase } from '@/features/agenda-phase';
 import { calculateTradeGoodBonuses } from '@/features/strategy-phase/calculateTradeGoodBonuses';
 import { useSaveStrategySelections } from '@/features/strategy-phase/useSaveStrategySelections';
 import { getGameState } from '@/lib/db/gameState';
-import { getStrategySelectionsByRound } from '@/lib/db/strategySelections';
+import { getAllStrategySelections } from '@/lib/db/strategySelections';
 import { FACTIONS } from '@/lib/factions';
 import { Panel, Button } from '@/components/common';
 import { voiceSettings } from '@/lib/voiceSettings';
@@ -119,7 +119,7 @@ export function GamePage() {
       try {
         const [newGameState, newSelections] = await Promise.all([
           getGameState(gameId),
-          getStrategySelectionsByRound(gameId, currentRound),
+          getAllStrategySelections(gameId),
         ]);
 
         if (newGameState) {
@@ -150,7 +150,7 @@ export function GamePage() {
     try {
       const [newGameState, newSelections] = await Promise.all([
         getGameState(gameId),
-        getStrategySelectionsByRound(gameId, currentRound),
+        getAllStrategySelections(gameId),
       ]);
 
       if (newGameState) {
@@ -279,6 +279,15 @@ export function GamePage() {
             </Button>
           </div>
         )}
+        <div className={styles.factionOverviewButton}>
+          <Button
+            variant="secondary"
+            onClick={() => navigate(`/game/${gameId}/factions`)}
+            title="View faction overview"
+          >
+            📋 Factions
+          </Button>
+        </div>
         <div className={styles.volumeButton}>
           <Button
             variant="secondary"

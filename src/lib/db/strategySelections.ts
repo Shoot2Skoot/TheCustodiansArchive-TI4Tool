@@ -79,6 +79,22 @@ export async function createStrategySelections(
   return data.map(toCamelCase);
 }
 
+// Get all strategy selections for a game (all rounds)
+export async function getAllStrategySelections(gameId: string) {
+  const { data, error } = await supabase
+    .from('strategy_selections')
+    .select('*')
+    .eq('game_id', gameId)
+    .order('round_number', { ascending: true })
+    .order('selection_order', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to get strategy selections: ${error.message}`);
+  }
+
+  return data.map(toCamelCase);
+}
+
 // Get all strategy selections for a game and round
 export async function getStrategySelectionsByRound(gameId: string, roundNumber: number) {
   const { data, error } = await supabase

@@ -3,7 +3,7 @@ import { useStore, selectCurrentGame, selectGameState, selectPlayers } from '../
 import { getGameById, getGameByRoomCode } from '../lib/db/games';
 import { getGameState } from '../lib/db/gameState';
 import { getPlayersByGame } from '../lib/db/players';
-import { getStrategySelectionsByRound } from '../lib/db/strategySelections';
+import { getAllStrategySelections } from '../lib/db/strategySelections';
 import { subscribeToGame, unsubscribeFromGame } from '../lib/realtime';
 
 /**
@@ -54,11 +54,8 @@ export function useGame(gameId: string | null) {
           return;
         }
 
-        // Load strategy selections for current round
-        const strategySelectionsData = await getStrategySelectionsByRound(
-          gameId!,
-          gameStateData.currentRound
-        );
+        // Load all strategy selections for all rounds
+        const strategySelectionsData = await getAllStrategySelections(gameId!);
 
         // Update store
         setCurrentGame(gameData);
@@ -86,17 +83,14 @@ export function useGame(gameId: string | null) {
     };
   }, [gameId, setCurrentGame, setGameState, setPlayers, setStrategySelections, setGameChannel, clearGame]);
 
-  // Reload strategy selections when round changes
+  // Reload all strategy selections when round changes
   useEffect(() => {
     if (!gameId || !gameState) return;
 
     async function reloadStrategySelections() {
       if (!gameId || !gameState) return; // Type guard for async function
       try {
-        const strategySelectionsData = await getStrategySelectionsByRound(
-          gameId,
-          gameState.currentRound
-        );
+        const strategySelectionsData = await getAllStrategySelections(gameId);
         setStrategySelections(strategySelectionsData);
       } catch (err) {
         console.error('Failed to reload strategy selections:', err);

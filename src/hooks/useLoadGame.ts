@@ -3,7 +3,7 @@ import { useStore } from '@/store';
 import { getGameById } from '@/lib/db/games';
 import { getGameState } from '@/lib/db/gameState';
 import { getPlayersByGame } from '@/lib/db/players';
-import { getStrategySelectionsByRound } from '@/lib/db/strategySelections';
+import { getAllStrategySelections } from '@/lib/db/strategySelections';
 
 export function useLoadGame(gameId: string | undefined) {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,11 +51,8 @@ export function useLoadGame(gameId: string | undefined) {
           throw new Error('Game state not found');
         }
 
-        // Load strategy selections for current round
-        const strategySelections = await getStrategySelectionsByRound(
-          gameId,
-          gameState.currentRound
-        );
+        // Load all strategy selections for all rounds
+        const strategySelections = await getAllStrategySelections(gameId);
 
         // Update store
         setCurrentGame(game);

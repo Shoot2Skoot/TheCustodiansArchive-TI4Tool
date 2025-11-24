@@ -99,6 +99,12 @@ export function StrategyCard({
                 alt={pickedBy.factionName}
                 className={styles.factionIcon}
               />
+              {tradeGoodBonus > 0 && (
+                <div className={styles.overlayBonus}>
+                  <img src={tradeGoodImage} alt="Trade Good" className={styles.overlayBonusImage} />
+                  <span className={styles.overlayBonusText}>+{tradeGoodBonus}</span>
+                </div>
+              )}
               <div className={styles.pickedInfo}>
                 <div className={styles.factionName}>{pickedBy.factionName}</div>
                 <div className={styles.playerName} style={{ color: pickedBy.color }}>
