@@ -111,7 +111,8 @@ export function GameSetupWizard() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
+      {/* Progress Indicator Panel */}
+      <Panel className={styles.progressPanel}>
         <h1 className={styles.title}>Game Setup</h1>
         <div className={styles.stepIndicator}>
           <StepDot step={1} active={currentStep === 'player-count'} completed={currentStep !== 'player-count'} label="Players" />
@@ -124,8 +125,9 @@ export function GameSetupWizard() {
           <StepLine completed={currentStep === 'speaker-selection'} />
           <StepDot step={5} active={currentStep === 'speaker-selection'} completed={false} label="Speaker" />
         </div>
-      </div>
+      </Panel>
 
+      {/* Content Panel */}
       <Panel className={styles.content}>
         {currentStep === 'player-count' && (
           <PlayerCountSelector

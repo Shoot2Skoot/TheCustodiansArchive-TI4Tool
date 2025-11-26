@@ -1,26 +1,29 @@
 .container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: var(--space-6);
+  padding: var(--space-3) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.header {
+.progressPanel {
   text-align: center;
-  margin-bottom: var(--space-8);
+  padding: var(--space-3) var(--space-4);
 }
 
 .title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl);
   font-weight: 700;
   color: var(--color-accent-primary);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-3);
 }
 
 .stepIndicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: 0;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -29,18 +32,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .stepDot {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   background: var(--color-bg-secondary);
   border: 2px solid var(--color-border);
   color: var(--color-text-secondary);
@@ -51,7 +54,7 @@
   background: var(--color-accent-primary);
   border-color: var(--color-accent-primary);
   color: var(--color-bg-primary);
-  box-shadow: 0 0 0 4px rgba(var(--color-accent-primary-rgb), 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-primary-rgb), 0.1);
 }
 
 .stepDot.completed {
@@ -61,11 +64,13 @@
 }
 
 .stepLine {
-  flex: 1;
   height: 2px;
   background: var(--color-border);
-  min-width: 40px;
+  min-width: 30px;
+  flex: 1;
   transition: background var(--transition-normal);
+  align-self: center;
+  margin-top: -22px;
 }
 
 .stepLine.completed {
@@ -73,7 +78,7 @@
 }
 
 .stepLabel {
-  font-size: var(--font-size-xs);
+  font-size: 10px;
   color: var(--color-text-secondary);
   font-weight: 500;
   white-space: nowrap;
