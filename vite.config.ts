@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import clickToComponent from 'vite-plugin-react-click-to-component';
 import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    clickToComponent(),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
