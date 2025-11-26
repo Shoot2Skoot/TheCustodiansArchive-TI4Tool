@@ -44,11 +44,12 @@
   justify-content: center;
   font-weight: 600;
   font-size: var(--font-size-sm);
-  background: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
+  background: var(--color-bg-primary);
+  border: 3px solid rgba(255, 255, 255, 0.2);
   color: var(--color-text-secondary);
   transition: all var(--transition-normal);
   padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stepDot.active {
@@ -62,16 +63,18 @@
   background: var(--color-success);
   border-color: var(--color-success);
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stepLine {
-  height: 2px;
-  background: var(--color-border);
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
   min-width: 30px;
   flex: 1;
   transition: background var(--transition-normal);
   align-self: center;
   margin-top: -22px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .stepLine.completed {
