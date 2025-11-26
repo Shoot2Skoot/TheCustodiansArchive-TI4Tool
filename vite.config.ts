@@ -8,7 +8,8 @@ export default defineConfig({
   plugins: [
     react(),
     reactClickToComponent({
-      editor: 'cursor',
+      // Try using the -g flag explicitly for better line navigation
+      editor: 'cursor -g',
     }),
   ],
   resolve: {
