@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/common';
 import type { GameConfig } from '@/types';
-import type { TimerMode } from '@/types/enums';
 import styles from './GameOptionsForm.module.css';
 
 interface GameOptionsFormProps {
@@ -61,70 +60,16 @@ export function GameOptionsForm({ initialConfig, onComplete, onBack }: GameOptio
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
-                checked={config.timerEnabled || false}
+                checked={config.timerEnabled ?? true}
                 onChange={(e) => updateConfig('timerEnabled', e.target.checked)}
                 className={styles.checkbox}
               />
               <span>Enable Turn Timer</span>
             </label>
+            <p className={styles.fieldDescription}>
+              Tracks each player's total time spent during the game and per-round.
+            </p>
           </div>
-
-          {config.timerEnabled && (
-            <>
-              <div className={styles.field}>
-                <label className={styles.label}>Timer Mode</label>
-                <div className={styles.radioGroup}>
-                  <label className={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      name="timerMode"
-                      value="per-turn"
-                      checked={config.timerMode === 'per-turn'}
-                      onChange={(e) => updateConfig('timerMode', e.target.value as TimerMode)}
-                      className={styles.radio}
-                    />
-                    <div>
-                      <div className={styles.radioTitle}>Per Turn</div>
-                      <div className={styles.radioDescription}>Timer resets each turn</div>
-                    </div>
-                  </label>
-                  <label className={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      name="timerMode"
-                      value="cumulative"
-                      checked={config.timerMode === 'cumulative'}
-                      onChange={(e) => updateConfig('timerMode', e.target.value as TimerMode)}
-                      className={styles.radio}
-                    />
-                    <div>
-                      <div className={styles.radioTitle}>Cumulative</div>
-                      <div className={styles.radioDescription}>Total time per player tracked</div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.field}>
-                <label className={styles.label}>
-                  Timer Duration (minutes)
-                  <span className={styles.labelValue}>{config.timerDurationMinutes || 5} min</span>
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="30"
-                  value={config.timerDurationMinutes || 5}
-                  onChange={(e) => updateConfig('timerDurationMinutes', parseInt(e.target.value))}
-                  className={styles.slider}
-                />
-                <div className={styles.sliderLabels}>
-                  <span>1 min</span>
-                  <span>30 min</span>
-                </div>
-              </div>
-            </>
-          )}
         </div>
 
         {/* Display Options */}
@@ -174,7 +119,7 @@ export function GameOptionsForm({ initialConfig, onComplete, onBack }: GameOptio
           Back
         </Button>
         <Button variant="primary" size="large" onClick={handleSubmit}>
-          Continue to Speaker Selection
+          Continue to Objective Selection
         </Button>
       </div>
     </div>

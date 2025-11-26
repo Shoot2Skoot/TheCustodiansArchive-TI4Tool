@@ -30,7 +30,7 @@ export function GameSetupWizard() {
   const [gameConfig, setGameConfig] = useState<Partial<GameConfig>>({
     playerCount: 6,
     victoryPointLimit: 10,
-    timerEnabled: false,
+    timerEnabled: true,
     timerMode: 'per-turn',
     timerDurationMinutes: 5,
     showObjectives: true,
