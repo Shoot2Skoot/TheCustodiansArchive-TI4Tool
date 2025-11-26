@@ -43,11 +43,12 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   background: var(--color-bg-secondary);
   border: 2px solid var(--color-border);
   color: var(--color-text-secondary);
   transition: all var(--transition-normal);
+  padding: 0;
 }
 
 .stepDot.active {
@@ -78,7 +79,7 @@
 }
 
 .stepLabel {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   font-weight: 500;
   white-space: nowrap;
