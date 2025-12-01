@@ -12,7 +12,13 @@ import {
   calculateTotalCapacity,
   calculateNeededCapacity,
   hasSpecialCapacityRules,
+  getUnitStats,
+  type UnitType,
 } from '@/data/combatConfig';
+import type { CombatUnit, DiceRoll } from '@/types/combatUnits';
+import { createCombatUnit, getActiveUnits, canCombatContinue } from '@/types/combatUnits';
+import { BatchDiceRoller } from './components/DiceRoller';
+import { HitAssignment } from './components/HitAssignment';
 import styles from './CombatModal.module.css';
 
 // ============================================================================
@@ -152,9 +158,14 @@ export function CombatModalV2({
   const [showAttackerCapacityModal, setShowAttackerCapacityModal] = useState(false);
   const [showDefenderCapacityModal, setShowDefenderCapacityModal] = useState(false);
 
-  // Space Cannon hits state (for Phase 1)
+  // Space Cannon hits state (for Phase 1) - DEPRECATED, will be removed
   const [defenderHits, setDefenderHits] = useState(0);
   const [attackerHits, setAttackerHits] = useState(0);
+
+  // Combat Unit Tracking (NEW SYSTEM)
+  const [attackerCombatUnits, setAttackerCombatUnits] = useState<CombatUnit[]>([]);
+  const [defenderCombatUnits, setDefenderCombatUnits] = useState<CombatUnit[]>([]);
+  const [thirdPartyCombatUnits, setThirdPartyCombatUnits] = useState<CombatUnit[]>([]);
 
   // Save state to localStorage
   useEffect(() => {
@@ -1336,7 +1347,68 @@ export function CombatModalV2({
             <div className={styles.buttonGroup}>
               <Button
                 onClick={() => {
-                  addLog('Unit inventory confirmed - All units recorded');
+                  // Convert unit counts to individual CombatUnit instances
+                  const convertToCombatUnits = (
+                    counts: UnitCounts,
+                    side: 'attacker' | 'defender',
+                    participant: CombatParticipant
+                  ): CombatUnit[] => {
+                    const units: CombatUnit[] = [];
+                    let unitIndex = 0;
+
+                    // Helper to create units of a specific type
+                    const addUnitsOfType = (type: UnitType, count: number) => {
+                      for (let i = 0; i < count; i++) {
+                        const stats = getUnitStats(type, participant.factionId);
+                        units.push(
+                          createCombatUnit(
+                            type,
+                            stats,
+                            side,
+                            participant.playerId,
+                            participant.playerName,
+                            participant.factionId,
+                            unitIndex++
+                          )
+                        );
+                      }
+                    };
+
+                    // Create units for each type
+                    addUnitsOfType('war_sun', counts.warSun);
+                    addUnitsOfType('dreadnought', counts.dreadnought);
+                    addUnitsOfType('cruiser', counts.cruiser);
+                    addUnitsOfType('carrier', counts.carrier);
+                    addUnitsOfType('destroyer', counts.destroyer);
+                    addUnitsOfType('fighter', counts.fighter);
+                    addUnitsOfType('flagship', counts.flagship);
+                    addUnitsOfType('infantry', counts.infantry);
+                    addUnitsOfType('mech', counts.mech);
+                    addUnitsOfType('pds', counts.pds);
+
+                    return units;
+                  };
+
+                  // Convert attacker units
+                  const attackerCombatUnitsArray = convertToCombatUnits(
+                    attackerUnits,
+                    'attacker',
+                    combatState.attacker!
+                  );
+                  setAttackerCombatUnits(attackerCombatUnitsArray);
+
+                  // Convert defender units
+                  const defenderCombatUnitsArray = convertToCombatUnits(
+                    defenderUnits,
+                    'defender',
+                    combatState.defender!
+                  );
+                  setDefenderCombatUnits(defenderCombatUnitsArray);
+
+                  // TODO: Convert third-party units (for now, empty)
+                  setThirdPartyCombatUnits([]);
+
+                  addLog(`Unit inventory confirmed - ${attackerCombatUnitsArray.length} attacker units, ${defenderCombatUnitsArray.length} defender units`);
                   goToStep('P0.6');
                 }}
                 variant="primary"
@@ -1510,152 +1582,108 @@ export function CombatModalV2({
       );
     }
 
-    // P1.2: Space Cannon Rolls (Defender fires first)
+    // P1.2: Space Cannon Rolls (NEW - uses dice rolling system)
     if (step === 'P1.2') {
-      return (
-        <div className={styles.stepContent}>
-          <h3>P1.2 — Space Cannon Rolls</h3>
-          <p>Defender fires Space Cannon units at Attacker's ships.</p>
-          <p className={styles.infoNote}>
-            Third-party players with Space Cannon in adjacent systems may also fire (in player order).
-          </p>
+      // Get all units with Space Cannon capability
+      const defenderSpaceCannonUnits = defenderCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
+      const attackerSpaceCannonUnits = attackerCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
+      // TODO: Add third-party space cannon units
 
-          <div className={styles.inputGroup}>
-            <label>Defender Space Cannon Hits:</label>
-            <input
-              type="number"
-              min="0"
-              defaultValue="0"
-              onChange={(e) => {
-                const hits = parseInt(e.target.value) || 0;
-                setDefenderHits(hits);
-                setCombatState(prev => ({
-                  ...prev,
-                  attacker: {
-                    ...prev.attacker!,
-                    queuedHits: hits,
-                  },
-                }));
-              }}
-            />
-          </div>
+      const allSpaceCannonUnits = [...defenderSpaceCannonUnits, ...attackerSpaceCannonUnits];
 
-          <div className={styles.inputGroup}>
-            <label>Attacker Space Cannon Hits (if any units have SC):</label>
-            <input
-              type="number"
-              min="0"
-              defaultValue="0"
-              onChange={(e) => {
-                const hits = parseInt(e.target.value) || 0;
-                setAttackerHits(hits);
-                setCombatState(prev => ({
-                  ...prev,
-                  defender: {
-                    ...prev.defender!,
-                    queuedHits: hits,
-                  },
-                }));
-              }}
-            />
-          </div>
-
-          <div className={styles.buttonGroup}>
+      if (allSpaceCannonUnits.length === 0) {
+        // No space cannon units - skip to next phase
+        return (
+          <div className={styles.stepContent}>
+            <h3>P1.2 — Space Cannon Rolls</h3>
+            <p>No Space Cannon units present. Skipping to Space Combat.</p>
             <Button
               onClick={() => {
-                addLog(`Space Cannon Rolls: Defender ${defenderHits} hits, Attacker ${attackerHits} hits`);
-                goToStep('P1.3');
+                addLog('No Space Cannon units - proceeding to Space Combat');
+                goToPhase(Phase.SPACE_COMBAT, 'P2.1');
               }}
               variant="primary"
             >
-              Continue to Hit Assignment
-            </Button>
-
-            <Button
-              onClick={() => {
-                addLog('SCRAMBLE FREQUENCY played - Reroll opponent SC dice');
-                // In a real implementation, this would trigger a reroll
-              }}
-              variant="secondary"
-            >
-              Play SCRAMBLE FREQUENCY
-            </Button>
-
-            <Button
-              onClick={() => {
-                addLog('Graviton Laser System - Force hits to non-fighter ships');
-              }}
-              variant="secondary"
-            >
-              Use Graviton Laser System
+              Continue to Space Combat →
             </Button>
           </div>
+        );
+      }
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P1.2 — Space Cannon Rolls</h3>
+          <p className={styles.infoNote}>
+            Space Cannon units fire at the attacker's fleet. Defender fires first, then attacker (if they have SC units), then third parties (in player order).
+          </p>
+
+          <BatchDiceRoller
+            units={allSpaceCannonUnits}
+            targetValueGetter={(unit) => unit.spaceCannonValue || 6}
+            rollsGetter={(unit) => unit.spaceCannonRolls || 1}
+            canReroll={true}
+            onComplete={(rollResults) => {
+              // Calculate total hits from all rolls
+              let totalHits = 0;
+              rollResults.forEach((unitRolls) => {
+                const hits = unitRolls.filter(r => r.isHit).length;
+                totalHits += hits;
+              });
+
+              addLog(`Space Cannon: ${totalHits} hit${totalHits !== 1 ? 's' : ''} scored`);
+
+              // Store hits for P1.3 assignment
+              setDefenderHits(totalHits); // Temp storage - will remove this later
+
+              goToStep('P1.3');
+            }}
+            title="Space Cannon Offense — Roll Dice"
+          />
         </div>
       );
     }
 
-    // P1.3: Assign Hits
+    // P1.3: Assign Hits (NEW - uses interactive UI)
     if (step === 'P1.3') {
-      const attackerHits = combatState.attacker.queuedHits;
-      const defenderHits = combatState.defender.queuedHits;
+      const hitsToAssign = defenderHits; // Temp: using old state variable for now
 
       return (
         <div className={styles.stepContent}>
-          <h3>P1.3 — Assign Hits</h3>
-          <p>Assign Space Cannon hits to ships. Ships with Sustain Damage may absorb hits.</p>
+          <h3>P1.3 — Space Cannon Hit Assignment</h3>
+          <p className={styles.infoNote}>
+            The attacker must assign {hitsToAssign} hit{hitsToAssign !== 1 ? 's' : ''} from Space Cannon fire to their ships.
+          </p>
 
-          <div className={styles.hitAssignment}>
-            <div>
-              <h4>Attacker took {attackerHits} hits</h4>
-              <div className={styles.inputGroup}>
-                <label>Ships Destroyed:</label>
-                <input type="number" min="0" max={attackerHits} defaultValue="0" />
-              </div>
-              <div className={styles.inputGroup}>
-                <label>Sustain Damage Used:</label>
-                <input type="number" min="0" max={attackerHits} defaultValue="0" />
-              </div>
-            </div>
+          <HitAssignment
+            units={attackerCombatUnits}
+            hitsToAssign={hitsToAssign}
+            targetPlayerName={combatState.attacker?.playerName || 'Attacker'}
+            onComplete={(updatedUnits) => {
+              // Update attacker units with damage/destruction
+              setAttackerCombatUnits(updatedUnits);
 
-            <div>
-              <h4>Defender took {defenderHits} hits</h4>
-              <div className={styles.inputGroup}>
-                <label>Ships Destroyed:</label>
-                <input type="number" min="0" max={defenderHits} defaultValue="0" />
-              </div>
-              <div className={styles.inputGroup}>
-                <label>Sustain Damage Used:</label>
-                <input type="number" min="0" max={defenderHits} defaultValue="0" />
-              </div>
-            </div>
-          </div>
+              const destroyedCount = updatedUnits.filter(u => u.state === 'destroyed').length;
+              const damagedCount = updatedUnits.filter(u => u.state === 'sustained').length;
 
-          <div className={styles.buttonGroup}>
-            <Button
-              onClick={() => {
-                addLog('Hits assigned, proceeding to combat continuation check');
-                // Reset queued hits
-                setCombatState(prev => ({
-                  ...prev,
-                  attacker: { ...prev.attacker!, queuedHits: 0 },
-                  defender: { ...prev.defender!, queuedHits: 0 },
-                }));
-                goToStep('P1.4');
-              }}
-              variant="primary"
-            >
-              Confirm Hit Assignment
-            </Button>
-          </div>
+              addLog(`Space Cannon hits assigned: ${destroyedCount} ships destroyed, ${damagedCount} damaged`);
+              goToStep('P1.4');
+            }}
+            title="Assign Space Cannon Hits to Attacker"
+          />
         </div>
       );
     }
 
     // P1.4: Combat Continuation Check
     if (step === 'P1.4') {
-      // In real implementation, would check actual unit counts
-      const attackerHasShips = true; // Placeholder
-      const defenderHasShips = true; // Placeholder
+      const activeAttackerShips = getActiveUnits(attackerCombatUnits).filter(u => u.isShip);
+      const activeDefenderShips = getActiveUnits(defenderCombatUnits).filter(u => u.isShip);
+
+      const attackerHasShips = activeAttackerShips.length > 0;
+      const defenderHasShips = activeDefenderShips.length > 0;
+
+      const attackerShipCount = activeAttackerShips.length;
+      const defenderShipCount = activeDefenderShips.length;
 
       return (
         <div className={styles.stepContent}>
@@ -1663,8 +1691,8 @@ export function CombatModalV2({
           <p>Evaluate whether combat continues based on remaining ships.</p>
 
           <div className={styles.combatStatus}>
-            <p>Attacker has ships: {attackerHasShips ? 'Yes' : 'No'}</p>
-            <p>Defender has ships: {defenderHasShips ? 'Yes' : 'No'}</p>
+            <p>Attacker has {attackerShipCount} active ship{attackerShipCount !== 1 ? 's' : ''}</p>
+            <p>Defender has {defenderShipCount} active ship{defenderShipCount !== 1 ? 's' : ''}</p>
           </div>
 
           {!attackerHasShips && !defenderHasShips ? (
@@ -1672,6 +1700,7 @@ export function CombatModalV2({
               <p>Both sides destroyed - Combat ends in a draw</p>
               <Button
                 onClick={() => {
+                  addLog('All ships destroyed - Combat ends in draw');
                   setCombatState(prev => ({ ...prev, isComplete: true, winner: 'draw' }));
                 }}
                 variant="primary"
@@ -1684,6 +1713,7 @@ export function CombatModalV2({
               <p>Attacker has no ships - Defender wins</p>
               <Button
                 onClick={() => {
+                  addLog('Attacker eliminated - Defender wins');
                   setCombatState(prev => ({ ...prev, isComplete: true, winner: 'defender' }));
                 }}
                 variant="primary"

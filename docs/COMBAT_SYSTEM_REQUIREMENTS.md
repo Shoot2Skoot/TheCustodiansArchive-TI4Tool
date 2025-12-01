@@ -2,6 +2,50 @@
 
 ---
 
+## 📊 Implementation Progress Tracker
+
+### ✅ Foundational Systems (Complete)
+- [x] Individual unit tracking system (`CombatUnit` type with state management)
+- [x] Dice rolling system with visual display and automatic hit calculation
+- [x] Per-die reroll system
+- [x] Interactive hit assignment UI with sustain damage handling
+- [x] Unit state transitions (undamaged → sustained → destroyed)
+
+### ✅ Phase 0: Activation & Initialization (Complete)
+- [x] P0.1 — Select Attacking Faction
+- [x] P0.2 — Select Defending Faction
+- [ ] P0.3 — Activation Step (ability/card prompts) **MISSING**
+- [x] P0.4 — Movement Step
+- [x] P0.5 — Unit Inventory Confirmation (with capacity validation)
+- [x] P0.6 — Post-Movement Actions Window
+
+### 🚧 Phase 1: Space Cannon Offense (In Progress)
+- [x] P1.1 — Space Cannon Offense Cancellation Window
+- [ ] P1.2 — Space Cannon Rolls (needs dice system integration)
+- [ ] P1.3 — Hit Assignment (needs hit UI integration)
+- [ ] P1.4 — Combat Continuation Check
+
+### ⏳ Phase 2: Space Combat (Pending Rebuild)
+- [ ] P2.1 — Start of Combat Effects
+- [ ] P2.2 — Anti-Fighter Barrage
+- [ ] P2.3 — Announce Retreats
+- [ ] P2.4 — Combat Rolls
+- [ ] P2.5 — Hit Assignment & Damage Resolution
+- [ ] P2.6 — Combat Continuation Check
+
+### ⏳ Phase 3: Invasion — Bombardment (Pending Rebuild)
+- [ ] P3.1-P3.10 — All bombardment and invasion steps
+
+### ⏳ Phase 4: Ground Combat (Pending Rebuild)
+- [ ] P4.1-P4.6 — All ground combat steps
+
+### ⏳ Post-Combat (Pending Rebuild)
+- [ ] PC.1-PC.3 — All post-combat steps
+
+**Last Updated:** 2025-01-12 (Foundational systems complete, beginning Phase 1 rebuild)
+
+---
+
 ## Combat Entry Trigger
 
 When a player wishes to activate a system containing enemy units, display an **[Activate Enemy System]** button. Clicking this button initiates the activation and combat sequence.
