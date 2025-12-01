@@ -25,13 +25,13 @@
 - [x] P1.3 — Hit Assignment (using HitAssignment component)
 - [x] P1.4 — Combat Continuation Check (using actual unit state)
 
-### ⏳ Phase 2: Space Combat (Pending Rebuild)
-- [ ] P2.1 — Start of Combat Effects
-- [ ] P2.2 — Anti-Fighter Barrage
-- [ ] P2.3 — Announce Retreats
-- [ ] P2.4 — Combat Rolls
-- [ ] P2.5 — Hit Assignment & Damage Resolution
-- [ ] P2.6 — Combat Continuation Check
+### ✅ Phase 2: Space Combat (Complete)
+- [x] P2.1 — Start of Combat Effects (manual ability buttons)
+- [x] P2.2 — Anti-Fighter Barrage (using BatchDiceRoller + HitAssignment)
+- [x] P2.3 — Announce Retreats (manual retreat declarations)
+- [x] P2.4 — Combat Rolls (using BatchDiceRoller for all ships)
+- [x] P2.5 — Hit Assignment & Damage Resolution (using HitAssignment component)
+- [x] P2.6 — Combat Continuation Check (using actual unit state, round looping)
 
 ### ⏳ Phase 3: Invasion — Bombardment (Pending Rebuild)
 - [ ] P3.1-P3.10 — All bombardment and invasion steps
@@ -42,7 +42,7 @@
 ### ⏳ Post-Combat (Pending Rebuild)
 - [ ] PC.1-PC.3 — All post-combat steps
 
-**Last Updated:** 2025-12-01 (Phase 1 complete - Space Cannon Offense fully integrated with new systems)
+**Last Updated:** 2025-12-01 (Phases 1-2 complete - Space Cannon and Space Combat fully integrated with new systems)
 
 ---
 
