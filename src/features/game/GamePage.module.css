@@ -61,6 +61,10 @@
   margin-left: var(--space-4);
 }
 
+.factionOverviewButton {
+  margin-left: var(--space-3);
+}
+
 .volumeButton {
   margin-left: var(--space-3);
 }

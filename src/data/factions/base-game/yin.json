@@ -1,0 +1,103 @@
+{
+  "id": "yin",
+  "name": "The Yin Brotherhood",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "INDOCTRINATION",
+      "description": "At the start of a ground combat, you may spend 2 influence to replace 1 of your opponent's participating infantry with 1 infantry from your reinforcements.",
+      "type": "action"
+    },
+    {
+      "name": "DEVOTION",
+      "description": "After each space battle round, you may destroy 1 of your cruisers or destroyers in the active system to produce 1 hit and assign it to 1 of your opponent's ships in that system.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Van Hauge",
+    "cost": 8,
+    "combat": "9 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "When this ship is destroyed, destroy all ships in this system.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Sarween Tools",
+      "type": "cybernetic",
+      "color": "yellow"
+    }
+  ],
+  "commodityValue": 2,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Darien",
+        "resources": 4,
+        "influence": 4,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Greyfire Mutagen",
+      "effect": "After a system is activated: The Yin player cannot use faction abilities or faction technology during this tactical action.",
+      "returnCondition": "Then, return this card to the Yin player.",
+      "placeFaceUp": false
+    },
+    "omega": {
+      "name": "Greyfire Mutagen",
+      "effect": "At the start of a ground combat against 2 or more ground forces that are not controlled by the Yin player: Replace 1 of your opponent's infantry with 1 infantry from your reinforcements",
+      "returnCondition": "Then, return this card to the Yin player",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Brother Milor",
+        "type": "agent",
+        "ability": "After a player's destroyer or cruiser is destroyed, you may exhaust this card. If you do, that player may place up to 2 fighters from their reinforcements in that unit's system"
+      },
+      "omega": {
+        "name": "Brother Milor",
+        "type": "agent",
+        "ability": "After a player's unit is destroyed: You may exhaust this card to allow that player to place 2 fighters in the destroyed unit's system if it was a ship, or 2 infantry on its planet if it was a ground force."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Brother Omar",
+        "type": "commander",
+        "unlockCondition": "Use your Indoctrination faction ability",
+        "ability": "This card satisfies a green technology prerequisite. You may produce 1 additional infantry for their cost, these infantry do not count against your production limit."
+      },
+      "omega": {
+        "name": "Brother Omar",
+        "type": "commander",
+        "unlockCondition": "Use one of your faction abilities",
+        "ability": "This card satisfies a green technology prerequisite. When you research a technology owned by another player, you may return 1 of your infantry to reinforcements to ignore its prerequisites."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Dannel of the Tenth",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: For each planet that contains any number of your infantry, either ready that planet or place an equal number of infantry from your reinforcements on that planet. Then, purge this card."
+      },
+      "omega": {
+        "name": "Dannel of the Tenth",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Commit up to 3 infantry from your reinforcements to any non-home planets and resolve invasions on those planets; players cannot use SPACE CANNON against those units. Then, purge this card."
+      }
+    }
+  }
+}

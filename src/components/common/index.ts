@@ -15,3 +15,7 @@ export { ToastProvider, ToastContainer, useToast } from './Toast';
 export type { Toast, ToastType } from './Toast';
 
 export { StrategyCardNumber } from './StrategyCardNumber';
+
+export { PlayerTimer } from './PlayerTimer';
+
+export { PauseGameButton } from './PauseGameButton';

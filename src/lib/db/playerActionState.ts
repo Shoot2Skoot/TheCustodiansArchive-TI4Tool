@@ -13,18 +13,30 @@ export async function upsertPlayerActionState(
   roundNumber: number,
   updates: Partial<PlayerActionStateUpdate>
 ) {
+  console.log('🔵 upsertPlayerActionState called:', { gameId, playerId, roundNumber, updates });
+
   const { data, error } = await supabase
     .from('player_action_state')
-    .upsert({
-      game_id: gameId,
-      player_id: playerId,
-      round_number: roundNumber,
-      ...updates,
-    } as any)
+    .upsert(
+      {
+        game_id: gameId,
+        player_id: playerId,
+        round_number: roundNumber,
+        ...updates,
+      } as any,
+      {
+        onConflict: 'game_id,player_id,round_number',
+      }
+    )
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('🔴 upsertPlayerActionState ERROR:', error);
+    throw error;
+  }
+
+  console.log('✅ upsertPlayerActionState SUCCESS:', data);
   return data;
 }
 

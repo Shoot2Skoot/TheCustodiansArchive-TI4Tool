@@ -170,6 +170,8 @@ export async function changeMecatolOwner(gameId: string, newOwnerId: string) {
 
 // Advance to next phase
 export async function advancePhase(gameId: string, currentPhase: GamePhase): Promise<GameState> {
+  console.log('🔵 advancePhase called:', { gameId, currentPhase });
+
   const phaseOrder: GamePhase[] = ['setup', 'speaker-selection', 'strategy', 'action', 'status', 'agenda'];
 
   const currentIndex = phaseOrder.indexOf(currentPhase);
@@ -183,6 +185,8 @@ export async function advancePhase(gameId: string, currentPhase: GamePhase): Pro
   } else {
     nextPhase = phaseOrder[currentIndex + 1]!;
   }
+
+  console.log('📊 Phase transition:', { currentPhase, nextPhase, shouldIncrementRound });
 
   const currentState = await getGameState(gameId);
   if (!currentState) {
@@ -198,5 +202,9 @@ export async function advancePhase(gameId: string, currentPhase: GamePhase): Pro
     updates.currentRound = currentState.currentRound + 1;
   }
 
-  return updateGameState(gameId, updates);
+  console.log('💾 Updating game state with:', updates);
+
+  const result = await updateGameState(gameId, updates);
+  console.log('✅ advancePhase completed, new state:', { phase: result.currentPhase, round: result.currentRound });
+  return result;
 }

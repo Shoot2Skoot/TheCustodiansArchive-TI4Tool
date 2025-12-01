@@ -1,0 +1,181 @@
+.factionCard {
+  flex-shrink: 0;
+  width: 320px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  transition: all 0.2s ease;
+  overflow: hidden;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .factionCard {
+    width: 100%;
+    max-height: none;
+  }
+}
+
+.factionCard:hover {
+  border-color: var(--color-border-accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-border-primary);
+  flex-shrink: 0;
+}
+
+.factionIcon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.headerText {
+  flex: 1;
+  min-width: 0;
+}
+
+.factionName {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-1) 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playerInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.playerColor {
+  padding: 2px var(--space-2);
+  border-radius: 3px;
+  font-weight: var(--font-semibold);
+  text-transform: capitalize;
+  font-size: var(--font-size-xs);
+}
+
+.playerColor.red {
+  background: rgba(229, 57, 53, 0.2);
+  color: var(--color-player-red);
+}
+
+.playerColor.blue {
+  background: rgba(30, 136, 229, 0.2);
+  color: var(--color-player-blue);
+}
+
+.playerColor.green {
+  background: rgba(67, 160, 71, 0.2);
+  color: var(--color-player-green);
+}
+
+.playerColor.yellow {
+  background: rgba(253, 216, 53, 0.2);
+  color: var(--color-player-yellow);
+}
+
+.playerColor.purple {
+  background: rgba(142, 36, 170, 0.2);
+  color: var(--color-player-purple);
+}
+
+.playerColor.black {
+  background: rgba(192, 192, 192, 0.2);
+  color: var(--color-player-black);
+}
+
+.playerColor.orange {
+  background: rgba(251, 140, 0, 0.2);
+  color: var(--color-player-orange);
+}
+
+.playerColor.pink {
+  background: rgba(236, 64, 122, 0.2);
+  color: var(--color-player-pink);
+}
+
+.playerName {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-accent) var(--color-bg-secondary);
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: var(--color-border-accent);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-primary);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .factionCard {
+    width: 280px;
+  }
+
+  .header {
+    padding: var(--space-2);
+  }
+
+  .factionIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .factionName {
+    font-size: var(--font-size-sm);
+  }
+
+  .content {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+}

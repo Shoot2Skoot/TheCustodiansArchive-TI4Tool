@@ -1,0 +1,113 @@
+{
+  "id": "argent",
+  "name": "The Argent Flight",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "ZEAL",
+      "description": "You always vote first during the agenda phase. When you cast at least 1 vote, cast 1 additional vote for each player in the game including you.",
+      "type": "passive"
+    },
+    {
+      "name": "RAID FORMATION",
+      "description": "When 1 or more of your units uses ANTI-FIGHTER BARRAGE, for each hit produced in excess of your opponent's fighters, choose 1 of your opponent's ships that has SUSTAIN DAMAGE to become damaged.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Quetzecoatl",
+    "cost": 8,
+    "combat": "7 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "Other players cannot use SPACE CANNON against your ships in this system",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": {
+    "name": "Aerie Sentinel",
+    "cost": 2,
+    "combat": "6",
+    "abilities": [
+      "This unit does not count against capacity if it is being transported or if it is in a space area with 1 or more of your ships that has capacity values.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "startingTechnologies": [
+    {
+      "name": "Neural Motivator",
+      "type": "biotic",
+      "color": "green",
+      "description": "Choose two of: Neural Motivator, Sarween Tools, or Plasma Scoring"
+    },
+    {
+      "name": "Sarween Tools",
+      "type": "cybernetic",
+      "color": "yellow",
+      "description": "Choose two of: Neural Motivator, Sarween Tools, or Plasma Scoring"
+    },
+    {
+      "name": "Plasma Scoring",
+      "type": "warfare",
+      "color": "red",
+      "description": "Choose two of: Neural Motivator, Sarween Tools, or Plasma Scoring"
+    }
+  ],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Valk",
+        "resources": 2,
+        "influence": 0,
+        "traits": []
+      },
+      {
+        "name": "Avar",
+        "resources": 1,
+        "influence": 1,
+        "traits": []
+      },
+      {
+        "name": "Ylir",
+        "resources": 0,
+        "influence": 2,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Strike Wing Ambuscade",
+      "effect": "When 1 or more of your units make a roll for a unit ability: Choose 1 of those units to roll 1 additional die. Then, return this card to the Argent player.",
+      "returnCondition": "Then, return this card to the Argent player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Trillossa Aun Mirik",
+        "type": "agent",
+        "ability": "When a player produces ground forces in a system: You may exhaust this card; that player may place those units on any planets they control in that system and any adjacent systems."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Trrakan Aun Zulok",
+        "type": "commander",
+        "unlockCondition": "Have 6 units that have ANTI-FIGHTER BARRAGE, SPACE CANNON or BOMBARDMENT on the game board",
+        "ability": "When 1 or more of your units make a roll for a unit ability: You may choose 1 of those unit to roll 1 additional die."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Mirik Aun Sissiri",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Move any number of your ships from any systems to any number of other systems that contain 1 of your command tokens and no other players' ships. Then, purge this card."
+      }
+    }
+  }
+}

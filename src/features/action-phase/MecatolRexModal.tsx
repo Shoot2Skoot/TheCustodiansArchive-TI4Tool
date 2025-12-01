@@ -113,12 +113,11 @@ export function MecatolRexModal({
                       </button>
                     ) : currentOwner ? (
                       <button
-                        className={`${styles.factionToken} ${isTransitioning ? styles.fadeOut : ''} ${styles.fadeIn}`}
+                        className={`${styles.factionToken} ${isTransitioning ? styles.fadeOut : ''}`}
                         onClick={handleClaimClick}
                         style={{
                           // @ts-ignore - CSS custom property
                           '--player-color': currentOwner.color,
-                          animation: 'factionPulse 2s ease-in-out infinite'
                         }}
                       >
                         <img

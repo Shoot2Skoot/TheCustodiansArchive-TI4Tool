@@ -28,5 +28,3 @@ export type EventType =
   | 'player-passed';
 
 export type SpeakerSource = 'initial' | 'politics-card' | 'manual-change';
-
-export type TimerMode = 'per-turn' | 'cumulative';

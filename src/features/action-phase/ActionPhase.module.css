@@ -35,16 +35,31 @@
   justify-content: center;
   align-items: center;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
 }
 
 /* Current Player Display (enlarged, 1.5x) */
 .currentPlayerDisplay {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: var(--space-6);
   padding: var(--space-4) var(--space-6);
   border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.timerSection {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.currentPlayerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .currentPlayerCard {
@@ -441,6 +456,27 @@
 .endPhasePanel {
   padding: var(--space-4);
   text-align: center;
+}
+
+.endPhaseContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.endPhaseTitle {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.endPhaseMessage {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  font-style: italic;
 }
 
 /* Game Actions Panel */

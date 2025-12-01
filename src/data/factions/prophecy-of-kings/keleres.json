@@ -1,0 +1,91 @@
+{
+  "id": "keleres",
+  "name": "The Council Keleres",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "THE TRIBUNI",
+      "description": "During setup, choose an unplayed faction from among the Mentak, the Xxcha and The Argent Flight; take that faction's home system, command tokens and control markers. Additionally, take the Keleres Hero that corresponds to that faction.",
+      "type": "setup"
+    },
+    {
+      "name": "COUNCIL PATRONAGE",
+      "description": "Replenish your commodities at the start of the strategy phase, then gain 1 trade good.",
+      "type": "passive"
+    },
+    {
+      "name": "LAW'S ORDER",
+      "description": "You may spend 1 influence at the start of your turn to treat all laws as blank until the end of your turn.",
+      "type": "action"
+    }
+  ],
+  "flagship": {
+    "name": "Artemiris",
+    "cost": 8,
+    "combat": "7 (x2)",
+    "move": 1,
+    "capacity": 6,
+    "abilities": [
+      "Other players must spend 2 influence to activate the system that contains this ship.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": {
+    "name": "Omniopiares",
+    "cost": 2,
+    "combat": "6",
+    "abilities": [
+      "Other players must spend 1 influence to commit ground forces to the planet that contains this unit.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "startingTechnologies": [],
+  "commodityValue": 2,
+  "homeSystem": {
+    "planets": [],
+    "note": "Takes home system from chosen faction (Mentak, Xxcha, or Argent Flight)"
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Keleres Rider",
+      "effect": "After an agenda is revealed: You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, draw 1 action card and gain 2 trade goods. Then, return this card to the Keleres player.",
+      "returnCondition": "Then, return this card to the Keleres player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Xander Alexin Victori III",
+        "type": "agent",
+        "ability": "At any time: You may exhaust this card to allow any player to spend commodities as if they were trade goods."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Suffi An",
+        "type": "commander",
+        "unlockCondition": "Spend 1 trade good after you play an action card that has a component action",
+        "ability": "After you perform a component action: You may perform an additional action."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Kuuasi Aun Jalatai (Argent)",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "At the start of a round of space combat in a system that contains a planet you control: Place your flagship and up to a total of 2 cruisers and/or destroyers from your reinforcements in the active system. Then, purge this card.",
+        "alternates": [
+          {
+            "name": "Odlynn Myrr (Xxcha)",
+            "ability": "After an agenda is revealed: You may cast up to 6 additional votes on this agenda. Predict aloud an outcome for this agenda. For each player that votes for another outcome, gain 1 trade good and 1 command token. Then, purge this card."
+          },
+          {
+            "name": "Harka Leeds (Mentak)",
+            "ability": "ACTION: Reveal cards from the action card deck until you reveal 3 action cards that have component actions. Draw those cards and shuffle the rest back into the action card deck. Then, purge this card."
+          }
+        ]
+      }
+    }
+  }
+}

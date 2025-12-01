@@ -1,0 +1,226 @@
+/* Modal overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.combatPanel {
+  width: 100%;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-color, #333);
+  padding-bottom: 15px;
+}
+
+.header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+
+.participants {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-size: 1.2rem;
+}
+
+.attacker {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.defender {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.vs {
+  color: #95a5a6;
+  font-weight: bold;
+}
+
+/* Phase indicator */
+.phaseIndicator {
+  background-color: rgba(52, 152, 219, 0.2);
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+/* Phase content */
+.phaseContent {
+  margin-bottom: 20px;
+}
+
+.phaseContent h2 {
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.combatStatus {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-family: monospace;
+}
+
+/* Step content */
+.stepContent {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.stepContent h3 {
+  margin: 0 0 10px 0;
+  color: #f39c12;
+}
+
+.stepContent p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+/* Button groups */
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Nested abilities section */
+.nestedAbilities {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-left: 3px solid #f39c12;
+  border-radius: 4px;
+}
+
+.abilityNote {
+  margin: 0 0 10px 0;
+  font-style: italic;
+  color: #f39c12;
+}
+
+/* Input groups */
+.inputGroup {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inputGroup label {
+  font-weight: bold;
+  min-width: 200px;
+}
+
+.inputGroup input[type="number"] {
+  padding: 8px;
+  border: 2px solid var(--border-color, #333);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  font-size: 1rem;
+  width: 100px;
+}
+
+/* Debug section */
+.debugSection {
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 15px;
+  margin-top: 20px;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.debugSection h4 {
+  margin: 0 0 10px 0;
+  color: #95a5a6;
+}
+
+.debugSection p {
+  margin: 5px 0;
+}
+
+/* Footer */
+.footer {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid var(--border-color, #333);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Result content (when combat is complete) */
+.resultContent {
+  text-align: center;
+}
+
+.resultContent h2 {
+  margin: 20px 0;
+  font-size: 2rem;
+  color: #2ecc71;
+}
+
+/* Combat log */
+.logSection {
+  margin: 30px 0;
+  text-align: left;
+}
+
+.logSection h3 {
+  margin-bottom: 10px;
+}
+
+.logContent {
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.logEntry {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logEntry:last-child {
+  border-bottom: none;
+}

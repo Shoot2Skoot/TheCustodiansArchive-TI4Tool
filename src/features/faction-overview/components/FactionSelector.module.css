@@ -1,0 +1,93 @@
+.selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  border-radius: 8px;
+}
+
+.label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-bold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.factionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.factionButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.factionButton:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border-accent);
+  transform: translateY(-2px);
+}
+
+.factionButton.selected {
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: white;
+}
+
+.factionIcon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.factionName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .selector {
+    padding: var(--space-3);
+  }
+
+  .factionButtons {
+    gap: var(--space-1);
+  }
+
+  .factionButton {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .factionIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .factionName {
+    display: none;
+  }
+}

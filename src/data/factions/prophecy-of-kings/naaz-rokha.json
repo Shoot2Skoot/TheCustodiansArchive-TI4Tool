@@ -1,0 +1,101 @@
+{
+  "id": "naaz-rokha",
+  "name": "The Naaz-Rokha Alliance",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "DISTANT SUNS",
+      "description": "When you explore a planet that contains 1 of your mechs, you may draw 1 additional card; choose 1 to resolve and discard the rest.",
+      "type": "passive"
+    },
+    {
+      "name": "FABRICATION",
+      "description": "ACTION: Either purge 2 of your relic fragments of the same type to gain 1 relic; or purge 1 of your relic fragments to gain 1 command token.",
+      "type": "action"
+    }
+  ],
+  "flagship": {
+    "name": "Visz el Vir",
+    "cost": 8,
+    "combat": "9 (x2)",
+    "move": 1,
+    "capacity": 4,
+    "abilities": [
+      "Your mechs in this system roll 1 additional die during combat",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": {
+    "name": "Eidolon / Z-Grav Eidolon",
+    "cost": 2,
+    "combat": "6 (x2) / 8 (x2)",
+    "abilities": [
+      "Eidolon: If this unit is in the space area of the active system at the start of a space combat, flip this card. (This card begins the game with this side face up)",
+      "Z-Grav Eidolon: If this unit is in the space area of the active system, it is also a ship. At the end of a space battle in the active system, flip this card. (This card begins the game with this side face down)",
+      "SUSTAIN DAMAGE"
+    ],
+    "note": "Two-sided mech unit"
+  },
+  "startingTechnologies": [
+    {
+      "name": "Psychoarchaeology",
+      "type": "biotic",
+      "color": "green"
+    },
+    {
+      "name": "AI Development Algorithm",
+      "type": "warfare",
+      "color": "red"
+    }
+  ],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Naazir",
+        "resources": 2,
+        "influence": 1,
+        "traits": []
+      },
+      {
+        "name": "Rokha",
+        "resources": 1,
+        "influence": 2,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Black Market Forgery",
+      "effect": "ACTION: Purge 2 of your relic fragments of the same type to gain 1 relic. Then, return this card to the Naaz-Rokha player.",
+      "returnCondition": "Then, return this card to the Naaz-Rokha player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Garv and Gunn",
+        "type": "agent",
+        "ability": "At the end of a player's turn: You may exhaust this card to allow that player to explore 1 of their planets."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Dart and Tai",
+        "type": "commander",
+        "unlockCondition": "Have 3 mechs in 3 systems",
+        "ability": "After you gain control of a planet that was controlled by another player: You may explore that planet."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Hesh and Prit",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Gain 1 relic and perform the secondary ability of up to 2 readied or unchosen strategy cards; during this action, spend command tokens from your reinforcements instead of your strategy pool. Then, purge this card."
+      }
+    }
+  }
+}

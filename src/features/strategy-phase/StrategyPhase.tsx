@@ -10,7 +10,7 @@ import type { TimerTracking } from '@/types';
 import { PhaseType, PromptType, SoundCategory, audioService } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt } from '@/lib/audio';
 import { normalizeFactionId } from '@/lib/audioHelpers';
-import { startPlayerTurn, endPlayerTurn, getTimerTracking, getPlayerTimerData } from '@/lib/db/timers';
+import { startPlayerTurn, endPlayerTurn, getTimerTracking, getPlayerTimerData, getPlayerCurrentRoundTime } from '@/lib/db/timers';
 import styles from './StrategyPhase.module.css';
 
 // Session storage keys for audio tracking (persists across StrictMode remounts)
@@ -81,6 +81,7 @@ export function StrategyPhase({
   // Timer tracking state
   const [timerTracking, setTimerTracking] = useState<TimerTracking[]>([]);
   const [currentPlayerTimer, setCurrentPlayerTimer] = useState<TimerTracking | null>(null);
+  const [currentRoundTime, setCurrentRoundTime] = useState<number>(0);
   const previousPlayerIdRef = useRef<string | null>(null);
 
   // Get undo/redo functions from store
@@ -179,9 +180,12 @@ export function StrategyPhase({
           // Start current player's turn
           await startPlayerTurn(gameId, currentPlayer.id);
 
-          // Update current player timer data
+          // Load current player timer data and round time
           const timerData = await getPlayerTimerData(gameId, currentPlayer.id);
+          const roundTime = await getPlayerCurrentRoundTime(gameId, currentPlayer.id, roundNumber);
+
           setCurrentPlayerTimer(timerData);
+          setCurrentRoundTime(roundTime);
 
           // Update ref
           previousPlayerIdRef.current = currentPlayer.id;
@@ -422,26 +426,6 @@ export function StrategyPhase({
       {/* Combined Turn Panel */}
       <Panel className={styles.turnIndicator}>
         <div className={styles.turnPanelLayout}>
-          <div className={styles.turnPanelSpacer}>
-            {/* Timer and Pause Button */}
-            {timerEnabled && currentPlayer && !isSelectionComplete && (
-              <div className={styles.timerSection}>
-                <PlayerTimer
-                  timerData={currentPlayerTimer}
-                  playerName={currentPlayer.displayName}
-                  isPaused={isPaused}
-                  compact={true}
-                />
-                <PauseGameButton
-                  gameId={gameId}
-                  isPaused={isPaused}
-                  isHost={isHost || false}
-                  compact={true}
-                />
-              </div>
-            )}
-          </div>
-
           <div className={styles.turnPanelCenter}>
             {!isSelectionComplete ? (
               <>
@@ -492,6 +476,27 @@ export function StrategyPhase({
                       [{selections.length + 1}/{players.length}]
                     </span>
                   </div>
+
+                  {/* Timer and Pause Button - Right Side */}
+                  {timerEnabled && currentPlayer && (
+                    <div className={styles.timerSection}>
+                      <PlayerTimer
+                        timerData={currentPlayerTimer}
+                        isPaused={isPaused}
+                        compact={false}
+                        showRoundTime={true}
+                        currentRoundTime={currentRoundTime}
+                        hidePlayerName={true}
+                        hideTotalTime={true}
+                      />
+                      <PauseGameButton
+                        gameId={gameId}
+                        isPaused={isPaused}
+                        isHost={isHost || false}
+                        compact={false}
+                      />
+                    </div>
+                  )}
                 </div>
               </>
             ) : (

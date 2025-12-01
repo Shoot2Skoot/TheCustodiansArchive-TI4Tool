@@ -1,0 +1,98 @@
+{
+  "id": "mahact",
+  "name": "The Mahact Gene-Sorcerers",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "EDICT",
+      "description": "When you win a combat, place 1 command token from your opponent's reinforcements in your fleet pool if it does not already contain 1 of that player's tokens; other player's tokens in your fleet pool increase your fleet limit but cannot be redistributed.",
+      "type": "passive"
+    },
+    {
+      "name": "IMPERIA",
+      "description": "While another player's command token is in your fleet pool, you can use the ability of that player's commander, if it is unlocked.",
+      "type": "passive"
+    },
+    {
+      "name": "HUBRIS",
+      "description": "During setup, purge your \"Alliance\" promissory note. Other players cannot give you their 'Alliance\" promissory note.",
+      "type": "setup"
+    }
+  ],
+  "flagship": {
+    "name": "Arvicon Rex",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "During combat against an opponent whose command token is not in your fleet pool, apply +2 to the results of this unit's combat rolls",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": {
+    "name": "Starlancer",
+    "cost": 2,
+    "combat": "6",
+    "abilities": [
+      "After a player whose command token is in your fleet pool activates this system, you may spend their token from your fleet pool to end their turn; they gain that token.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "startingTechnologies": [
+    {
+      "name": "Bio Stims",
+      "type": "biotic",
+      "color": "green"
+    },
+    {
+      "name": "Predictive Intelligence",
+      "type": "cybernetic",
+      "color": "yellow"
+    }
+  ],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Ixth",
+        "resources": 3,
+        "influence": 5,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Scepter of Dominion",
+      "effect": "At the start of the strategy phase: Choose 1 non-home system that contains your units; each other player who has a token on the Mahact player's command sheet places a token from their reinforcements in that system. Then, return this card to the Mahact player.",
+      "returnCondition": "Then, return this card to the Mahact player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Jae Mir Kan",
+        "type": "agent",
+        "ability": "When you would spend a command token during the secondary ability of a strategic action: You may exhaust this card to remove 1 of the active player's command tokens from the board and use it instead."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Il Na Viroset",
+        "type": "commander",
+        "unlockCondition": "Have 2 other factions' command tokens in your fleet pool",
+        "ability": "During your tactical actions, you can activate systems that contain your command tokens. If you do, return both command tokens to your reinforcements and end your turn."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Airo Shir Aur",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Move all units in the space area of any system to an adjacent system that contains a different player's ships. Space combat is resolved in that system; neither player can retreat or resolve abilities that would move their ships. Then, purge this card."
+      }
+    }
+  }
+}

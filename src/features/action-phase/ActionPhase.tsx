@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Panel, Button, StrategyCardNumber } from '@/components/common';
+import { Panel, Button, StrategyCardNumber, PlayerTimer, PauseGameButton } from '@/components/common';
 import { STRATEGY_CARDS, getPlayerColor, type PlayerColor } from '@/lib/constants';
 import { getFactionImage, FACTIONS } from '@/lib/factions';
 import { useStore } from '@/store';
 import { getCurrentUserId } from '@/lib/auth';
 import type { PlayerActionState, ActionPhaseState } from '@/store/slices/undoSlice';
+import type { TimerTracking } from '@/types';
 import { setObjectiveCompletion } from '@/lib/db/objectives';
-import { claimMecatolRex, getGameState } from '@/lib/db/gameState';
+import { claimMecatolRex, getGameState, advancePhase } from '@/lib/db/gameState';
+import { startPlayerTurn, endPlayerTurn, getTimerTracking, getPlayerTimerData, getPlayerCurrentRoundTime } from '@/lib/db/timers';
 import { PoliticsCardModal } from './PoliticsCardModal';
 import { MecatolRexModal } from './MecatolRexModal';
 import { ActionStrategyCard } from './ActionStrategyCard';
@@ -16,6 +18,7 @@ import { PhaseType, PromptType, EventType } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt, playStrategyCard, playEvent } from '@/lib/audio';
 import { normalizeFactionId, getStrategyCardAudioType } from '@/lib/audioHelpers';
 import { getPlayerActionStates } from '@/lib/db/playerActionState';
+import { CombatModal } from '@/features/combat';
 import styles from './ActionPhase.module.css';
 
 // Session storage keys for audio tracking (persists across StrictMode remounts)
@@ -92,8 +95,16 @@ export function ActionPhase({
   const [showPoliticsModal, setShowPoliticsModal] = useState(false);
   const [showChangeSpeakerModal, setShowChangeSpeakerModal] = useState(false);
   const [showMecatolRexModal, setShowMecatolRexModal] = useState(false);
+  const [showCombatModal, setShowCombatModal] = useState(false);
+  const [combatDefenderId, setCombatDefenderId] = useState<string | null>(null);
   const [actionInProgress, setActionInProgress] = useState<'tactical' | 'component' | null>(null);
   const hasLoadedInitialState = useRef(false);
+
+  // Timer tracking state
+  const [timerTracking, setTimerTracking] = useState<TimerTracking[]>([]);
+  const [currentPlayerTimer, setCurrentPlayerTimer] = useState<TimerTracking | null>(null);
+  const [currentRoundTime, setCurrentRoundTime] = useState<number>(0);
+  const previousPlayerIdRef = useRef<string | null>(null);
 
   // Get undo/redo functions from store
   const pushHistory = useStore((state) => state.pushHistory);
@@ -104,6 +115,8 @@ export function ActionPhase({
   const mecatolClaimed = useStore((state) => state.gameState?.mecatolClaimed);
   const gameCreatedBy = useStore((state) => state.currentGame?.createdBy);
   const setGameState = useStore((state) => state.setGameState);
+  const isPaused = useStore((state) => state.gameState?.isPaused ?? false);
+  const timerEnabled = useStore((state) => state.currentGame?.config?.timerEnabled ?? false);
 
   // Database hooks
   const {
@@ -207,6 +220,62 @@ export function ActionPhase({
     }
   }, [currentPlayer?.id, activePlayers.length]);
 
+  // Load timer tracking data
+  useEffect(() => {
+    if (!timerEnabled) return;
+
+    const loadTimerData = async () => {
+      try {
+        const timers = await getTimerTracking(gameId);
+        setTimerTracking(timers);
+      } catch (error) {
+        console.error('Error loading timer tracking:', error);
+      }
+    };
+
+    loadTimerData();
+
+    // Reload every 10 seconds to keep data fresh
+    const interval = setInterval(loadTimerData, 10000);
+    return () => clearInterval(interval);
+  }, [gameId, timerEnabled]);
+
+  // Handle player turn changes (start/end timers)
+  useEffect(() => {
+    if (!timerEnabled || !currentPlayer || isPaused) return;
+
+    const handleTurnChange = async () => {
+      const previousPlayerId = previousPlayerIdRef.current;
+
+      // If the current player has changed
+      if (previousPlayerId !== currentPlayer.id) {
+        try {
+          // End previous player's turn if there was one
+          if (previousPlayerId) {
+            await endPlayerTurn(gameId, previousPlayerId, roundNumber);
+          }
+
+          // Start current player's turn
+          await startPlayerTurn(gameId, currentPlayer.id);
+
+          // Load current player timer data and round time
+          const timerData = await getPlayerTimerData(gameId, currentPlayer.id);
+          const roundTime = await getPlayerCurrentRoundTime(gameId, currentPlayer.id, roundNumber);
+
+          setCurrentPlayerTimer(timerData);
+          setCurrentRoundTime(roundTime);
+
+          // Update ref
+          previousPlayerIdRef.current = currentPlayer.id;
+        } catch (error) {
+          console.error('Error handling turn change:', error);
+        }
+      }
+    };
+
+    handleTurnChange();
+  }, [currentPlayer?.id, gameId, roundNumber, timerEnabled, isPaused]);
+
   // Get current game state snapshot for undo
   const getCurrentStateSnapshot = useCallback((): ActionPhaseState => ({
     currentTurnPlayerId: currentPlayer?.id || '',
@@ -223,9 +292,24 @@ export function ActionPhase({
   const handleTacticalActionDone = async () => {
     if (!currentPlayer || !currentUserId) return;
 
+    // Save to database FIRST
+    const saveSuccess = await saveTacticalAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+    });
+
+    if (!saveSuccess) {
+      alert('ERROR: Failed to save tactical action to database. Action cancelled.');
+      console.error('❌ Tactical action save failed - UI not updated');
+      setActionInProgress(null);
+      return; // Don't update UI or advance if save failed
+    }
+
+    // Only proceed if save succeeded
     setActionInProgress(null);
 
-    // Push current state to undo history BEFORE updating
+    // Push current state to undo history AFTER successful save
     pushHistory({
       type: 'actionPhaseAction',
       actionType: 'tactical',
@@ -243,13 +327,6 @@ export function ActionPhase({
       )
     );
 
-    // Save to database
-    await saveTacticalAction({
-      gameId,
-      roundNumber,
-      playerId: currentPlayer.id,
-    });
-
     // Increment global turn counter
     setGlobalTurnCounter((prev) => prev + 1);
 
@@ -266,9 +343,24 @@ export function ActionPhase({
   const handleComponentActionDone = async () => {
     if (!currentPlayer || !currentUserId) return;
 
+    // Save to database FIRST
+    const saveSuccess = await saveTacticalAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+    });
+
+    if (!saveSuccess) {
+      alert('ERROR: Failed to save component action to database. Action cancelled.');
+      console.error('❌ Component action save failed - UI not updated');
+      setActionInProgress(null);
+      return; // Don't update UI or advance if save failed
+    }
+
+    // Only proceed if save succeeded
     setActionInProgress(null);
 
-    // Push current state to undo history BEFORE updating
+    // Push current state to undo history AFTER successful save
     pushHistory({
       type: 'actionPhaseAction',
       actionType: 'component',
@@ -285,13 +377,6 @@ export function ActionPhase({
           : state
       )
     );
-
-    // Save to database (reusing tactical action table for now)
-    await saveTacticalAction({
-      gameId,
-      roundNumber,
-      playerId: currentPlayer.id,
-    });
 
     // Increment global turn counter
     setGlobalTurnCounter((prev) => prev + 1);
@@ -327,14 +412,30 @@ export function ActionPhase({
 
   // Handle strategy card done button - process the action
   const handleStrategyCardDone = async () => {
-    setIsStrategyCardActionInProgress(false);
-
     if (!currentPlayer || !currentUserId) return;
 
     const strategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
     if (!strategyCard) return;
 
-    // Push current state to undo history BEFORE updating
+    // Save to database FIRST
+    const saveSuccess = await saveStrategyCardAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+      strategyCardId: strategyCard.strategyCardId,
+    });
+
+    if (!saveSuccess) {
+      alert('ERROR: Failed to save strategy card action to database. Action cancelled.');
+      console.error('❌ Strategy card action save failed - UI not updated');
+      setIsStrategyCardActionInProgress(false);
+      return; // Don't update UI or advance if save failed
+    }
+
+    // Only proceed if save succeeded
+    setIsStrategyCardActionInProgress(false);
+
+    // Push current state to undo history AFTER successful save
     pushHistory({
       type: 'strategyCardAction',
       strategyCardId: strategyCard.strategyCardId,
@@ -351,14 +452,6 @@ export function ActionPhase({
           : state
       )
     );
-
-    // Save to database
-    await saveStrategyCardAction({
-      gameId,
-      roundNumber,
-      playerId: currentPlayer.id,
-      strategyCardId: strategyCard.strategyCardId,
-    });
 
     // Increment global turn counter
     setGlobalTurnCounter((prev) => prev + 1);
@@ -382,7 +475,21 @@ export function ActionPhase({
   const handleSelectSpeaker = async (newSpeakerId: string) => {
     if (!currentUserId) return;
 
-    // Push current state to undo history BEFORE updating speaker
+    // Save to database FIRST
+    const saveSuccess = await changeSpeaker({
+      gameId,
+      newSpeakerId,
+    });
+
+    if (!saveSuccess) {
+      alert('ERROR: Failed to save speaker change to database. Action cancelled.');
+      console.error('❌ Speaker change save failed - UI not updated');
+      setShowPoliticsModal(false);
+      return; // Don't update UI or advance if save failed
+    }
+
+    // Only proceed if save succeeded
+    // Push current state to undo history AFTER successful save
     pushHistory({
       type: 'speakerChange',
       newSpeakerId,
@@ -399,12 +506,6 @@ export function ActionPhase({
 
     setShowPoliticsModal(false);
 
-    // Save to database
-    await changeSpeaker({
-      gameId,
-      newSpeakerId,
-    });
-
     // Now advance to next player (Politics card action is complete)
     advanceToNextPlayer();
   };
@@ -413,7 +514,21 @@ export function ActionPhase({
   const handleManualSpeakerChange = async (newSpeakerId: string) => {
     if (!currentUserId) return;
 
-    // Push current state to undo history BEFORE updating speaker
+    // Save to database FIRST
+    const saveSuccess = await changeSpeaker({
+      gameId,
+      newSpeakerId,
+    });
+
+    if (!saveSuccess) {
+      alert('ERROR: Failed to save speaker change to database. Action cancelled.');
+      console.error('❌ Speaker change save failed - UI not updated');
+      setShowChangeSpeakerModal(false);
+      return; // Don't update UI if save failed
+    }
+
+    // Only proceed if save succeeded
+    // Push current state to undo history AFTER successful save
     pushHistory({
       type: 'speakerChange',
       newSpeakerId,
@@ -429,12 +544,6 @@ export function ActionPhase({
     playEvent(EventType.SPEAKER_CHANGE);
 
     setShowChangeSpeakerModal(false);
-
-    // Save to database
-    await changeSpeaker({
-      gameId,
-      newSpeakerId,
-    });
 
     // Do NOT advance to next player - this is a manual change outside of turn flow
   };
@@ -504,6 +613,30 @@ export function ActionPhase({
     // Don't advance turn - let them try another action
   };
 
+  // Handle Enter Combat button click
+  const handleEnterCombat = () => {
+    if (!currentPlayer) return;
+
+    // For now, just pick the first other player as defender (TODO: add player selection UI)
+    const otherPlayers = players.filter(p => p.id !== currentPlayer.id);
+    if (otherPlayers.length > 0) {
+      setCombatDefenderId(otherPlayers[0].id);
+      setShowCombatModal(true);
+    }
+  };
+
+  // Handle Combat Complete
+  const handleCombatComplete = (result: { winner: 'attacker' | 'defender' | null }) => {
+    console.log('Combat completed:', result);
+    setShowCombatModal(false);
+    setCombatDefenderId(null);
+  };
+
+  // Handle Combat Close
+  const handleCombatClose = () => {
+    setShowCombatModal(false);
+  };
+
   // Handle pass action
   const handlePass = async () => {
     if (!currentPlayer || !currentUserId || !currentPlayerState) return;
@@ -511,7 +644,21 @@ export function ActionPhase({
     // Can only pass after using strategy card
     if (!currentPlayerState.strategyCardUsed) return;
 
-    // Push current state to undo history BEFORE updating
+    // Save to database FIRST
+    const saveSuccess = await savePassAction({
+      gameId,
+      roundNumber,
+      playerId: currentPlayer.id,
+    });
+
+    if (!saveSuccess) {
+      alert('ERROR: Failed to save pass action to database. Action cancelled.');
+      console.error('❌ Pass action save failed - UI not updated');
+      return; // Don't update UI or advance if save failed
+    }
+
+    // Only proceed if save succeeded
+    // Push current state to undo history AFTER successful save
     pushHistory({
       type: 'passAction',
       data: getCurrentStateSnapshot(),
@@ -523,13 +670,6 @@ export function ActionPhase({
     setPlayerActionStates((prev) =>
       prev.map((state) => (state.playerId === currentPlayer.id ? { ...state, hasPassed: true } : state))
     );
-
-    // Save to database
-    await savePassAction({
-      gameId,
-      roundNumber,
-      playerId: currentPlayer.id,
-    });
 
     // Move to next player
     advanceToNextPlayer();
@@ -745,13 +885,49 @@ export function ActionPhase({
   const allPlayersPassed = playerActionStates.every((state) => state.hasPassed);
 
   // Handle end phase
-  const handleEndPhase = () => {
-    if (allPlayersPassed) {
+  const handleEndPhase = async () => {
+    if (!allPlayersPassed) return;
+
+    try {
       // Play phase exit sound
       playPhaseExit(PhaseType.ACTION);
+
+      // Advance to next phase in database
+      await advancePhase(gameId, 'action');
+
+      // Call onComplete to trigger state reload in GamePage
       onComplete();
+    } catch (error) {
+      console.error('❌ Error advancing from action phase:', error);
+      alert('ERROR: Failed to advance to next phase. Please try again.');
     }
   };
+
+  // Auto-advance when all players have passed
+  useEffect(() => {
+    if (!allPlayersPassed) return;
+
+    console.log('🎯 All players have passed, auto-advancing to status phase in 2 seconds...');
+
+    // Give players a moment to see that everyone has passed before auto-advancing
+    const timer = setTimeout(async () => {
+      try {
+        // Play phase exit sound
+        playPhaseExit(PhaseType.ACTION);
+
+        // Advance to next phase in database
+        await advancePhase(gameId, 'action');
+
+        // Call onComplete to trigger state reload in GamePage
+        onComplete();
+      } catch (error) {
+        console.error('❌ Error auto-advancing from action phase:', error);
+        alert('ERROR: Failed to automatically advance to next phase.');
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [allPlayersPassed, gameId, onComplete]);
 
   if (!currentPlayer) {
     return (
@@ -780,8 +956,6 @@ export function ActionPhase({
       {/* Turn Indicator Panel - Matching Strategy Phase */}
       <Panel className={styles.turnIndicator}>
         <div className={styles.turnPanelLayout}>
-          <div className={styles.turnPanelSpacer}></div>
-
           <div className={styles.turnPanelCenter}>
             {/* Action Queue Bar */}
             <div className={styles.turnQueueBar}>
@@ -884,6 +1058,7 @@ export function ActionPhase({
 
             {/* Current Player Display */}
             <div className={styles.currentPlayerDisplay}>
+              <div className={styles.currentPlayerWrapper}>
               {(() => {
                 const currentStrategyCard = turnOrder.find((s) => s.playerId === currentPlayer.id);
                 const currentState = playerActionStates.find((s) => s.playerId === currentPlayer.id);
@@ -932,6 +1107,28 @@ export function ActionPhase({
                   </div>
                 );
               })()}
+              </div>
+
+              {/* Timer and Pause Button - Right Side */}
+              {timerEnabled && currentPlayer && (
+                <div className={styles.timerSection}>
+                  <PlayerTimer
+                    timerData={currentPlayerTimer}
+                    isPaused={isPaused}
+                    compact={false}
+                    showRoundTime={true}
+                    currentRoundTime={currentRoundTime}
+                    hidePlayerName={true}
+                    hideTotalTime={true}
+                  />
+                  <PauseGameButton
+                    gameId={gameId}
+                    isPaused={isPaused}
+                    isHost={isHost || false}
+                    compact={false}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -944,9 +1141,13 @@ export function ActionPhase({
           {/* Future panels will be added here */}
           {allPlayersPassed && (
             <Panel className={styles.endPhasePanel}>
-              <Button onClick={handleEndPhase} variant="primary" size="large">
-                End Action Phase
-              </Button>
+              <div className={styles.endPhaseContent}>
+                <h3 className={styles.endPhaseTitle}>All Players Have Passed</h3>
+                <p className={styles.endPhaseMessage}>Advancing to Status Phase...</p>
+                <Button onClick={handleEndPhase} variant="secondary" size="medium">
+                  Skip Wait
+                </Button>
+              </div>
             </Panel>
           )}
 
@@ -972,7 +1173,7 @@ export function ActionPhase({
               <Button onClick={() => setShowMecatolRexModal(true)} variant="secondary" size="medium">
                 Mecatol Rex
               </Button>
-              <Button onClick={() => console.log('Enter Combat clicked')} variant="secondary" size="medium">
+              <Button onClick={handleEnterCombat} variant="secondary" size="medium">
                 Enter Combat
               </Button>
             </div>
@@ -1114,6 +1315,21 @@ export function ActionPhase({
           custodiansTaken={mecatolClaimed ?? false}
           onClaimMecatolRex={handleMecatolRexClaim}
           onClose={() => setShowMecatolRexModal(false)}
+        />
+      )}
+
+      {/* Combat Modal */}
+      {showCombatModal && currentPlayer && combatDefenderId && (
+        <CombatModal
+          gameId={gameId}
+          attackerId={currentPlayer.id}
+          defenderId={combatDefenderId}
+          attackerName={currentPlayer.displayName}
+          defenderName={players.find(p => p.id === combatDefenderId)?.displayName || 'Unknown'}
+          attackerFactionId={currentPlayer.factionId}
+          defenderFactionId={players.find(p => p.id === combatDefenderId)?.factionId || 'unknown'}
+          onClose={handleCombatClose}
+          onComplete={handleCombatComplete}
         />
       )}
     </div>

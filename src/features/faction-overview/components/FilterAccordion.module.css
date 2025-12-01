@@ -1,0 +1,131 @@
+.filterPanel {
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  overflow: hidden;
+}
+
+.accordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-secondary);
+  border: none;
+  border-bottom: 2px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.accordionHeader:hover {
+  background: var(--color-bg-elevated);
+}
+
+.accordionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-primary);
+}
+
+.expandIcon {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-primary);
+  line-height: 1;
+  min-width: 24px;
+  text-align: center;
+}
+
+.accordionContent {
+  padding: var(--space-4);
+  background: var(--color-bg-elevated);
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-3);
+}
+
+.toggleAllButton {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    6px 0, 100% 0, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 0 100%, 0 6px
+  );
+}
+
+.toggleAllButton:hover {
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: white;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2);
+}
+
+.categoryLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.categoryLabel:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border-accent);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-accent-primary);
+}
+
+.categoryText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .accordionContent {
+    padding: var(--space-3);
+  }
+
+  .categoryGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-1);
+  }
+
+  .categoryLabel {
+    padding: var(--space-1);
+  }
+
+  .categoryText {
+    font-size: var(--font-size-xs);
+  }
+}

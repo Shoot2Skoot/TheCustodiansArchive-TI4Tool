@@ -1,0 +1,85 @@
+{
+  "id": "sol",
+  "name": "The Federation of Sol",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "ORBITAL DROP",
+      "description": "ACTION: Spend 1 token from your strategy pool to place 2 infantry from your reinforcements on 1 planet you control.",
+      "type": "action"
+    },
+    {
+      "name": "VERSATILE",
+      "description": "When you gain command tokens during the status phase, gain 1 additional command token.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Genesis",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 1,
+    "capacity": 12,
+    "abilities": [
+      "At the end of the status phase, place 1 infantry from your reinforcements in this system's space area.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Neural Motivator",
+      "type": "biotic",
+      "color": "green"
+    },
+    {
+      "name": "Antimass Deflectors",
+      "type": "propulsion",
+      "color": "blue"
+    }
+  ],
+  "commodityValue": 4,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Jord",
+        "resources": 4,
+        "influence": 2,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Military Support",
+      "effect": "At the start of the Sol player's turn: Remove 1 token from the Sol player's strategy pool, if able, and return it to their reinforcements. Then, you may place 2 infantry from your reinforcements on any planet you control.",
+      "returnCondition": "Then return this card to the Sol player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Evelyn Delouis",
+        "type": "agent",
+        "ability": "At the start of a ground combat round: You may exhaust this card to choose 1 ground force in the active system; that ground force rolls 1 additional die during this combat round."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Claire Gibson",
+        "type": "commander",
+        "unlockCondition": "Control planets that have a combined total of at least 12 resources",
+        "ability": "At the start of a ground combat on a planet you control: You may place 1 infantry from your reinforcements on that planet."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Jace X. 4th Air Legion",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Remove each of your command tokens from the game board and return them to your reinforcements. Then, purge this card."
+      }
+    }
+  }
+}

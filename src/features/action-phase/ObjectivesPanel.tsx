@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { Panel } from '@/components/common';
 import { useStore } from '@/store';
 import { shallow } from 'zustand/shallow';
@@ -41,6 +41,9 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
   const currentRound = useStore((state) => state.gameState?.currentRound);
   const players = useStore((state) => state.players, shallow);
   const objectivesReloadCounter = useStore((state) => state.objectivesReloadCounter);
+
+  // Only use infinite scroll if there are enough objectives to warrant it
+  const shouldUseInfiniteScroll = useMemo(() => objectives.length >= 4, [objectives.length]);
 
   // Debug logging - monitor render frequency
   console.log('🟡 ObjectivesPanel render - objectives:', objectives.length);
@@ -102,24 +105,27 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
   const handlePrevious = useCallback(() => {
     if (objectives.length === 0) return;
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex - 1;
+      // If not using infinite scroll, clamp to 0
+      const newIndex = shouldUseInfiniteScroll ? prevIndex - 1 : Math.max(0, prevIndex - 1);
       scrollToIndex(newIndex);
       return newIndex;
     });
-  }, [scrollToIndex]);
+  }, [scrollToIndex, shouldUseInfiniteScroll, objectives.length]);
 
   const handleNext = useCallback(() => {
     if (objectives.length === 0) return;
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex + 1;
+      // If not using infinite scroll, clamp to last index
+      const maxIndex = shouldUseInfiniteScroll ? Infinity : objectives.length - 1;
+      const newIndex = Math.min(maxIndex, prevIndex + 1);
       scrollToIndex(newIndex);
       return newIndex;
     });
-  }, [scrollToIndex]);
+  }, [scrollToIndex, shouldUseInfiniteScroll, objectives.length]);
 
-  // Handle infinite scroll wrap-around
+  // Handle infinite scroll wrap-around (only when using infinite scroll)
   useEffect(() => {
-    if (objectives.length === 0) return undefined;
+    if (objectives.length === 0 || !shouldUseInfiniteScroll) return undefined;
 
     // Only reset if we're beyond the original objectives
     if (currentIndex >= objectives.length) {
@@ -142,7 +148,7 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
     }
 
     return undefined;
-  }, [currentIndex, objectives.length, scrollToIndex]);
+  }, [currentIndex, objectives.length, scrollToIndex, shouldUseInfiniteScroll]);
 
   const cycleSpeed = () => {
     const speeds: AutoScrollSpeed[] = ['off', 'slow', 'medium', 'fast'];
@@ -176,8 +182,9 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
     );
   }
 
-  // Create extended list with clones for infinite scroll effect
-  const extendedObjectives = [...objectives, ...objectives];
+  // Only duplicate objectives for infinite scroll if there are enough to warrant it
+  // With fewer objectives, just show them once
+  const extendedObjectives = shouldUseInfiniteScroll ? [...objectives, ...objectives] : objectives;
 
   return (
     <Panel className={styles.objectivesPanel} beveled>
@@ -189,6 +196,7 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
         <button
           className={styles.carouselButton}
           onClick={handlePrevious}
+          disabled={!shouldUseInfiniteScroll && currentIndex === 0}
           aria-label="Previous objective"
         >
           ‹
@@ -232,6 +240,10 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
                       className={`${styles.factionIcon} ${hasScored ? styles.scored : ''}`}
                       onClick={() => handleToggleCompletion(objective.id, player.id)}
                       title={`${player.displayName || player.factionId} - ${hasScored ? 'Scored' : 'Not scored'}`}
+                      style={{
+                        // @ts-ignore - CSS custom property
+                        '--player-color': player.color
+                      }}
                     >
                       <img
                         src={getFactionImage(player.factionId, 'color')}
@@ -249,6 +261,7 @@ export function ObjectivesPanel({ gameId }: ObjectivesPanelProps) {
         <button
           className={styles.carouselButton}
           onClick={handleNext}
+          disabled={!shouldUseInfiniteScroll && currentIndex >= objectives.length - 1}
           aria-label="Next objective"
         >
           ›

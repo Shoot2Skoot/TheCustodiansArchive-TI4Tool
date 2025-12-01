@@ -5,8 +5,6 @@ export interface GameConfig {
   playerCount: number;
   victoryPointLimit: number;
   timerEnabled: boolean;
-  timerMode: 'per-turn' | 'cumulative';
-  timerDurationMinutes: number;
   showObjectives: boolean;
   showTechnologies: boolean;
   showStrategyCards: boolean;
@@ -49,6 +47,10 @@ export interface GameState {
   lastActivityAt: string;
   phaseStartedAt: string | null;
   updatedAt: string;
+  // Pause functionality
+  isPaused: boolean;
+  pausedAt: string | null;
+  pausedByUserId: string | null;
 }
 
 // Database Model - Strategy Selection
@@ -133,6 +135,17 @@ export interface TimerTracking {
   totalTimeSeconds: number;
   turnStartedAt: string | null;
   isCurrentTurn: boolean;
+  updatedAt: string;
+}
+
+// Database Model - Player Round Time
+export interface PlayerRoundTime {
+  id: string;
+  gameId: string;
+  playerId: string;
+  roundNumber: number;
+  timeSeconds: number;
+  createdAt: string;
   updatedAt: string;
 }
 

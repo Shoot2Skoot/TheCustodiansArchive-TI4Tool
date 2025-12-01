@@ -1,24 +1,22 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-6);
+  gap: var(--space-3);
+  padding: 0;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-4);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .headerContent {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .objectiveIcon {
@@ -104,13 +102,13 @@
 .objectivesContainer {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-2);
 }
 
 .objectiveGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-8);
 }
 
 .noResults {
@@ -130,94 +128,131 @@
 
 .objectiveCard {
   position: relative;
-  padding: var(--space-4);
-  background: var(--color-bg-elevated);
-  border: 2px solid var(--color-border-primary);
+  padding: 0;
+  border: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
-  /* Beveled corners */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  /* Beveled corners - top-right and bottom-left */
   clip-path: polygon(
-    12px 0, 100% 0, 100% calc(100% - 12px),
-    calc(100% - 12px) 100%, 0 100%, 0 12px
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
+}
+
+/* Border layer - sits behind everything */
+.objectiveCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-border-primary);
+  z-index: -2;
+  transition: background 0.2s ease;
+}
+
+/* Background layer - creates the border effect by being inset */
+.objectiveCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-elevated);
+  z-index: -1;
+  /* Inset clip-path to create 2px border effect */
+  clip-path: polygon(
+    2px 2px,
+    calc(100% - calc(12px + 1px)) 2px,
+    calc(100% - 2px) calc(12px + 1px),
+    calc(100% - 2px) calc(100% - 2px),
+    calc(12px + 1px) calc(100% - 2px),
+    2px calc(100% - calc(12px + 1px))
   );
 }
 
 .objectiveCard:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--color-border-accent);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+.objectiveCard:hover::before {
+  background: var(--color-border-accent);
+}
+
+.objectiveCard.selected::before {
+  background: #6496ff;
+}
+
 .objectiveCard.selected {
-  background: rgba(100, 150, 255, 0.15);
-  border-color: #6496ff;
   box-shadow: 0 0 0 2px #6496ff;
 }
 
-.objectiveHeader {
+.cardHeader {
+  position: relative;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid var(--color-border-primary);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.objectiveHeaderLeft {
-  display: flex;
-  flex-direction: column;
   gap: var(--space-2);
-  flex: 1;
 }
 
-.expansionBadge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 4px;
-  align-self: flex-start;
-  /* Small beveled corners */
-  clip-path: polygon(
-    4px 0, 100% 0, 100% calc(100% - 4px),
-    calc(100% - 4px) 100%, 0 100%, 0 4px
-  );
+.cardHeader.base {
+  background: linear-gradient(135deg, rgba(40, 60, 100, 0.9), rgba(30, 45, 80, 0.9));
+  border-bottom-color: rgba(100, 150, 255, 0.3);
 }
 
-.expansionBadge.base {
+.cardHeader.pok {
+  background: linear-gradient(135deg, rgba(60, 40, 100, 0.9), rgba(50, 30, 85, 0.9));
+  border-bottom-color: rgba(200, 150, 255, 0.3);
+}
+
+.objectiveCard.selected .cardHeader {
   background: rgba(100, 150, 255, 0.2);
-  color: #6496ff;
-  border: 1px solid rgba(100, 150, 255, 0.4);
+  border-bottom-color: #6496ff;
 }
 
-.expansionBadge.pok {
-  background: rgba(200, 150, 255, 0.2);
-  color: #c896ff;
-  border: 1px solid rgba(200, 150, 255, 0.4);
+.objectiveCard.selected .cardHeader.base {
+  background: linear-gradient(135deg, rgba(60, 90, 140, 0.9), rgba(45, 70, 120, 0.9));
+  border-bottom-color: #6496ff;
+}
+
+.objectiveCard.selected .cardHeader.pok {
+  background: linear-gradient(135deg, rgba(80, 60, 140, 0.9), rgba(70, 50, 120, 0.9));
+  border-bottom-color: #c896ff;
+}
+
+.cardContent {
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.objectiveCard:hover .cardContent {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.objectiveCard.selected .cardContent {
+  background: rgba(100, 150, 255, 0.1);
 }
 
 .objectiveName {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.objectivePoints {
-  padding: 0.25rem 0.75rem;
-  background: var(--color-accent-primary);
-  color: #000;
-  border-radius: 4px;
-  font-size: var(--font-size-sm);
-  font-weight: 700;
-  flex-shrink: 0;
-  /* Small beveled corners */
-  clip-path: polygon(
-    4px 0, 100% 0, 100% calc(100% - 4px),
-    calc(100% - 4px) 100%, 0 100%, 0 4px
-  );
+  font-family: 'Russo One', sans-serif;
+  font-size: var(--font-size-md);
+  font-weight: 400;
+  color: white;
+  flex: 1;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
 }
 
 .objectiveCondition {
@@ -227,27 +262,25 @@
 }
 
 .selectedBadge {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #6496ff;
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(100, 150, 255, 0.5);
+  flex-shrink: 0;
 }
 
 .checkmark {
   color: white;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
 .infoBox {
-  padding: var(--space-6);
+  padding: var(--space-3);
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-primary);
   border-radius: 12px;
@@ -287,8 +320,8 @@
 .actions {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding-top: var(--space-4);
+  gap: var(--space-3);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--color-border-primary);
 }
 

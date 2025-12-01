@@ -56,18 +56,20 @@ export function SpeakerSelection({ players, onSelect, onBack, isCreating = false
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Select Speaker</h2>
+        <div className={styles.headerRow}>
+          <h2 className={styles.title}>Select Speaker</h2>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handleRandomSpeaker}
+            className={styles.randomButton}
+          >
+            🎲 Random Speaker
+          </Button>
+        </div>
         <p className={styles.description}>
           Who will be the starting speaker?
         </p>
-        <Button
-          variant="secondary"
-          size="small"
-          onClick={handleRandomSpeaker}
-          className={styles.randomButton}
-        >
-          🎲 Random Speaker
-        </Button>
       </div>
 
       <div className={styles.playerGrid}>

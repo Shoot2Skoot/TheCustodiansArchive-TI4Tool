@@ -1,0 +1,91 @@
+{
+  "id": "l1z1x",
+  "name": "The L1Z1X Mindnet",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "ASSIMILATE",
+      "description": "When you gain control of a planet, replace each PDS and space dock that is on that planet with a matching unit from your reinforcements.",
+      "type": "passive"
+    },
+    {
+      "name": "HARROW",
+      "description": "At the end of each round of ground combat, your ships in the active system may use their Bombardment abilities against your opponent's ground forces on the planet.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "[0.0.1]",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 1,
+    "capacity": 5,
+    "abilities": [
+      "During a space combat, hits produced by this ship and by your dreadnoughts in this system must be assigned to non-fighter ships if able.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Neural Motivator",
+      "type": "biotic",
+      "color": "green"
+    },
+    {
+      "name": "Plasma Scoring",
+      "type": "warfare",
+      "color": "red"
+    }
+  ],
+  "commodityValue": 2,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "[0.0.0]",
+        "resources": 5,
+        "influence": 0,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Cybernetic Enhancements",
+      "effect": "At the start of your turn: Remove 1 token from the L1Z1X player's strategy pool and return it to their reinforcements. Then, place 1 command token from your reinforcements in your strategy pool.",
+      "returnCondition": "Then, return this card to the L1Z1X player.",
+      "placeFaceUp": false
+    },
+    "omega": {
+      "name": "Cybernetic Enhancements",
+      "effect": "When you gain command tokens during the status phase: Gain 1 additional command token",
+      "returnCondition": "Then, return this card to the L1Z1X player",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "I48S",
+        "type": "agent",
+        "ability": "After a player activates a system: You may exhaust this card to allow that player to replace 1 of their infantry in the active system with 1 mech from their reinforcements"
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "2RAM",
+        "type": "commander",
+        "unlockCondition": "Have 4 Dreadnoughts on the Board",
+        "ability": "Units that have PLANETARY SHIELD do not prevent you from using Bombardment"
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "The Helmsman",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Choose 1 system that does not contain other players' ships; you may move your flagship and any number of dreadnoughts from other systems into the chosen system. Then, purge this card."
+      }
+    }
+  }
+}

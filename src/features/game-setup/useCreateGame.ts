@@ -3,6 +3,7 @@ import { createGame } from '@/lib/db/games';
 import { createPlayer } from '@/lib/db/players';
 import { initializeGameState } from '@/lib/db/gameState';
 import { createInitialObjectives } from '@/lib/db/objectives';
+import { initializeTimerTracking } from '@/lib/db/timers';
 import { ensureAnonymousSession } from '@/lib/auth';
 import { useStore } from '@/store';
 import { supabase } from '@/lib/supabase';
@@ -45,9 +46,7 @@ export function useCreateGame() {
       const gameConfig: GameConfig = {
         playerCount: config.playerCount || 6,
         victoryPointLimit: config.victoryPointLimit || 10,
-        timerEnabled: config.timerEnabled || false,
-        timerMode: config.timerMode || 'per-turn',
-        timerDurationMinutes: config.timerDurationMinutes || 5,
+        timerEnabled: config.timerEnabled ?? true,
         showObjectives: config.showObjectives ?? true,
         showTechnologies: config.showTechnologies ?? true,
         showStrategyCards: config.showStrategyCards ?? true,
@@ -99,6 +98,17 @@ export function useCreateGame() {
 
       if (validPlayers.length !== players.length) {
         throw new Error('Failed to create all players');
+      }
+
+      // Step 2.5: Initialize timer tracking if enabled
+      if (gameConfig.timerEnabled) {
+        try {
+          const playerIds = validPlayers.map(p => p!.id);
+          await initializeTimerTracking(game.id, playerIds);
+        } catch (timerError) {
+          console.warn('Failed to initialize timer tracking:', timerError);
+          // Don't throw - timers are not critical for game creation
+        }
       }
 
       // Step 3: Initialize game state with speaker

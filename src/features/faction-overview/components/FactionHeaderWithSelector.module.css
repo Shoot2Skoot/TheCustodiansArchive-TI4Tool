@@ -1,0 +1,315 @@
+.container {
+  position: relative;
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  border-radius: 8px;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  gap: var(--space-4);
+}
+
+.factionInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.factionIcon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.factionText {
+  flex: 1;
+  min-width: 0;
+}
+
+.factionName {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.playerInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.playerColor {
+  padding: var(--space-1) var(--space-3);
+  border-radius: 4px;
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-size: var(--font-size-sm);
+}
+
+.playerName {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-semibold);
+}
+
+/* Action buttons */
+.actionButtons {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.iconButton {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.iconButton:hover {
+  border-color: var(--color-border-accent);
+  transform: scale(1.05);
+}
+
+.iconButton.active {
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+}
+
+/* Dropdown */
+.dropdown {
+  border-top: 2px solid var(--color-border-primary);
+  background: var(--color-bg-secondary);
+  padding: var(--space-4);
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.dropdownTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-primary);
+}
+
+.toggleAllButton {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    6px 0, 100% 0, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 0 100%, 0 6px
+  );
+}
+
+.toggleAllButton:hover {
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: white;
+}
+
+/* Filter category grid */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2);
+}
+
+.categoryLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.categoryLabel:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border-accent);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-accent-primary);
+}
+
+.categoryText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* Faction grid */
+.factionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2);
+}
+
+.factionItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  text-align: left;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    8px 0, 100% 0, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 0 100%, 0 8px
+  );
+}
+
+.factionItem:hover {
+  border-color: var(--color-border-accent);
+  transform: translateY(-2px);
+}
+
+.factionItem.selected {
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: white;
+}
+
+.factionItemIcon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.factionItemName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: var(--font-semibold);
+}
+
+/* Player colors */
+.blue { background: #3b82f6; color: white; }
+.red { background: #ef4444; color: white; }
+.green { background: #10b981; color: white; }
+.yellow { background: #f59e0b; color: black; }
+.purple { background: #a855f7; color: white; }
+.orange { background: #f97316; color: white; }
+.pink { background: #ec4899; color: white; }
+.black { background: #1f2937; color: white; }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    clip-path: none;
+    border-radius: 0;
+  }
+
+  .header {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .factionIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .factionName {
+    font-size: var(--font-size-lg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .playerInfo {
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+  }
+
+  .iconButton {
+    width: 44px;
+    height: 44px;
+    font-size: 1.25rem;
+  }
+
+  .dropdown {
+    padding: var(--space-3);
+  }
+
+  .categoryGrid,
+  .factionGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-1);
+  }
+
+  .categoryLabel {
+    padding: var(--space-1);
+  }
+
+  .categoryText {
+    font-size: var(--font-size-xs);
+  }
+
+  .factionItem {
+    padding: var(--space-2);
+  }
+
+  .factionItemIcon {
+    width: 32px;
+    height: 32px;
+  }
+}

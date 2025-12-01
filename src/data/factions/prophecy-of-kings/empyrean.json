@@ -1,0 +1,100 @@
+{
+  "id": "empyrean",
+  "name": "The Empyrean",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "VOIDBORN",
+      "description": "Nebulae do not affect your ships' movement.",
+      "type": "passive"
+    },
+    {
+      "name": "AETHERPASSAGE",
+      "description": "After a player activates a system, you may allow that player to move their ships through systems that contain your ships.",
+      "type": "passive"
+    },
+    {
+      "name": "DARK WHISPERS",
+      "description": "During setup, take the additional Empyrean faction promissory note; you have 2 faction promissory notes.",
+      "type": "setup"
+    }
+  ],
+  "flagship": {
+    "name": "Dynamo",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "After any player's unit in this system or an adjacent system uses SUSTAIN DAMAGE, you may spend 2 influence to repair that unit.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": {
+    "name": "Watcher",
+    "cost": 2,
+    "combat": "6",
+    "abilities": [
+      "You may remove this unit from a system that contains or is adjacent to another player's units to cancel an action card played by that player.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "startingTechnologies": [
+    {
+      "name": "Dark Energy Tap",
+      "type": "propulsion",
+      "color": "blue"
+    }
+  ],
+  "commodityValue": 4,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "The Dark",
+        "resources": 3,
+        "influence": 4,
+        "traits": []
+      }
+    ],
+    "features": ["Nebula"]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Dark Pact",
+      "effect": "ACTION: Place this card face up in your play area. When you give a number of commodities to the Empyrean player equal to your maximum commodity value, you each gain 1 trade good. If you activate a system that contains 1 or more of the Empyrean player's units, return this card to the Empyrean player.",
+      "returnCondition": "If you activate a system that contains 1 or more of the Empyrean player's units, return this card to the Empyrean player.",
+      "placeFaceUp": true
+    },
+    "alternate": {
+      "name": "Blood Pact",
+      "effect": "ACTION: Place this card face up in your play area. When you and the Empyrean player cast votes for the same outcome, cast 4 additional votes for that outcome. If you activate a system that contains 1 or more of the Empyrean player's units, return this card to the Empyrean player.",
+      "returnCondition": "If you activate a system that contains 1 or more of the Empyrean player's units, return this card to the Empyrean player.",
+      "placeFaceUp": true
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Acamar",
+        "type": "agent",
+        "ability": "After a player moves ships into a system that does not contain any planets: You may exhaust this card; that player gains 1 command token."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Xuange",
+        "type": "commander",
+        "unlockCondition": "Be neighbors with all other players",
+        "ability": "After another player moves ships into a system that contains 1 of your command tokens: You may return that token to your reinforcements."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Conservator Procyon",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Place 1 frontier token in each system that does not contain any planets and does not already have a frontier token. Then, explore each frontier token that is in a system that contains 1 or more of your ships. Then, purge this card."
+      }
+    }
+  }
+}

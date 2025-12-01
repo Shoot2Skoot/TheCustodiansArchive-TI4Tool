@@ -1,0 +1,112 @@
+{
+  "id": "nomad",
+  "name": "The Nomad",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "THE COMPANY",
+      "description": "During setup, take the 2 additional Nomad faction agents and place them next to your faction sheet; you have 3 agents.",
+      "type": "setup"
+    },
+    {
+      "name": "FUTURE SIGHT",
+      "description": "During the Agenda phase, after an outcome that you voted for or predicted is resolved, gain 1 trade good.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Memoria",
+    "cost": 8,
+    "combat": "7 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "You may treat this unit as if it were adjacent to systems that contain one or more of your mechs",
+      "SUSTAIN DAMAGE",
+      "ANTI-FIGHTER BARRAGE 8 (x3)"
+    ],
+    "upgrade": {
+      "name": "Memoria II",
+      "cost": 8,
+      "combat": "5 (x2)",
+      "move": 2,
+      "capacity": 6,
+      "abilities": [
+        "You may treat this unit as if it were adjacent to systems that contain one or more of your mechs",
+        "SUSTAIN DAMAGE",
+        "ANTI-FIGHTER BARRAGE 5 (x3)"
+      ],
+      "prerequisites": ["biotic", "propulsion", "cybernetic"]
+    }
+  },
+  "mech": {
+    "name": "Quantum Manipulator",
+    "cost": 2,
+    "combat": "6",
+    "abilities": [
+      "While this unit is in a space area during combat, you may use its SUSTAIN DAMAGE ability to cancel a hit that is produced against your ships in this system.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "startingTechnologies": [
+    {
+      "name": "Sling Relay",
+      "type": "propulsion",
+      "color": "blue"
+    }
+  ],
+  "commodityValue": 4,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Arcturus",
+        "resources": 4,
+        "influence": 4,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "The Cavalry",
+      "effect": "At the start of a space combat against a player other than the Nomad: During this combat, treat 1 of your non-fighter ships as if it has the SUSTAIN DAMAGE ability, combat value, and ANTI-FIGHTER BARRAGE value of the Nomad's flagship. Return this card to the Nomad player at the end of this combat.",
+      "returnCondition": "Return this card to the Nomad player at the end of this combat.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Artuno the Betrayer",
+        "type": "agent",
+        "ability": "When you gain trade goods from the supply: You may exhaust this card to place an equal number of trade goods on this card. When this card readies, gain the trade goods on this card."
+      },
+      "agent2": {
+        "name": "Field Marshall Mercer",
+        "type": "agent",
+        "ability": "At the end of a player's turn: You may exhaust this card to allow that player to remove up to 2 of their ground forces from the game board and place them on planets they control in the active system."
+      },
+      "agent3": {
+        "name": "The Thundarian",
+        "type": "agent",
+        "ability": "After the \"Roll Dice\" step of combat: You may exhaust this card. If you do, hits are not assigned to either players' units. Return to the start of this combat round's \"Roll Dice\" step."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Navarch Feng",
+        "type": "commander",
+        "unlockCondition": "Have 1 scored secret objective",
+        "ability": "You can produce your Flagship without spending resources."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Ahk-Syl Siven",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Place this card near the game board; your flagship and units it transports can move out of systems that contain your command tokens during this game round. At the end of that game round, purge this card."
+      }
+    }
+  }
+}

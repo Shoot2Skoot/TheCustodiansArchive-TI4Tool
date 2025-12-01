@@ -1,0 +1,86 @@
+{
+  "id": "saar",
+  "name": "The Clan of Saar",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "SCAVENGE",
+      "description": "After you gain control of a planet, gain 1 trade good.",
+      "type": "passive"
+    },
+    {
+      "name": "NOMADIC",
+      "description": "You can score objectives even if you do not control the planets in your home system.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Son of Ragh",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "ANTI-FIGHTER BARRAGE 6 (x4)",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Antimass Deflectors",
+      "type": "propulsion",
+      "color": "blue"
+    }
+  ],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Lisis II",
+        "resources": 1,
+        "influence": 0,
+        "traits": []
+      },
+      {
+        "name": "Ragh",
+        "resources": 2,
+        "influence": 1,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Ragh's Call",
+      "effect": "After you commit 1 or more units to land on a planet: Remove all of the Saar player's ground forces from that planet and place them on a planet controlled by the Saar player.",
+      "returnCondition": "Then return this card to the Saar player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Captain Mendosa",
+        "type": "agent",
+        "ability": "After a player activates a system: You may exhaust this card to increase the move value of 1 of that player's ships to match the move value of the ship on the game board that has the highest move value"
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Rowl Sarrig",
+        "type": "commander",
+        "unlockCondition": "Have 3 space docks on the game board",
+        "ability": "When you produce fighters or infantry: You may place each of those units at any of your space docks that are not blockaded"
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Gurno Aggero",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Choose 1 system that is adjacent to 1 of your Space Docks. Destroy all other players' infantry and fighters in that system. Then, purge this card."
+      }
+    }
+  }
+}

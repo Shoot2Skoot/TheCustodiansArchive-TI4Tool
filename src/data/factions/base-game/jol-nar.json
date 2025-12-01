@@ -1,0 +1,106 @@
+{
+  "id": "jol-nar",
+  "name": "The Universities of Jol-Nar",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "FRAGILE",
+      "description": "Apply -1 to the result of each of your unit's combat rolls.",
+      "type": "passive"
+    },
+    {
+      "name": "BRILLIANT",
+      "description": "When you spend a command token to resolve the secondary ability of the \"Technology\" strategy card, you may resolve the primary ability instead.",
+      "type": "passive"
+    },
+    {
+      "name": "ANALYTICAL",
+      "description": "When you research a technology that is not a unit upgrade technology, you may ignore 1 prerequisite.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "J.N.S. Hylarim",
+    "cost": 8,
+    "combat": "6 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "When making a combat roll for this ship, each result of a 9 or 10, before applying modifiers, produces 2 additional hits.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Neural Motivator",
+      "type": "biotic",
+      "color": "green"
+    },
+    {
+      "name": "Antimass Deflectors",
+      "type": "propulsion",
+      "color": "blue"
+    },
+    {
+      "name": "Sarween Tools",
+      "type": "cybernetic",
+      "color": "yellow"
+    },
+    {
+      "name": "Plasma Scoring",
+      "type": "warfare",
+      "color": "red"
+    }
+  ],
+  "commodityValue": 4,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Jol",
+        "resources": 1,
+        "influence": 2,
+        "traits": []
+      },
+      {
+        "name": "Nar",
+        "resources": 2,
+        "influence": 3,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Research Agreement",
+      "effect": "After the Jol-Nar player researches a technology that is not a faction technology: Gain that technology.",
+      "returnCondition": "Then, return this card to the Jol-Nar player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Doctor Sucaban",
+        "type": "agent",
+        "ability": "When a player spends resources to research: You may exhaust this card to allow that player to remove any number of their infantry from the game board. For each unit removed, reduce the resources spent by 1"
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Ta-Zern",
+        "type": "commander",
+        "unlockCondition": "Own 8 technologies",
+        "ability": "After you roll dice for a unit ability: You may re-roll any of those dice."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Rin, the Master's Legacy",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: For each non-unit upgrade technology you own, you may replace that technology with any technology of the same color from the deck. Then, purge this card."
+      }
+    }
+  }
+}

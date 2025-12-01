@@ -197,23 +197,25 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  transition: all 0.3s ease;
+  animation: factionPulse 2s ease-in-out infinite;
 }
 
 @keyframes factionPulse {
   0%, 100% {
-    filter: drop-shadow(0 0 8px var(--player-color, rgba(100, 150, 255, 0.6))) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 0 8px var(--player-color, rgba(100, 150, 255, 0.6)));
     transform: scale(1);
   }
   50% {
-    filter: drop-shadow(0 0 12px var(--player-color, rgba(100, 150, 255, 0.8))) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 0 12px var(--player-color, rgba(100, 150, 255, 0.8)));
     transform: scale(1.03);
   }
 }
 
 .factionToken:hover {
-  animation: none !important;
-  transform: scale(1.1) !important;
-  filter: brightness(1.1) drop-shadow(0 0 20px var(--player-color, rgba(100, 150, 255, 0.8))) !important;
+  animation: none;
+  transform: scale(1.1);
+  filter: brightness(1.1) drop-shadow(0 0 20px var(--player-color, rgba(100, 150, 255, 0.8)));
 }
 
 .factionImage {

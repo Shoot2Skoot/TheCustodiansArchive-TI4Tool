@@ -1,0 +1,1 @@
+export { PauseGameButton } from './PauseGameButton';

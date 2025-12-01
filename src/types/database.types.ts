@@ -75,6 +75,9 @@ export type Database = {
           phase_started_at: string | null
           speaker_player_id: string | null
           updated_at: string
+          is_paused: boolean
+          paused_at: string | null
+          paused_by_user_id: string | null
         }
         Insert: {
           current_phase?: string
@@ -87,6 +90,9 @@ export type Database = {
           phase_started_at?: string | null
           speaker_player_id?: string | null
           updated_at?: string
+          is_paused?: boolean
+          paused_at?: string | null
+          paused_by_user_id?: string | null
         }
         Update: {
           current_phase?: string
@@ -99,6 +105,9 @@ export type Database = {
           phase_started_at?: string | null
           speaker_player_id?: string | null
           updated_at?: string
+          is_paused?: boolean
+          paused_at?: string | null
+          paused_by_user_id?: string | null
         }
         Relationships: [
           {
@@ -280,6 +289,51 @@ export type Database = {
           },
           {
             foreignKeyName: "player_action_state_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      player_round_times: {
+        Row: {
+          created_at: string
+          game_id: string
+          id: string
+          player_id: string
+          round_number: number
+          time_seconds: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          game_id: string
+          id?: string
+          player_id: string
+          round_number: number
+          time_seconds?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          game_id?: string
+          id?: string
+          player_id?: string
+          round_number?: number
+          time_seconds?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_round_times_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_round_times_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
             referencedRelation: "players"

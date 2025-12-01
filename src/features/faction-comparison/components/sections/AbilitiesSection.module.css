@@ -1,0 +1,39 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.header {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ability {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.abilityName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.abilityDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}

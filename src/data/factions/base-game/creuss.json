@@ -1,0 +1,86 @@
+{
+  "id": "creuss",
+  "name": "The Ghosts of Creuss",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "QUANTUM ENTANGLEMENT",
+      "description": "You treat all systems that contain either an alpha or beta wormhole as adjacent to each other. Game effects cannot prevent you from using this ability.",
+      "type": "passive"
+    },
+    {
+      "name": "SLIPSTREAM",
+      "description": "During your tactical actions, apply +1 to the move value of each of your ships that starts its movement in your home system or in a system that contains either an alpha or beta wormhole.",
+      "type": "passive"
+    },
+    {
+      "name": "CREUSS GATE",
+      "description": "When you create the game board, place the Creuss Gate (tile 17) where your home system would normally be placed. The Creuss Gate system is not a home system. Then, place your home system (tile 51) in your play area.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Hil Colish",
+    "cost": 8,
+    "combat": "5",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "This ship's system contains a delta wormhole",
+      "During movement, this ship may move before or after your other ships",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Gravity Drive",
+      "type": "propulsion",
+      "color": "blue"
+    }
+  ],
+  "commodityValue": 4,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Creuss",
+        "resources": 4,
+        "influence": 2,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Creuss Iff",
+      "effect": "At the start of your turn during the action phase: Place or move a Creuss wormhole token into either a system that contains a planet you control or a non-home system that does not contain another player's ships.",
+      "returnCondition": "Then, return this card to the Creuss player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Emissary Taivra",
+        "type": "agent",
+        "ability": "After a player activates a system that contains a non-delta wormhole: You may exhaust this card; if you do, that system is adjacent to all other systems that contain a wormhole during this tactical action"
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Sai Seravus",
+        "type": "commander",
+        "unlockCondition": "Have units in 3 systems that contain alpha or beta wormholes",
+        "ability": "After your ships move: For each ship that has a capacity value and moved through 1 or more wormholes, you may place 1 fighter from your reinforcements with that ship if you have unused capacity in the active system."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Riftwalker Meian",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Swap the positions of any two systems that contain wormholes or your units, other than the Creuss system and the Wormhole Nexus. Then, purge this card."
+      }
+    }
+  }
+}

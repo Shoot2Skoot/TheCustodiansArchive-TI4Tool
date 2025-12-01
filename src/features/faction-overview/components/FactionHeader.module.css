@@ -1,0 +1,122 @@
+.factionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-primary);
+  border-radius: 8px;
+
+  /* Chamfered corners */
+  clip-path: polygon(
+    16px 0, 100% 0, 100% calc(100% - 16px),
+    calc(100% - 16px) 100%, 0 100%, 0 16px
+  );
+}
+
+.factionIcon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.factionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.factionName {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.playerInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.playerColor {
+  padding: var(--space-1) var(--space-3);
+  border-radius: 4px;
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-size: var(--font-size-sm);
+}
+
+.playerName {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-semibold);
+}
+
+/* Player colors */
+.blue {
+  background: #3b82f6;
+  color: white;
+}
+
+.red {
+  background: #ef4444;
+  color: white;
+}
+
+.green {
+  background: #10b981;
+  color: white;
+}
+
+.yellow {
+  background: #f59e0b;
+  color: black;
+}
+
+.purple {
+  background: #a855f7;
+  color: white;
+}
+
+.orange {
+  background: #f97316;
+  color: white;
+}
+
+.pink {
+  background: #ec4899;
+  color: white;
+}
+
+.black {
+  background: #1f2937;
+  color: white;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .factionHeader {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .factionIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .factionName {
+    font-size: var(--font-size-xl);
+  }
+
+  .playerInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+}

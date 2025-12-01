@@ -1,0 +1,98 @@
+{
+  "id": "titans",
+  "name": "The Titans of Ul",
+  "expansion": "pok",
+  "abilities": [
+    {
+      "name": "TERRAGENESIS",
+      "description": "After you explore a planet that does not have a sleeper token, you may place or move 1 sleeper token onto that planet.",
+      "type": "passive"
+    },
+    {
+      "name": "AWAKEN",
+      "description": "After you activate a system that contains 1 or more of your sleeper tokens, you may replace each of those tokens with 1 PDS from your reinforcements.",
+      "type": "passive"
+    },
+    {
+      "name": "COALESCENSE",
+      "description": "If your flagship or your AWAKEN faction ability places your units into the same space area or onto the same planet as another player's units, your units must participate in combat during \"Space Combat\" or \"Ground Combat\" steps.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Ouranos",
+    "cost": 8,
+    "combat": "7 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "DEPLOY: After you activate a system that contains 1 or more of your PDS, you may replace 1 of those PDS with this unit",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": {
+    "name": "Hecatoncheires",
+    "cost": 2,
+    "combat": "6",
+    "abilities": [
+      "DEPLOY: When you would place a PDS on a planet, you may place 1 mech and 1 infantry on that planet instead.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "startingTechnologies": [
+    {
+      "name": "Antimass Deflectors",
+      "type": "propulsion",
+      "color": "blue"
+    },
+    {
+      "name": "Scanlink Drone Network",
+      "type": "cybernetic",
+      "color": "yellow"
+    }
+  ],
+  "commodityValue": 2,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Elysium",
+        "resources": 4,
+        "influence": 1,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Terraform",
+      "effect": "ACTION: Attach this card to a non-home planet you control other than Mecatol Rex. Its resource and influence values are each increased by 1 and it is treated as having all 3 planet traits (cultural, hazardous, and industrial).",
+      "returnCondition": "Attached to planet",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Tellurian",
+        "type": "agent",
+        "ability": "When a hit is produced against a unit: You may exhaust this card to cancel that hit."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Tungstantus",
+        "type": "commander",
+        "unlockCondition": "Have 5 Structures on the game board",
+        "ability": "When 1 or more of your units use PRODUCTION: You may gain 1 trade good."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Ul the Progenitor",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Ready Elysium and attach this card to it. Its resource and influence values are each increased by 3, and it gains the SPACE CANNON 5 (x3) ability as if it were a unit."
+      }
+    }
+  }
+}

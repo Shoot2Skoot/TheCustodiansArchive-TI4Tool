@@ -1,0 +1,91 @@
+{
+  "id": "yssaril",
+  "name": "The Yssaril Tribes",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "STALL TACTICS",
+      "description": "ACTION: Discard 1 action card from your hand.",
+      "type": "action"
+    },
+    {
+      "name": "SCHEMING",
+      "description": "When you draw 1 or more action cards, draw 1 additional action card. Then, choose and discard 1 action card from your hand.",
+      "type": "passive"
+    },
+    {
+      "name": "CRAFTY",
+      "description": "You can have any number of action cards in your hand. Game effects cannot prevent you from using this ability.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Y'sia Y'ssrila",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 2,
+    "capacity": 3,
+    "abilities": [
+      "This ship can move through systems that contain other player's ships.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Neural Motivator",
+      "type": "biotic",
+      "color": "green"
+    }
+  ],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Retillion",
+        "resources": 2,
+        "influence": 3,
+        "traits": []
+      },
+      {
+        "name": "Shalloq",
+        "resources": 1,
+        "influence": 2,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Spy Net",
+      "effect": "At the start of your turn: Look at the Yssaril player's hand of action cards. Choose 1 of those cards and add it to your hand.",
+      "returnCondition": "Then, return this card to the Yssaril player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Clever Clever Ssruu",
+        "type": "agent",
+        "ability": "This card has the text ability of each other player's agent, even if that agent is exhausted."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "So Ata",
+        "type": "commander",
+        "unlockCondition": "Have 7 Action cards",
+        "ability": "After another player activates a system that contains your units: You may look at that player's action cards, promissory notes, or secret objectives."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Kyver, Blade and Key",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Each other player shows you 1 action card from their hand. For each player, you may either take that card or force that player to discard 3 random action cards from their hand. Then, purge this card."
+      }
+    }
+  }
+}

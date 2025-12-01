@@ -1,0 +1,80 @@
+{
+  "id": "muaat",
+  "name": "The Embers of Muaat",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "STAR FORGE",
+      "description": "ACTION: Spend 1 token from your strategy pool to place either 2 fighters or 1 destroyer from your reinforcements in a system that contains 1 or more of your war suns.",
+      "type": "action"
+    },
+    {
+      "name": "GASHLAI PHYSIOLOGY",
+      "description": "Your ships can move through supernovas.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "The Inferno",
+    "cost": 8,
+    "combat": "5 (x2)",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "ACTION: Spend 1 token from your strategy pool to place 1 cruiser in this unit's system.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Plasma Scoring",
+      "type": "warfare",
+      "color": "red"
+    }
+  ],
+  "commodityValue": 4,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Muaat",
+        "resources": 4,
+        "influence": 1,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Fires of the Gashlai",
+      "effect": "ACTION: Remove 1 token from the Muaat player's fleet pool and return it to their reinforcements. Then, gain your war sun unit upgrade technology card.",
+      "returnCondition": "Then, return this card to the Muaat player.",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Umbat",
+        "type": "agent",
+        "ability": "ACTION: Exhaust this card to choose a player. That player may produce up to 2 units that each have a cost of 4 or less in a system that contains one of their War Suns or their flagship"
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Magmus",
+        "type": "commander",
+        "unlockCondition": "Produce a War Sun",
+        "ability": "After you spend a token from your strategy pool: You may gain 1 trade good"
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Adjudicator Ba'al",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "After you move a war sun into a non-home system other than Mecatol Rex: You may destroy all other players' units in that system and replace that system tile with the Muaat supernova tile. If you do, purge this card and each planet card that corresponds to the replaced system tile."
+      }
+    }
+  }
+}

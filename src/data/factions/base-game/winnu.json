@@ -1,0 +1,80 @@
+{
+  "id": "winnu",
+  "name": "The Winnu",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "BLOOD TIES",
+      "description": "You do not have to spend influence to remove the custodians token from Mecatol Rex.",
+      "type": "passive"
+    },
+    {
+      "name": "RECLAMATION",
+      "description": "After you resolve a tactical action during which you gained control of Mecatol Rex, you may place 1 PDS and 1 space dock from your reinforcements on Mecatol Rex.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Salai Sai Corian",
+    "cost": 8,
+    "combat": "7",
+    "move": 1,
+    "capacity": 3,
+    "abilities": [
+      "When this unit makes a combat roll, it rolls a number of dice equal to the number of your opponent's non-fighter ships in this system.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Winnu",
+        "resources": 3,
+        "influence": 4,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Acquiescence",
+      "effect": "At the end of the strategy phase: Exchange 1 of your strategy cards with a strategy card that was chosen by the Winnu player.",
+      "returnCondition": "Then, return this card to the Winnu player.",
+      "placeFaceUp": false
+    },
+    "omega": {
+      "name": "Acquiescence",
+      "effect": "When the Winnu player resolves a strategic action: You do not have to spend or place a command token to resolve the secondary ability of that strategy card",
+      "returnCondition": "Then, return this card to the Winnu player",
+      "placeFaceUp": false
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Berekar Berekon",
+        "type": "agent",
+        "ability": "When 1 or more of a player's units use PRODUCTION: You may exhaust this card to reduce the combined cost of the produced units by 2."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "Rickar Rickani",
+        "type": "commander",
+        "unlockCondition": "Control Mecatol Rex or enter into a combat in the Mecatol Rex system",
+        "ability": "During combat: Apply +2 to the result of each of your unit's combat rolls in the Mecatol Rex system, your home system, and each system that contains a legendary planet."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "Mathis Mathinus",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "ACTION: Perform the primary ability of any strategy card. Then, choose any number of other players. Those players may perform the secondary ability of that strategy card. Then, purge this card."
+      }
+    }
+  }
+}

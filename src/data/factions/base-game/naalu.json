@@ -1,0 +1,102 @@
+{
+  "id": "naalu",
+  "name": "The Naalu Collective",
+  "expansion": "base",
+  "abilities": [
+    {
+      "name": "TELEPATHIC",
+      "description": "At the end of the strategy phase, place the Naalu \"0\" token on your strategy card; you are first in initiative order.",
+      "type": "passive"
+    },
+    {
+      "name": "FORESIGHT",
+      "description": "After another player moves ships into a system that contains 1 or more of your ships, you may place 1 token from your strategy pool in an adjacent system that does not contain another player's ships; move your ships from the active system into that system.",
+      "type": "passive"
+    }
+  ],
+  "flagship": {
+    "name": "Matriarch",
+    "cost": 8,
+    "combat": "9 (x2)",
+    "move": 1,
+    "capacity": 6,
+    "abilities": [
+      "During an invasion in this system, you may commit fighters to planets as if they were ground forces. When combat ends, return those units to the space area.",
+      "SUSTAIN DAMAGE"
+    ]
+  },
+  "mech": null,
+  "startingTechnologies": [
+    {
+      "name": "Neural Motivator",
+      "type": "biotic",
+      "color": "green"
+    },
+    {
+      "name": "Sarween Tools",
+      "type": "cybernetic",
+      "color": "yellow"
+    }
+  ],
+  "commodityValue": 3,
+  "homeSystem": {
+    "planets": [
+      {
+        "name": "Druaa",
+        "resources": 3,
+        "influence": 1,
+        "traits": []
+      },
+      {
+        "name": "Maaluuk",
+        "resources": 0,
+        "influence": 2,
+        "traits": []
+      }
+    ]
+  },
+  "promissoryNote": {
+    "base": {
+      "name": "Gift of Prescience",
+      "effect": "At the end of the strategy phase: Place this card face-up in your play area and place the Naalu \"0\" token on your strategy card; you are first in the initiative order. The Naalu player cannot use their TELEPATHIC faction ability during this game round.",
+      "returnCondition": "Return this card to the Naalu player at the end of the status phase.",
+      "placeFaceUp": true
+    }
+  },
+  "leaders": {
+    "agent": {
+      "base": {
+        "name": "Z'eu",
+        "type": "agent",
+        "ability": "After an agenda is revealed: You may exhaust this card to look at the top card of the agenda deck. Then, you may show that card to 1 other player"
+      },
+      "omega": {
+        "name": "Z'eu",
+        "type": "agent",
+        "ability": "ACTION: Exhaust this card and choose a player; that player may perform a tactical action in a non-home system without placing a command token; that system still counts as being activated."
+      }
+    },
+    "commander": {
+      "base": {
+        "name": "M'aban",
+        "type": "commander",
+        "unlockCondition": "Have 12 fighters on the game board",
+        "ability": "You may produce 1 additional fighter for their cost; these additional units do not count against your PRODUCTION limit"
+      },
+      "omega": {
+        "name": "M'aban",
+        "type": "commander",
+        "unlockCondition": "Have ground units in or adjacent to the Mexatol Rex system",
+        "ability": "At any time: You may look at your neighbours' hand of promissory notes and the top and bottom card of the agenda deck."
+      }
+    },
+    "hero": {
+      "base": {
+        "name": "The Oracle",
+        "type": "hero",
+        "unlockCondition": "Score 3 objectives",
+        "ability": "At the end of the status phase: You may force each other player to give you 1 promissory note from their hand. If you do, purge this card."
+      }
+    }
+  }
+}

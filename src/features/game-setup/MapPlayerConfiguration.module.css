@@ -1,8 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-6);
+  gap: var(--space-3);
+  padding: 0;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -11,7 +11,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-2);
   align-items: center;
 }
 
@@ -32,9 +32,15 @@
 .mapContainer {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 450px;
   aspect-ratio: 1;
   margin: 0 auto;
+}
+
+@media (min-width: 1920px) {
+  .mapContainer {
+    max-width: 550px;
+  }
 }
 
 .mapBackground {
@@ -154,16 +160,16 @@
 .actions {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding-top: var(--space-6);
+  gap: var(--space-3);
+  padding-top: var(--space-3);
 }
 
 /* Player Config Modal */
 .playerConfigModal {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-6);
+  gap: var(--space-3);
+  padding: var(--space-4);
 }
 
 .nameSection {
@@ -199,26 +205,26 @@
 .colorSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .factionSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .modalActions {
   display: flex;
   justify-content: flex-end;
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--color-border);
 }
 
 .colorGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-2);
   margin: 0 auto;
 }
 
@@ -290,8 +296,8 @@
 .factionSelector {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  gap: var(--space-2);
+  padding: var(--space-3);
 }
 
 .searchInput {
@@ -312,8 +318,8 @@
 .factionGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: var(--space-3);
-  padding: var(--space-2);
+  gap: var(--space-2);
+  padding: 0;
 }
 
 .factionCard {

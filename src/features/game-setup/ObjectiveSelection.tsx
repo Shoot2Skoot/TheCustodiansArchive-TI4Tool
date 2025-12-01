@@ -35,7 +35,7 @@ export function ObjectiveSelection({ onComplete, onBack }: ObjectiveSelectionPro
     onComplete(Array.from(selectedObjectives));
   };
 
-  // Filter objectives based on search term
+  // Filter objectives based on search term and sort alphabetically
   const filteredObjectives = ALL_STAGE_1_OBJECTIVES.filter(obj => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
@@ -43,7 +43,7 @@ export function ObjectiveSelection({ onComplete, onBack }: ObjectiveSelectionPro
       obj.name.toLowerCase().includes(search) ||
       obj.condition.toLowerCase().includes(search)
     );
-  });
+  }).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className={styles.container}>
@@ -141,21 +141,19 @@ function ObjectiveCard({ objective, isSelected, onClick }: ObjectiveCardProps) {
       className={`${styles.objectiveCard} ${isSelected ? styles.selected : ''}`}
       onClick={onClick}
     >
-      <div className={styles.objectiveHeader}>
-        <div className={styles.objectiveHeaderLeft}>
-          <span className={`${styles.expansionBadge} ${styles[objective.expansion]}`}>
-            {objective.expansion === 'base' ? 'Base Game' : 'Prophecy of Kings'}
-          </span>
-          <div className={styles.objectiveName}>{objective.name}</div>
+      <div className={`${styles.cardHeader} ${styles[objective.expansion]}`}>
+        <div className={styles.objectiveName}>
+          {objective.name}
         </div>
-        <div className={styles.objectivePoints}>{objective.points} VP</div>
+        {isSelected && (
+          <div className={styles.selectedBadge}>
+            <span className={styles.checkmark}>✓</span>
+          </div>
+        )}
       </div>
-      <div className={styles.objectiveCondition}>{objective.condition}</div>
-      {isSelected && (
-        <div className={styles.selectedBadge}>
-          <span className={styles.checkmark}>✓</span>
-        </div>
-      )}
+      <div className={styles.cardContent}>
+        <div className={styles.objectiveCondition}>{objective.condition}</div>
+      </div>
     </button>
   );
 }
