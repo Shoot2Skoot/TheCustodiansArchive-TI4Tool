@@ -132,6 +132,58 @@
   color: #f39c12;
 }
 
+/* Static reminders */
+.staticReminders {
+  background-color: rgba(241, 196, 15, 0.1);
+  border: 1px solid #f1c40f;
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+}
+
+.staticReminders p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #f1c40f;
+  font-style: italic;
+}
+
+/* Player selection */
+.playerSelection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.playerButton {
+  width: 100%;
+  text-align: left;
+  padding: 15px 20px !important;
+  font-size: 1.1rem !important;
+}
+
+.attackerNote {
+  background-color: rgba(231, 76, 60, 0.2);
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Placeholder text */
+.placeholder {
+  background-color: rgba(52, 152, 219, 0.1);
+  border: 1px dashed #3498db;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 15px 0;
+  color: #3498db;
+  font-style: italic;
+  text-align: center;
+}
+
 /* Input groups */
 .inputGroup {
   margin: 15px 0;

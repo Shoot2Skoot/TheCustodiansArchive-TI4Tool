@@ -18,7 +18,7 @@ import { PhaseType, PromptType, EventType } from '@/lib/audio';
 import { playPhaseEnter, playPhaseExit, playFactionPrompt, playStrategyCard, playEvent } from '@/lib/audio';
 import { normalizeFactionId, getStrategyCardAudioType } from '@/lib/audioHelpers';
 import { getPlayerActionStates } from '@/lib/db/playerActionState';
-import { CombatModal } from '@/features/combat';
+import { CombatModalV2 } from '@/features/combat';
 import styles from './ActionPhase.module.css';
 
 // Session storage keys for audio tracking (persists across StrictMode remounts)
@@ -96,7 +96,6 @@ export function ActionPhase({
   const [showChangeSpeakerModal, setShowChangeSpeakerModal] = useState(false);
   const [showMecatolRexModal, setShowMecatolRexModal] = useState(false);
   const [showCombatModal, setShowCombatModal] = useState(false);
-  const [combatDefenderId, setCombatDefenderId] = useState<string | null>(null);
   const [actionInProgress, setActionInProgress] = useState<'tactical' | 'component' | null>(null);
   const hasLoadedInitialState = useRef(false);
 
@@ -613,23 +612,15 @@ export function ActionPhase({
     // Don't advance turn - let them try another action
   };
 
-  // Handle Enter Combat button click
+  // Handle Activate Enemy System button click
   const handleEnterCombat = () => {
-    if (!currentPlayer) return;
-
-    // For now, just pick the first other player as defender (TODO: add player selection UI)
-    const otherPlayers = players.filter(p => p.id !== currentPlayer.id);
-    if (otherPlayers.length > 0) {
-      setCombatDefenderId(otherPlayers[0].id);
-      setShowCombatModal(true);
-    }
+    setShowCombatModal(true);
   };
 
   // Handle Combat Complete
   const handleCombatComplete = (result: { winner: 'attacker' | 'defender' | null }) => {
     console.log('Combat completed:', result);
     setShowCombatModal(false);
-    setCombatDefenderId(null);
   };
 
   // Handle Combat Close
@@ -1319,15 +1310,10 @@ export function ActionPhase({
       )}
 
       {/* Combat Modal */}
-      {showCombatModal && currentPlayer && combatDefenderId && (
-        <CombatModal
+      {showCombatModal && (
+        <CombatModalV2
           gameId={gameId}
-          attackerId={currentPlayer.id}
-          defenderId={combatDefenderId}
-          attackerName={currentPlayer.displayName}
-          defenderName={players.find(p => p.id === combatDefenderId)?.displayName || 'Unknown'}
-          attackerFactionId={currentPlayer.factionId}
-          defenderFactionId={players.find(p => p.id === combatDefenderId)?.factionId || 'unknown'}
+          players={players}
           onClose={handleCombatClose}
           onComplete={handleCombatComplete}
         />
