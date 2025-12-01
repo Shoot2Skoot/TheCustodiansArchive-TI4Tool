@@ -2212,26 +2212,176 @@ export function CombatModalV2({
   // ========================================================================
 
   const renderPhase5 = () => {
-    return (
-      <div className={styles.stepContent}>
-        <h3>Post-Combat Cleanup</h3>
-        <p>Combat has concluded.</p>
+    const { currentStep: step } = combatState;
+    const [showAbilityList, setShowAbilityList] = useState(false);
 
-        <Button
-          onClick={() => {
-            addLog('Combat Complete');
-            setCombatState(prev => ({
-              ...prev,
-              isComplete: true,
-              winner: 'attacker',
-            }));
-          }}
-          variant="primary"
-        >
-          Complete Combat
-        </Button>
-      </div>
-    );
+    // PC.1: Faction-Specific Triggers
+    if (step === 'PC.1') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>PC.1 — Faction-Specific Triggers</h3>
+          <p>
+            Resolve any post-combat faction abilities or effects that trigger after combat ends.
+          </p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No faction triggers - Proceeding to capacity check');
+                goToStep('PC.2');
+              }}
+              variant="primary"
+            >
+              Continue to Capacity Check
+            </Button>
+
+            <Button
+              onClick={() => setShowAbilityList(!showAbilityList)}
+              variant="secondary"
+            >
+              {showAbilityList ? 'Hide' : 'Show'} Faction Triggers
+            </Button>
+          </div>
+
+          {showAbilityList && (
+            <div className={styles.nestedAbilities}>
+              <p className={styles.abilityNote}>Post-combat faction abilities:</p>
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    addLog('Vuil\'raith Cabal - Capturing units (place them on Dimensional Tear)');
+                  }}
+                  variant="secondary"
+                >
+                  Use Vuil'raith Cabal Capture
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Mentak Coalition - Salvage Operations (gain trade goods from destroyed ships)');
+                  }}
+                  variant="secondary"
+                >
+                  Use Mentak Salvage Operations
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // PC.2: Capacity Check
+    if (step === 'PC.2') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>PC.2 — Capacity Check</h3>
+          <p>
+            The winner must ensure they have sufficient capacity for all fighters and ground forces in the system.
+          </p>
+
+          <div className={styles.infoNote}>
+            <p><strong>Capacity Rules:</strong></p>
+            <ul>
+              <li>Each Carrier provides 4 capacity (6 with Carrier II upgrade)</li>
+              <li>Each Dreadnought provides 1 capacity</li>
+              <li>Each War Sun provides 6 capacity</li>
+              <li>If capacity is exceeded, excess units must be removed immediately</li>
+            </ul>
+          </div>
+
+          <div className={styles.placeholder}>
+            <p>
+              Future enhancement: Automatic capacity calculation and unit removal interface
+            </p>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Capacity check complete - All units within capacity limits');
+                goToStep('PC.3');
+              }}
+              variant="primary"
+            >
+              Capacity is Sufficient
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('WARNING: Capacity exceeded - Removing excess units');
+                // In a full implementation, this would open a unit removal UI
+                goToStep('PC.3');
+              }}
+              variant="danger"
+            >
+              Remove Excess Units
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // PC.3: Combat Complete
+    if (step === 'PC.3') {
+      const determineWinner = () => {
+        // Determine winner based on combat outcome
+        // This is a simplified version - full logic would check multiple conditions
+        if (combatState.spaceCombatComplete && combatState.attacker?.spaceForces?.ships?.length === 0) {
+          return 'defender';
+        }
+        if (combatState.groundCombatComplete) {
+          return 'attacker'; // Attacker controls planet
+        }
+        if (combatState.defenderRetreated) {
+          return 'attacker';
+        }
+        if (combatState.attackerRetreated) {
+          return 'defender';
+        }
+        return 'attacker'; // Default
+      };
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>PC.3 — Combat Complete</h3>
+          <p>
+            All combat resolution is complete. The combat will now be finalized and recorded.
+          </p>
+
+          <div className={styles.infoNote}>
+            <p><strong>Combat Summary:</strong></p>
+            <ul>
+              <li>Space Combat: {combatState.spaceCombatComplete ? 'Complete' : 'Not fought'}</li>
+              <li>Space Combat Rounds: {combatState.spaceCombatRound}</li>
+              <li>Ground Combat: {combatState.groundCombatComplete ? 'Complete' : 'Not fought'}</li>
+              <li>Ground Combat Rounds: {combatState.groundCombatRound}</li>
+              <li>Attacker Retreated: {combatState.attackerRetreated ? 'Yes' : 'No'}</li>
+              <li>Defender Retreated: {combatState.defenderRetreated ? 'Yes' : 'No'}</li>
+            </ul>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                const winner = determineWinner();
+                addLog(`Combat Complete - ${winner === 'attacker' ? 'Attacker' : 'Defender'} Wins`);
+                setCombatState(prev => ({
+                  ...prev,
+                  isComplete: true,
+                  winner,
+                }));
+              }}
+              variant="primary"
+            >
+              Complete Combat
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   // ========================================================================
