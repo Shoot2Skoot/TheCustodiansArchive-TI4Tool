@@ -112,6 +112,25 @@
   color: #ecf0f1;
 }
 
+.dieUnrolled {
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  border-color: #34495e;
+  color: #95a5a6;
+  font-size: 2.5em;
+}
+
+.dieRolling {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  border-color: #e67e22;
+  color: white;
+  animation: rollingSpin 0.08s linear infinite;
+}
+
+@keyframes rollingSpin {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
 .dieRerolled {
   animation: rerollPulse 0.5s ease-in-out;
   border-width: 4px;
@@ -189,4 +208,20 @@
   background-color: rgba(46, 204, 113, 0.2);
   border-radius: 8px;
   margin-left: 15px;
+}
+
+/* Rolling Message */
+.rollingMessage {
+  font-size: 1.3em;
+  font-weight: 600;
+  color: #f39c12;
+  padding: 15px 30px;
+  background-color: rgba(243, 156, 18, 0.2);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }

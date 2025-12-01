@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/common';
 import type { DiceRoll, CombatUnit } from '@/types/combatUnits';
-import { createDiceRoll } from '@/types/combatUnits';
+import { createDiceRoll, rollDie } from '@/types/combatUnits';
 import styles from './DiceRoller.module.css';
 
 // ============================================================================
@@ -9,30 +9,59 @@ import styles from './DiceRoller.module.css';
 // ============================================================================
 
 interface DieProps {
-  roll: DiceRoll;
+  roll: DiceRoll | null; // null means unrolled
   canReroll: boolean;
   onReroll: () => void;
+  isRolling?: boolean;
+  rollingValue?: number;
 }
 
-function Die({ roll, canReroll, onReroll }: DieProps) {
-  const isHit = roll.isHit;
-  const className = `${styles.die} ${isHit ? styles.dieHit : styles.dieMiss} ${roll.wasRerolled ? styles.dieRerolled : ''}`;
+function Die({ roll, canReroll, onReroll, isRolling = false, rollingValue }: DieProps) {
+  // Unrolled state
+  if (!roll && !isRolling) {
+    return (
+      <div className={styles.dieContainer}>
+        <div className={`${styles.die} ${styles.dieUnrolled}`}>
+          <span className={styles.dieValue}>?</span>
+        </div>
+      </div>
+    );
+  }
 
-  return (
-    <div className={styles.dieContainer}>
-      <div className={className}>
-        <span className={styles.dieValue}>{roll.result}</span>
+  // Rolling animation state
+  if (isRolling && rollingValue !== undefined) {
+    return (
+      <div className={styles.dieContainer}>
+        <div className={`${styles.die} ${styles.dieRolling}`}>
+          <span className={styles.dieValue}>{rollingValue}</span>
+        </div>
       </div>
-      {canReroll && (
-        <button className={styles.rerollButton} onClick={onReroll}>
-          ↻ Reroll
-        </button>
-      )}
-      <div className={styles.dieLabel}>
-        {isHit ? '✓ HIT' : '✗ Miss'}
+    );
+  }
+
+  // Final result state
+  if (roll) {
+    const isHit = roll.isHit;
+    const className = `${styles.die} ${isHit ? styles.dieHit : styles.dieMiss} ${roll.wasRerolled ? styles.dieRerolled : ''}`;
+
+    return (
+      <div className={styles.dieContainer}>
+        <div className={className}>
+          <span className={styles.dieValue}>{roll.result}</span>
+        </div>
+        {canReroll && (
+          <button className={styles.rerollButton} onClick={onReroll}>
+            ↻ Reroll
+          </button>
+        )}
+        <div className={styles.dieLabel}>
+          {isHit ? '✓ HIT' : '✗ Miss'}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 }
 
 // ============================================================================
@@ -43,15 +72,29 @@ function Die({ roll, canReroll, onReroll }: DieProps) {
 interface UnitRollerProps {
   unit: CombatUnit;
   targetValue: number; // Hit on this or higher
-  rolls: DiceRoll[];
+  numDice: number; // How many dice this unit rolls
+  rolls: DiceRoll[] | null; // null means not rolled yet
   canReroll: boolean;
   onRollsChange: (rolls: DiceRoll[]) => void;
+  isRolling?: boolean;
+  rollingValues?: number[];
 }
 
-function UnitRoller({ unit, targetValue, rolls, canReroll, onRollsChange }: UnitRollerProps) {
-  const hits = rolls.filter(r => r.isHit).length;
+function UnitRoller({
+  unit,
+  targetValue,
+  numDice,
+  rolls,
+  canReroll,
+  onRollsChange,
+  isRolling = false,
+  rollingValues = []
+}: UnitRollerProps) {
+  const hits = rolls ? rolls.filter(r => r.isHit).length : 0;
+  const hasRolled = rolls !== null;
 
   const handleReroll = (rollIndex: number) => {
+    if (!rolls) return;
     const newRolls = [...rolls];
     const oldRoll = newRolls[rollIndex];
     newRolls[rollIndex] = createDiceRoll(
@@ -68,19 +111,28 @@ function UnitRoller({ unit, targetValue, rolls, canReroll, onRollsChange }: Unit
     <div className={styles.unitRoller}>
       <div className={styles.unitHeader}>
         <span className={styles.unitName}>{unit.displayName}</span>
-        <span className={styles.unitHits}>
-          {hits} hit{hits !== 1 ? 's' : ''}
-        </span>
+        {hasRolled && (
+          <span className={styles.unitHits}>
+            {hits} hit{hits !== 1 ? 's' : ''}
+          </span>
+        )}
       </div>
       <div className={styles.diceRow}>
-        {rolls.map((roll, index) => (
-          <Die
-            key={roll.id}
-            roll={roll}
-            canReroll={canReroll}
-            onReroll={() => handleReroll(index)}
-          />
-        ))}
+        {Array.from({ length: numDice }).map((_, index) => {
+          const roll = rolls ? rolls[index] : null;
+          const rollingValue = isRolling ? rollingValues[index] : undefined;
+
+          return (
+            <Die
+              key={`${unit.id}-die-${index}`}
+              roll={roll}
+              canReroll={canReroll && hasRolled}
+              onReroll={() => handleReroll(index)}
+              isRolling={isRolling}
+              rollingValue={rollingValue}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -110,10 +162,19 @@ export function BatchDiceRoller({
 }: BatchDiceRollerProps) {
   const [rolls, setRolls] = useState<Map<string, DiceRoll[]>>(new Map());
   const [hasRolled, setHasRolled] = useState(false);
+  const [isRolling, setIsRolling] = useState(false);
+  const [rollingValues, setRollingValues] = useState<Map<string, number[]>>(new Map());
+
+  // Animation settings
+  const ANIMATION_DURATION_MS = 1500; // Total duration of animation
+  const ANIMATION_INTERVAL_MS = 80; // How often to update rolling numbers
 
   const handleRollAll = () => {
-    const newRolls = new Map<string, DiceRoll[]>();
+    setIsRolling(true);
+    setHasRolled(false);
 
+    // Pre-calculate final results
+    const finalRolls = new Map<string, DiceRoll[]>();
     units.forEach(unit => {
       const targetValue = targetValueGetter(unit);
       const numRolls = rollsGetter(unit);
@@ -123,11 +184,32 @@ export function BatchDiceRoller({
         unitRolls.push(createDiceRoll(unit.id, i + 1, targetValue));
       }
 
-      newRolls.set(unit.id, unitRolls);
+      finalRolls.set(unit.id, unitRolls);
     });
 
-    setRolls(newRolls);
-    setHasRolled(true);
+    // Start animation - cycle through random numbers
+    const startTime = Date.now();
+    const animationInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+
+      if (elapsed >= ANIMATION_DURATION_MS) {
+        // Animation complete - show final results
+        clearInterval(animationInterval);
+        setIsRolling(false);
+        setRolls(finalRolls);
+        setHasRolled(true);
+        setRollingValues(new Map());
+      } else {
+        // Update with random numbers
+        const newRollingValues = new Map<string, number[]>();
+        units.forEach(unit => {
+          const numRolls = rollsGetter(unit);
+          const randomValues = Array.from({ length: numRolls }, () => rollDie());
+          newRollingValues.set(unit.id, randomValues);
+        });
+        setRollingValues(newRollingValues);
+      }
+    }, ANIMATION_INTERVAL_MS);
   };
 
   const handleUnitRollsChange = (unitId: string, newRolls: DiceRoll[]) => {
@@ -144,46 +226,65 @@ export function BatchDiceRoller({
     .flat()
     .filter(r => r.isHit).length;
 
+  // Build unit info for display (always show, even before rolling)
+  const unitInfo = units.map(unit => ({
+    unit,
+    targetValue: targetValueGetter(unit),
+    numDice: rollsGetter(unit),
+  }));
+
   return (
     <div className={styles.batchRoller}>
       <h3>{title}</h3>
 
-      {!hasRolled ? (
-        <div className={styles.rollAllContainer}>
-          <p>Ready to roll dice for {units.length} unit{units.length !== 1 ? 's' : ''}</p>
+      {/* Always show units and dice */}
+      <div className={styles.resultsContainer}>
+        {unitInfo.map(({ unit, targetValue, numDice }) => {
+          const unitRolls = rolls.get(unit.id) || null;
+          const unitRollingValues = rollingValues.get(unit.id) || [];
+
+          return (
+            <UnitRoller
+              key={unit.id}
+              unit={unit}
+              targetValue={targetValue}
+              numDice={numDice}
+              rolls={unitRolls}
+              canReroll={canReroll}
+              onRollsChange={(newRolls) => handleUnitRollsChange(unit.id, newRolls)}
+              isRolling={isRolling}
+              rollingValues={unitRollingValues}
+            />
+          );
+        })}
+      </div>
+
+      {/* Show roll button or continue button */}
+      <div className={styles.summary}>
+        {hasRolled && (
+          <div className={styles.totalHits}>
+            Total Hits: <span className={styles.hitsNumber}>{totalHits}</span>
+          </div>
+        )}
+
+        {!hasRolled && !isRolling && (
           <Button onClick={handleRollAll} variant="primary" size="large">
             🎲 Roll All Dice
           </Button>
-        </div>
-      ) : (
-        <>
-          <div className={styles.resultsContainer}>
-            {units.map(unit => {
-              const unitRolls = rolls.get(unit.id) || [];
-              const targetValue = targetValueGetter(unit);
-              return (
-                <UnitRoller
-                  key={unit.id}
-                  unit={unit}
-                  targetValue={targetValue}
-                  rolls={unitRolls}
-                  canReroll={canReroll}
-                  onRollsChange={(newRolls) => handleUnitRollsChange(unit.id, newRolls)}
-                />
-              );
-            })}
-          </div>
+        )}
 
-          <div className={styles.summary}>
-            <div className={styles.totalHits}>
-              Total Hits: <span className={styles.hitsNumber}>{totalHits}</span>
-            </div>
-            <Button onClick={handleContinue} variant="primary" size="large">
-              Continue to Hit Assignment →
-            </Button>
+        {isRolling && (
+          <div className={styles.rollingMessage}>
+            Rolling dice...
           </div>
-        </>
-      )}
+        )}
+
+        {hasRolled && !isRolling && (
+          <Button onClick={handleContinue} variant="primary" size="large">
+            Continue →
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
