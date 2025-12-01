@@ -303,3 +303,122 @@
 .logEntry:last-child {
   border-bottom: none;
 }
+
+/* Unit Selection UI */
+.unitSelection {
+  margin: 20px 0;
+}
+
+.unitSelection h4 {
+  margin: 20px 0 10px 0;
+  color: #f39c12;
+  font-size: 1.1rem;
+}
+
+.unitGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.unitCounter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unitCounter label {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.counterControls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.counterButton {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border-color, #333);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.counterButton:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: #f39c12;
+}
+
+.counterButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.counterInput {
+  width: 60px;
+  height: 40px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid var(--border-color, #333);
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  padding: 5px;
+}
+
+.counterInput:focus {
+  outline: none;
+  border-color: #f39c12;
+}
+
+/* Remove spinner arrows from number input */
+.counterInput::-webkit-outer-spin-button,
+.counterInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.counterInput[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.unitSummary {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.unitSummary h4 {
+  margin: 15px 0 10px 0;
+  color: #f39c12;
+  font-size: 1.2rem;
+}
+
+.unitSummary h4:first-child {
+  margin-top: 0;
+}
+
+.unitSummary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.unitSummary li {
+  padding: 5px 0;
+  font-size: 1rem;
+}

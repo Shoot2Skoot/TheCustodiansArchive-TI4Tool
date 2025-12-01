@@ -108,6 +108,43 @@ export function CombatModalV2({
 
   const [showAbilityList, setShowAbilityList] = useState(false);
 
+  // Unit selection state for P0.5
+  type UnitCounts = {
+    // Space units
+    warSun: number;
+    dreadnought: number;
+    cruiser: number;
+    carrier: number;
+    destroyer: number;
+    fighter: number;
+    flagship: number;
+    // Ground units
+    infantry: number;
+    mech: number;
+    // Structures
+    pds: number;
+  };
+
+  const emptyUnitCounts = (): UnitCounts => ({
+    warSun: 0,
+    dreadnought: 0,
+    cruiser: 0,
+    carrier: 0,
+    destroyer: 0,
+    fighter: 0,
+    flagship: 0,
+    infantry: 0,
+    mech: 0,
+    pds: 0,
+  });
+
+  const [attackerUnits, setAttackerUnits] = useState<UnitCounts>(emptyUnitCounts());
+  const [defenderUnits, setDefenderUnits] = useState<UnitCounts>(emptyUnitCounts());
+  const [unitSelectionStep, setUnitSelectionStep] = useState<'attacker' | 'defender' | 'third-party-prompt' | 'third-party-select' | 'done'>('attacker');
+  const [selectedThirdPartyId, setSelectedThirdPartyId] = useState<string | null>(null);
+  const [thirdPartyUnits, setThirdPartyUnits] = useState<UnitCounts>(emptyUnitCounts());
+  const [thirdPartyTarget, setThirdPartyTarget] = useState<'attacker' | 'defender'>('attacker');
+
   // Save state to localStorage
   useEffect(() => {
     if (!combatState.isComplete) {
@@ -324,25 +361,408 @@ export function CombatModalV2({
 
     // P0.5: Unit Inventory Confirmation
     if (step === 'P0.5') {
-      return (
-        <div className={styles.stepContent}>
-          <h3>P0.5 — Unit Inventory Confirmation</h3>
-          <p>Define all units present in combat for both attacker and defender.</p>
-
-          {/* TODO: Add unit selection UI */}
-          <p className={styles.placeholder}>Unit selection UI will be added here</p>
-
-          <Button
-            onClick={() => {
-              addLog('Unit inventory confirmed');
-              goToStep('P0.6');
-            }}
-            variant="primary"
-          >
-            Confirm Units
-          </Button>
+      const renderUnitCounter = (
+        label: string,
+        value: number,
+        onChange: (newValue: number) => void
+      ) => (
+        <div className={styles.unitCounter}>
+          <label>{label}</label>
+          <div className={styles.counterControls}>
+            <button
+              onClick={() => onChange(Math.max(0, value - 1))}
+              disabled={value === 0}
+              className={styles.counterButton}
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min="0"
+              max="99"
+              value={value}
+              onChange={(e) => onChange(Math.max(0, parseInt(e.target.value) || 0))}
+              className={styles.counterInput}
+            />
+            <button
+              onClick={() => onChange(value + 1)}
+              className={styles.counterButton}
+            >
+              +
+            </button>
+          </div>
         </div>
       );
+
+      // Attacker unit selection
+      if (unitSelectionStep === 'attacker') {
+        return (
+          <div className={styles.stepContent}>
+            <h3>P0.5 — Unit Inventory: Attacker</h3>
+            <p>
+              <strong>{combatState.attacker?.playerName}</strong>, select all units you are bringing into combat:
+            </p>
+
+            <div className={styles.unitSelection}>
+              <h4>Space Units</h4>
+              <div className={styles.unitGrid}>
+                {renderUnitCounter('War Suns', attackerUnits.warSun, (v) =>
+                  setAttackerUnits({ ...attackerUnits, warSun: v })
+                )}
+                {renderUnitCounter('Dreadnoughts', attackerUnits.dreadnought, (v) =>
+                  setAttackerUnits({ ...attackerUnits, dreadnought: v })
+                )}
+                {renderUnitCounter('Cruisers', attackerUnits.cruiser, (v) =>
+                  setAttackerUnits({ ...attackerUnits, cruiser: v })
+                )}
+                {renderUnitCounter('Carriers', attackerUnits.carrier, (v) =>
+                  setAttackerUnits({ ...attackerUnits, carrier: v })
+                )}
+                {renderUnitCounter('Destroyers', attackerUnits.destroyer, (v) =>
+                  setAttackerUnits({ ...attackerUnits, destroyer: v })
+                )}
+                {renderUnitCounter('Fighters', attackerUnits.fighter, (v) =>
+                  setAttackerUnits({ ...attackerUnits, fighter: v })
+                )}
+                {renderUnitCounter('Flagship', attackerUnits.flagship, (v) =>
+                  setAttackerUnits({ ...attackerUnits, flagship: Math.min(1, v) })
+                )}
+              </div>
+
+              <h4>Ground Units</h4>
+              <div className={styles.unitGrid}>
+                {renderUnitCounter('Infantry', attackerUnits.infantry, (v) =>
+                  setAttackerUnits({ ...attackerUnits, infantry: v })
+                )}
+                {renderUnitCounter('Mechs', attackerUnits.mech, (v) =>
+                  setAttackerUnits({ ...attackerUnits, mech: v })
+                )}
+              </div>
+            </div>
+
+            <Button
+              onClick={() => {
+                addLog(`Attacker units confirmed`);
+                setUnitSelectionStep('defender');
+              }}
+              variant="primary"
+            >
+              Continue to Defender Units
+            </Button>
+          </div>
+        );
+      }
+
+      // Defender unit selection
+      if (unitSelectionStep === 'defender') {
+        return (
+          <div className={styles.stepContent}>
+            <h3>P0.5 — Unit Inventory: Defender</h3>
+            <p>
+              <strong>{combatState.defender?.playerName}</strong>, select all units you have in the system:
+            </p>
+
+            <div className={styles.unitSelection}>
+              <h4>Space Units</h4>
+              <div className={styles.unitGrid}>
+                {renderUnitCounter('War Suns', defenderUnits.warSun, (v) =>
+                  setDefenderUnits({ ...defenderUnits, warSun: v })
+                )}
+                {renderUnitCounter('Dreadnoughts', defenderUnits.dreadnought, (v) =>
+                  setDefenderUnits({ ...defenderUnits, dreadnought: v })
+                )}
+                {renderUnitCounter('Cruisers', defenderUnits.cruiser, (v) =>
+                  setDefenderUnits({ ...defenderUnits, cruiser: v })
+                )}
+                {renderUnitCounter('Carriers', defenderUnits.carrier, (v) =>
+                  setDefenderUnits({ ...defenderUnits, carrier: v })
+                )}
+                {renderUnitCounter('Destroyers', defenderUnits.destroyer, (v) =>
+                  setDefenderUnits({ ...defenderUnits, destroyer: v })
+                )}
+                {renderUnitCounter('Fighters', defenderUnits.fighter, (v) =>
+                  setDefenderUnits({ ...defenderUnits, fighter: v })
+                )}
+                {renderUnitCounter('Flagship', defenderUnits.flagship, (v) =>
+                  setDefenderUnits({ ...defenderUnits, flagship: Math.min(1, v) })
+                )}
+              </div>
+
+              <h4>Ground Units</h4>
+              <div className={styles.unitGrid}>
+                {renderUnitCounter('Infantry', defenderUnits.infantry, (v) =>
+                  setDefenderUnits({ ...defenderUnits, infantry: v })
+                )}
+                {renderUnitCounter('Mechs', defenderUnits.mech, (v) =>
+                  setDefenderUnits({ ...defenderUnits, mech: v })
+                )}
+              </div>
+
+              <h4>Structures</h4>
+              <div className={styles.unitGrid}>
+                {renderUnitCounter('PDS', defenderUnits.pds, (v) =>
+                  setDefenderUnits({ ...defenderUnits, pds: v })
+                )}
+              </div>
+            </div>
+
+            <div className={styles.buttonGroup}>
+              <Button
+                onClick={() => {
+                  addLog(`Defender units confirmed`);
+                  setUnitSelectionStep('third-party-prompt');
+                }}
+                variant="primary"
+              >
+                Continue
+              </Button>
+              <Button
+                onClick={() => setUnitSelectionStep('attacker')}
+                variant="secondary"
+              >
+                Back to Attacker
+              </Button>
+            </div>
+          </div>
+        );
+      }
+
+      // Third-party prompt
+      if (unitSelectionStep === 'third-party-prompt') {
+        const otherPlayers = players.filter(
+          p => p.id !== combatState.attacker?.playerId && p.id !== combatState.defender?.playerId
+        );
+
+        return (
+          <div className={styles.stepContent}>
+            <h3>P0.5 — Space Cannon Defense</h3>
+            <p>Do any other players have PDS or Space Cannon units that can fire into this system?</p>
+
+            {otherPlayers.length === 0 ? (
+              <div>
+                <p className={styles.infoNote}>No other players in the game.</p>
+                <Button
+                  onClick={() => {
+                    addLog('No third-party space cannon - Units confirmed');
+                    setUnitSelectionStep('done');
+                  }}
+                  variant="primary"
+                >
+                  No - Continue
+                </Button>
+              </div>
+            ) : (
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    setUnitSelectionStep('third-party-select');
+                    setSelectedThirdPartyId(null);
+                    setThirdPartyUnits(emptyUnitCounts());
+                  }}
+                  variant="primary"
+                >
+                  Yes - Add Space Cannon Player
+                </Button>
+                <Button
+                  onClick={() => {
+                    addLog('No third-party space cannon - Units confirmed');
+                    setUnitSelectionStep('done');
+                  }}
+                  variant="secondary"
+                >
+                  No - Continue
+                </Button>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // Third-party selection
+      if (unitSelectionStep === 'third-party-select') {
+        const otherPlayers = players.filter(
+          p =>
+            p.id !== combatState.attacker?.playerId &&
+            p.id !== combatState.defender?.playerId &&
+            !combatState.thirdPartyParticipants.some(tp => tp.playerId === p.id)
+        );
+
+        return (
+          <div className={styles.stepContent}>
+            <h3>P0.5 — Add Space Cannon Player</h3>
+
+            {!selectedThirdPartyId ? (
+              <div>
+                <p>Select which player has Space Cannon units:</p>
+                <div className={styles.playerSelection}>
+                  {otherPlayers.map(player => (
+                    <Button
+                      key={player.id}
+                      onClick={() => setSelectedThirdPartyId(player.id)}
+                      variant="secondary"
+                    >
+                      {player.displayName}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => setUnitSelectionStep('third-party-prompt')}
+                  variant="secondary"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <p>
+                  <strong>
+                    {players.find(p => p.id === selectedThirdPartyId)?.displayName}
+                  </strong>
+                  , select your Space Cannon units:
+                </p>
+
+                <div className={styles.unitSelection}>
+                  <h4>Space Cannon Units</h4>
+                  <div className={styles.unitGrid}>
+                    {renderUnitCounter('PDS', thirdPartyUnits.pds, (v) =>
+                      setThirdPartyUnits({ ...thirdPartyUnits, pds: v })
+                    )}
+                  </div>
+
+                  <h4>Target</h4>
+                  <p>Who will these Space Cannons fire at?</p>
+                  <div className={styles.buttonGroup}>
+                    <Button
+                      onClick={() => setThirdPartyTarget('attacker')}
+                      variant={thirdPartyTarget === 'attacker' ? 'primary' : 'secondary'}
+                    >
+                      Fire at Attacker ({combatState.attacker?.playerName})
+                    </Button>
+                    <Button
+                      onClick={() => setThirdPartyTarget('defender')}
+                      variant={thirdPartyTarget === 'defender' ? 'primary' : 'secondary'}
+                    >
+                      Fire at Defender ({combatState.defender?.playerName})
+                    </Button>
+                  </div>
+                </div>
+
+                <div className={styles.buttonGroup}>
+                  <Button
+                    onClick={() => {
+                      const player = players.find(p => p.id === selectedThirdPartyId);
+                      if (player) {
+                        addLog(
+                          `${player.displayName} added with Space Cannon (firing at ${thirdPartyTarget})`
+                        );
+                        setCombatState(prev => ({
+                          ...prev,
+                          thirdPartyParticipants: [
+                            ...prev.thirdPartyParticipants,
+                            {
+                              playerId: player.id,
+                              playerName: player.displayName,
+                              factionId: player.factionId,
+                              spaceCannonUnits: [], // Will populate based on thirdPartyUnits
+                              firingAt: thirdPartyTarget,
+                            },
+                          ],
+                        }));
+                        setSelectedThirdPartyId(null);
+                        setThirdPartyUnits(emptyUnitCounts());
+                        setUnitSelectionStep('third-party-prompt');
+                      }
+                    }}
+                    variant="primary"
+                  >
+                    Add Player
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedThirdPartyId(null);
+                      setThirdPartyUnits(emptyUnitCounts());
+                    }}
+                    variant="secondary"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // Done - show summary and continue
+      if (unitSelectionStep === 'done') {
+        return (
+          <div className={styles.stepContent}>
+            <h3>P0.5 — Unit Inventory Summary</h3>
+
+            <div className={styles.unitSummary}>
+              <h4>Attacker: {combatState.attacker?.playerName}</h4>
+              <ul>
+                {attackerUnits.warSun > 0 && <li>{attackerUnits.warSun} War Sun(s)</li>}
+                {attackerUnits.dreadnought > 0 && <li>{attackerUnits.dreadnought} Dreadnought(s)</li>}
+                {attackerUnits.cruiser > 0 && <li>{attackerUnits.cruiser} Cruiser(s)</li>}
+                {attackerUnits.carrier > 0 && <li>{attackerUnits.carrier} Carrier(s)</li>}
+                {attackerUnits.destroyer > 0 && <li>{attackerUnits.destroyer} Destroyer(s)</li>}
+                {attackerUnits.fighter > 0 && <li>{attackerUnits.fighter} Fighter(s)</li>}
+                {attackerUnits.flagship > 0 && <li>{attackerUnits.flagship} Flagship</li>}
+                {attackerUnits.infantry > 0 && <li>{attackerUnits.infantry} Infantry</li>}
+                {attackerUnits.mech > 0 && <li>{attackerUnits.mech} Mech(s)</li>}
+              </ul>
+
+              <h4>Defender: {combatState.defender?.playerName}</h4>
+              <ul>
+                {defenderUnits.warSun > 0 && <li>{defenderUnits.warSun} War Sun(s)</li>}
+                {defenderUnits.dreadnought > 0 && <li>{defenderUnits.dreadnought} Dreadnought(s)</li>}
+                {defenderUnits.cruiser > 0 && <li>{defenderUnits.cruiser} Cruiser(s)</li>}
+                {defenderUnits.carrier > 0 && <li>{defenderUnits.carrier} Carrier(s)</li>}
+                {defenderUnits.destroyer > 0 && <li>{defenderUnits.destroyer} Destroyer(s)</li>}
+                {defenderUnits.fighter > 0 && <li>{defenderUnits.fighter} Fighter(s)</li>}
+                {defenderUnits.flagship > 0 && <li>{defenderUnits.flagship} Flagship</li>}
+                {defenderUnits.infantry > 0 && <li>{defenderUnits.infantry} Infantry</li>}
+                {defenderUnits.mech > 0 && <li>{defenderUnits.mech} Mech(s)</li>}
+                {defenderUnits.pds > 0 && <li>{defenderUnits.pds} PDS</li>}
+              </ul>
+
+              {combatState.thirdPartyParticipants.length > 0 && (
+                <>
+                  <h4>Third-Party Space Cannon:</h4>
+                  <ul>
+                    {combatState.thirdPartyParticipants.map(tp => (
+                      <li key={tp.playerId}>
+                        {tp.playerName} (firing at {tp.firingAt === 'attacker' ? combatState.attacker?.playerName : combatState.defender?.playerName})
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+
+            <div className={styles.buttonGroup}>
+              <Button
+                onClick={() => {
+                  addLog('Unit inventory confirmed - All units recorded');
+                  goToStep('P0.6');
+                }}
+                variant="primary"
+              >
+                Confirm and Continue
+              </Button>
+              <Button
+                onClick={() => setUnitSelectionStep('attacker')}
+                variant="secondary"
+              >
+                Edit Units
+              </Button>
+            </div>
+          </div>
+        );
+      }
+
+      return null;
     }
 
     // P0.6: Post-Movement Actions Window
@@ -2213,7 +2633,6 @@ export function CombatModalV2({
 
   const renderPhase5 = () => {
     const { currentStep: step } = combatState;
-    const [showAbilityList, setShowAbilityList] = useState(false);
 
     // PC.1: Faction-Specific Triggers
     if (step === 'PC.1') {
