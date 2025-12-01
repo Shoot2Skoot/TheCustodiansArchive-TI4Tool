@@ -7,6 +7,7 @@ import type {
   CombatParticipant,
 } from '@/types/combat';
 import { CombatPhase as Phase } from '@/types/combat';
+import { getFactionById } from '@/lib/factions';
 import styles from './CombatModal.module.css';
 
 // ============================================================================
@@ -199,23 +200,27 @@ export function CombatModalV2({
           <p>Which player is activating the system?</p>
 
           <div className={styles.playerSelection}>
-            {players.map(player => (
-              <Button
-                key={player.id}
-                onClick={() => {
-                  setCombatState(prev => ({
-                    ...prev,
-                    attacker: createParticipant(player, true),
-                  }));
-                  addLog(`${player.displayName} selected as Attacker`);
-                  goToStep('P0.2');
-                }}
-                variant="secondary"
-                className={styles.playerButton}
-              >
-                {player.displayName}
-              </Button>
-            ))}
+            {players.map(player => {
+              const faction = getFactionById(player.factionId);
+              return (
+                <Button
+                  key={player.id}
+                  onClick={() => {
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: createParticipant(player, true),
+                    }));
+                    addLog(`${faction?.name || player.displayName} (${player.displayName}) selected as Attacker`);
+                    goToStep('P0.2');
+                  }}
+                  variant="secondary"
+                  className={styles.playerButton}
+                >
+                  {faction?.name || player.displayName}
+                  <span className={styles.playerName}> ({player.displayName})</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
       );
@@ -223,32 +228,37 @@ export function CombatModalV2({
 
     // P0.2: Select Defending Faction
     if (step === 'P0.2') {
+      const attackerFaction = getFactionById(combatState.attacker?.factionId || '');
       return (
         <div className={styles.stepContent}>
           <h3>P0.2 — Select Defending Faction</h3>
           <p>Which player is defending the system?</p>
           <p className={styles.attackerNote}>
-            Attacker: <strong>{combatState.attacker?.playerName}</strong>
+            Attacker: <strong>{attackerFaction?.name || combatState.attacker?.playerName}</strong> ({combatState.attacker?.playerName})
           </p>
 
           <div className={styles.playerSelection}>
-            {players.filter(p => p.id !== combatState.attacker?.playerId).map(player => (
-              <Button
-                key={player.id}
-                onClick={() => {
-                  setCombatState(prev => ({
-                    ...prev,
-                    defender: createParticipant(player, false),
-                  }));
-                  addLog(`${player.displayName} selected as Defender`);
-                  goToStep('P0.3');
-                }}
-                variant="secondary"
-                className={styles.playerButton}
-              >
-                {player.displayName}
-              </Button>
-            ))}
+            {players.filter(p => p.id !== combatState.attacker?.playerId).map(player => {
+              const faction = getFactionById(player.factionId);
+              return (
+                <Button
+                  key={player.id}
+                  onClick={() => {
+                    setCombatState(prev => ({
+                      ...prev,
+                      defender: createParticipant(player, false),
+                    }));
+                    addLog(`${faction?.name || player.displayName} (${player.displayName}) selected as Defender`);
+                    goToStep('P0.3');
+                  }}
+                  variant="secondary"
+                  className={styles.playerButton}
+                >
+                  {faction?.name || player.displayName}
+                  <span className={styles.playerName}> ({player.displayName})</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
       );
@@ -618,15 +628,19 @@ export function CombatModalV2({
                   <p>Note: Space Cannons can only fire at the active player ({combatState.attacker?.playerName})</p>
                 </div>
                 <div className={styles.playerSelection}>
-                  {otherPlayers.map(player => (
-                    <Button
-                      key={player.id}
-                      onClick={() => setSelectedThirdPartyId(player.id)}
-                      variant="secondary"
-                    >
-                      {player.displayName}
-                    </Button>
-                  ))}
+                  {otherPlayers.map(player => {
+                    const faction = getFactionById(player.factionId);
+                    return (
+                      <Button
+                        key={player.id}
+                        onClick={() => setSelectedThirdPartyId(player.id)}
+                        variant="secondary"
+                      >
+                        {faction?.name || player.displayName}
+                        <span className={styles.playerName}> ({player.displayName})</span>
+                      </Button>
+                    );
+                  })}
                 </div>
                 <Button
                   onClick={() => setUnitSelectionStep('third-party-prompt')}
@@ -639,9 +653,12 @@ export function CombatModalV2({
               <div>
                 <p>
                   <strong>
-                    {players.find(p => p.id === selectedThirdPartyId)?.displayName}
-                  </strong>
-                  , select your Space Cannon units:
+                    {(() => {
+                      const player = players.find(p => p.id === selectedThirdPartyId);
+                      const faction = player ? getFactionById(player.factionId) : null;
+                      return faction?.name || player?.displayName || 'Unknown';
+                    })()}
+                  </strong> ({players.find(p => p.id === selectedThirdPartyId)?.displayName}), select your Space Cannon units:
                 </p>
 
                 <div className={styles.unitSelection}>
@@ -711,7 +728,10 @@ export function CombatModalV2({
             <h3>P0.5 — Unit Inventory Summary</h3>
 
             <div className={styles.unitSummary}>
-              <h4>Attacker: {combatState.attacker?.playerName}</h4>
+              <h4>
+                Attacker: {getFactionById(combatState.attacker?.factionId || '')?.name || combatState.attacker?.playerName}
+                {' '}({combatState.attacker?.playerName})
+              </h4>
               <ul>
                 {attackerUnits.warSun > 0 && <li>{attackerUnits.warSun} War Sun(s)</li>}
                 {attackerUnits.dreadnought > 0 && <li>{attackerUnits.dreadnought} Dreadnought(s)</li>}
@@ -724,7 +744,10 @@ export function CombatModalV2({
                 {attackerUnits.mech > 0 && <li>{attackerUnits.mech} Mech(s)</li>}
               </ul>
 
-              <h4>Defender: {combatState.defender?.playerName}</h4>
+              <h4>
+                Defender: {getFactionById(combatState.defender?.factionId || '')?.name || combatState.defender?.playerName}
+                {' '}({combatState.defender?.playerName})
+              </h4>
               <ul>
                 {defenderUnits.warSun > 0 && <li>{defenderUnits.warSun} War Sun(s)</li>}
                 {defenderUnits.dreadnought > 0 && <li>{defenderUnits.dreadnought} Dreadnought(s)</li>}
@@ -740,13 +763,19 @@ export function CombatModalV2({
 
               {combatState.thirdPartyParticipants.length > 0 && (
                 <>
-                  <h4>Third-Party Space Cannon (firing at {combatState.attacker?.playerName}):</h4>
+                  <h4>
+                    Third-Party Space Cannon (firing at{' '}
+                    {getFactionById(combatState.attacker?.factionId || '')?.name || combatState.attacker?.playerName}):
+                  </h4>
                   <ul>
-                    {combatState.thirdPartyParticipants.map(tp => (
-                      <li key={tp.playerId}>
-                        {tp.playerName}
-                      </li>
-                    ))}
+                    {combatState.thirdPartyParticipants.map(tp => {
+                      const faction = getFactionById(tp.factionId);
+                      return (
+                        <li key={tp.playerId}>
+                          {faction?.name || tp.playerName} ({tp.playerName})
+                        </li>
+                      );
+                    })}
                   </ul>
                 </>
               )}
@@ -2874,9 +2903,13 @@ export function CombatModalV2({
             <h1>Activate Enemy System</h1>
             {combatState.attacker && combatState.defender && (
               <div className={styles.participants}>
-                <span className={styles.attacker}>Attacker: {combatState.attacker.playerName}</span>
+                <span className={styles.attacker}>
+                  Attacker: {getFactionById(combatState.attacker.factionId)?.name || combatState.attacker.playerName}
+                </span>
                 <span className={styles.vs}>vs</span>
-                <span className={styles.defender}>Defender: {combatState.defender.playerName}</span>
+                <span className={styles.defender}>
+                  Defender: {getFactionById(combatState.defender.factionId)?.name || combatState.defender.playerName}
+                </span>
               </div>
             )}
           </div>
