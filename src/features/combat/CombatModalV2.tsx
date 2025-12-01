@@ -1721,22 +1721,490 @@ export function CombatModalV2({
   // ========================================================================
 
   const renderPhase4 = () => {
-    return (
-      <div className={styles.stepContent}>
-        <h3>Phase 4: Ground Combat - Round {combatState.groundCombatRound}</h3>
-        <p className={styles.placeholder}>Ground combat implementation in progress...</p>
+    const step = combatState.currentStep;
+    const round = combatState.groundCombatRound;
 
-        <Button
-          onClick={() => {
-            addLog('Ground Combat Complete');
-            goToPhase(Phase.POST_COMBAT, 'PC.1');
-          }}
-          variant="primary"
-        >
-          Skip to Post-Combat
-        </Button>
-      </div>
-    );
+    // P4.1: Start of Ground Combat Round
+    if (step === 'P4.1') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P4.1 — Start of Ground Combat Round {round}</h3>
+          <p>Resolve abilities that trigger at the start of a ground combat round.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No start of ground combat abilities');
+                goToStep('P4.2');
+              }}
+              variant="primary"
+            >
+              Continue (No Abilities)
+            </Button>
+
+            <Button
+              onClick={() => setShowAbilityList(!showAbilityList)}
+              variant="secondary"
+            >
+              {showAbilityList ? 'Hide' : 'Show'} Ground Combat Abilities
+            </Button>
+          </div>
+
+          {showAbilityList && (
+            <div className={styles.nestedAbilities}>
+              <p className={styles.abilityNote}>Available abilities:</p>
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    addLog('Yin Indoctrination - Spend 2 Influence to replace opponent infantry');
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: {
+                        ...prev.attacker!,
+                        abilitiesUsed: [...prev.attacker!.abilitiesUsed, 'yin_indoctrination'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Yin Indoctrination
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Sol Commander - Place 1 infantry from reinforcements');
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: {
+                        ...prev.attacker!,
+                        abilitiesUsed: [...prev.attacker!.abilitiesUsed, 'sol_commander'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Sol Commander (Claire Gibson)
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Magen Defense Grid ΩΩ - Produces 1 hit');
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: { ...prev.attacker!, queuedHits: prev.attacker.queuedHits + 1 },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Magen Defense Grid ΩΩ
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Arborec Mech - Deploy after tactical action');
+                  }}
+                  variant="secondary"
+                >
+                  Arborec Mech Deploy
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P4.2: Ground Combat Rolls
+    if (step === 'P4.2') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P4.2 — Ground Combat Rolls (Round {round})</h3>
+          <p>Both players roll dice for all participating ground forces.</p>
+
+          <div className={styles.inputGroup}>
+            <label>Attacker Hits:</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: { ...prev.defender!, queuedHits: hits },
+                  attacker: { ...prev.attacker!, hitsProduced: hits },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Defender Hits:</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: { ...prev.attacker!, queuedHits: hits },
+                  defender: { ...prev.defender!, hitsProduced: hits },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog(`Ground combat rolls: Attacker ${combatState.attacker.hitsProduced} hits, Defender ${combatState.defender.hitsProduced} hits`);
+                goToStep('P4.3');
+              }}
+              variant="primary"
+            >
+              Continue to Hit Assignment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('FIRE TEAM - Reroll any number of dice');
+              }}
+              variant="secondary"
+            >
+              Play FIRE TEAM
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Sol Agent (Evelyn Delouis) - Roll 1 additional die');
+              }}
+              variant="secondary"
+            >
+              Use Sol Agent
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Jol-Nar Modifier: -1 to all ground combat rolls');
+              }}
+              variant="secondary"
+            >
+              Apply Jol-Nar Modifier
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Sardakk N\'orr Modifier: +1 to all combat rolls');
+              }}
+              variant="secondary"
+            >
+              Apply Sardakk N'orr Modifier
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P4.3: Ground Combat Hit Assignment
+    if (step === 'P4.3') {
+      const attackerHits = combatState.attacker.queuedHits;
+      const defenderHits = combatState.defender.queuedHits;
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P4.3 — Ground Combat Hit Assignment (Round {round})</h3>
+          <p>Both players assign hits to their opponent's ground forces simultaneously.</p>
+
+          <div className={styles.hitAssignment}>
+            <div>
+              <h4>Attacker took {attackerHits} hits</h4>
+              <div className={styles.inputGroup}>
+                <label>Ground Forces Destroyed:</label>
+                <input type="number" min="0" max={attackerHits} defaultValue="0" />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Mechs Using Sustain Damage:</label>
+                <input type="number" min="0" max={attackerHits} defaultValue="0" />
+              </div>
+            </div>
+
+            <div>
+              <h4>Defender took {defenderHits} hits</h4>
+              <div className={styles.inputGroup}>
+                <label>Ground Forces Destroyed:</label>
+                <input type="number" min="0" max={defenderHits} defaultValue="0" />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Mechs Using Sustain Damage:</label>
+                <input type="number" min="0" max={defenderHits} defaultValue="0" />
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Ground combat hits assigned');
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: { ...prev.attacker!, queuedHits: 0, hitsProduced: 0 },
+                  defender: { ...prev.defender!, queuedHits: 0, hitsProduced: 0 },
+                }));
+                goToStep('P4.4');
+              }}
+              variant="primary"
+            >
+              Confirm Hit Assignment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Mentak Mech (Moll Terminus) - Opponent ground forces cannot use SD');
+              }}
+              variant="secondary"
+            >
+              Use Mentak Mech Ability
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Sardakk Valkyrie Particle Weave - Produce 1 additional hit');
+              }}
+              variant="secondary"
+            >
+              Use Valkyrie Particle Weave
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P4.4: L1Z1X Harrow Check
+    if (step === 'P4.4') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P4.4 — L1Z1X Harrow Check</h3>
+          <p>If L1Z1X is present, their ships may use Bombardment again after the round ends.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No Harrow ability');
+                goToStep('P4.5');
+              }}
+              variant="primary"
+            >
+              Continue (No Harrow)
+            </Button>
+
+            <Button
+              onClick={() => setShowAbilityList(!showAbilityList)}
+              variant="secondary"
+            >
+              {showAbilityList ? 'Hide' : 'Use'} L1Z1X Harrow
+            </Button>
+          </div>
+
+          {showAbilityList && (
+            <div className={styles.nestedAbilities}>
+              <div className={styles.inputGroup}>
+                <label>Harrow Bombardment Hits:</label>
+                <input
+                  type="number"
+                  min="0"
+                  defaultValue="0"
+                  onChange={(e) => {
+                    const hits = parseInt(e.target.value) || 0;
+                    setCombatState(prev => ({
+                      ...prev,
+                      defender: { ...prev.defender!, queuedHits: hits },
+                    }));
+                  }}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Ground Forces Destroyed:</label>
+                <input type="number" min="0" defaultValue="0" />
+              </div>
+
+              <Button
+                onClick={() => {
+                  addLog('L1Z1X Harrow used');
+                  setCombatState(prev => ({
+                    ...prev,
+                    defender: { ...prev.defender!, queuedHits: 0 },
+                  }));
+                  goToStep('P4.5');
+                }}
+                variant="primary"
+              >
+                Confirm Harrow
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P4.5: Ground Combat Continuation Check
+    if (step === 'P4.5') {
+      // In real implementation, would check actual unit counts
+      const attackerHasGroundForces = true; // Placeholder
+      const defenderHasGroundForces = true; // Placeholder
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P4.5 — Ground Combat Continuation Check (Round {round})</h3>
+          <p>Evaluate whether ground combat continues or ends.</p>
+
+          <div className={styles.combatStatus}>
+            <p>Attacker has ground forces: {attackerHasGroundForces ? 'Yes' : 'No'}</p>
+            <p>Defender has ground forces: {defenderHasGroundForces ? 'Yes' : 'No'}</p>
+          </div>
+
+          {!attackerHasGroundForces && !defenderHasGroundForces ? (
+            <div>
+              <p>All ground forces destroyed - Defender retains control</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    winner: 'defender',
+                    groundCombatComplete: true,
+                  }));
+                }}
+                variant="primary"
+              >
+                End Combat (Defender Retains)
+              </Button>
+            </div>
+          ) : !attackerHasGroundForces ? (
+            <div>
+              <p>Attacker eliminated - Defender wins</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    winner: 'defender',
+                    groundCombatComplete: true,
+                  }));
+                }}
+                variant="primary"
+              >
+                End Combat (Defender Wins)
+              </Button>
+            </div>
+          ) : !defenderHasGroundForces ? (
+            <div>
+              <p>Defender eliminated - Attacker establishes control</p>
+              <Button
+                onClick={() => {
+                  addLog('Defender eliminated - Attacker establishes control');
+                  goToStep('P4.6');
+                }}
+                variant="primary"
+              >
+                Establish Control
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <p>Both sides have ground forces - Continue to next round</p>
+              <Button
+                onClick={() => {
+                  addLog(`Ground Combat Round ${round} complete - Starting Round ${round + 1}`);
+                  setCombatState(prev => ({
+                    ...prev,
+                    groundCombatRound: prev.groundCombatRound + 1,
+                    currentStep: 'P4.1',
+                  }));
+                }}
+                variant="primary"
+              >
+                Next Ground Combat Round (Round {round + 1})
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P4.6: Establish Control
+    if (step === 'P4.6') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P4.6 — Establish Control</h3>
+          <p>Attacker gains control of the planet. The planet is exhausted upon gaining control.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Attacker establishes control - Proceeding to Post-Combat');
+                setCombatState(prev => ({ ...prev, groundCombatComplete: true }));
+                goToPhase(Phase.POST_COMBAT, 'PC.1');
+              }}
+              variant="primary"
+            >
+              Establish Control
+            </Button>
+
+            <Button
+              onClick={() => setShowAbilityList(!showAbilityList)}
+              variant="secondary"
+            >
+              {showAbilityList ? 'Hide' : 'Show'} Post-Control Actions
+            </Button>
+          </div>
+
+          {showAbilityList && (
+            <div className={styles.nestedAbilities}>
+              <p className={styles.abilityNote}>Post-control abilities:</p>
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    addLog('INFILTRATE - Replace defender structures');
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: {
+                        ...prev.attacker!,
+                        actionCardsPlayed: [...prev.attacker!.actionCardsPlayed, 'infiltrate'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Play INFILTRATE
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('L1Z1X Assimilate - Replace defender structures');
+                  }}
+                  variant="secondary"
+                >
+                  Use L1Z1X Assimilate
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('REPARATIONS - Exhaust opponent planet, ready your planet');
+                  }}
+                  variant="secondary"
+                >
+                  Play REPARATIONS
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
   };
 
   // ========================================================================
