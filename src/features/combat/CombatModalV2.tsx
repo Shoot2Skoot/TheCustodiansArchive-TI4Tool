@@ -1248,22 +1248,472 @@ export function CombatModalV2({
   // ========================================================================
 
   const renderPhase3 = () => {
-    return (
-      <div className={styles.stepContent}>
-        <h3>Phase 3: Invasion / Bombardment</h3>
-        <p className={styles.placeholder}>Invasion implementation in progress...</p>
+    const step = combatState.currentStep;
 
-        <Button
-          onClick={() => {
-            addLog('Invasion Complete');
-            goToPhase(Phase.GROUND_COMBAT, 'P4.1');
-          }}
-          variant="primary"
-        >
-          Skip to Ground Combat
-        </Button>
-      </div>
-    );
+    // P3.1: Bombardment Declaration
+    if (step === 'P3.1') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.1 — Bombardment Declaration</h3>
+          <p>Bombardment is optional. The attacker may choose to bombard planets before committing ground forces.</p>
+          <p className={styles.infoNote}>
+            Bombardment rolls are NOT affected by standard combat roll modifiers.
+          </p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Attacker chooses to bombard');
+                goToStep('P3.2');
+              }}
+              variant="primary"
+            >
+              Bombard
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Skip Bombardment');
+                setCombatState(prev => ({ ...prev, bombardmentComplete: true }));
+                goToStep('P3.7');
+              }}
+              variant="secondary"
+            >
+              Skip Bombardment
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P3.2: Bombardment Target Selection
+    if (step === 'P3.2') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.2 — Bombardment Target Selection</h3>
+          <p>Select which planet(s) to target and which units will bombard.</p>
+          <p className={styles.infoNote}>
+            Planetary Shield prevents Bombardment unless ignored (e.g., War Sun).
+          </p>
+
+          <div className={styles.placeholder}>
+            Planet/unit selection UI placeholder
+          </div>
+
+          <Button
+            onClick={() => {
+              addLog('Bombardment targets selected');
+              goToStep('P3.3');
+            }}
+            variant="primary"
+          >
+            Confirm Targets
+          </Button>
+        </div>
+      );
+    }
+
+    // P3.3: Defender Bombardment Response
+    if (step === 'P3.3') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.3 — Defender Bombardment Response</h3>
+          <p>Before Bombardment rolls, defender may respond with action cards.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No Bombardment response');
+                goToStep('P3.4');
+              }}
+              variant="primary"
+            >
+              Continue (No Response)
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('BUNKER played - Apply -4 to all Bombardment rolls');
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: {
+                    ...prev.defender!,
+                    actionCardsPlayed: [...prev.defender!.actionCardsPlayed, 'bunker'],
+                  },
+                }));
+                goToStep('P3.4');
+              }}
+              variant="secondary"
+            >
+              Play BUNKER (-4 to Bombardment)
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P3.4: Bombardment Rolls
+    if (step === 'P3.4') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.4 — Bombardment Rolls</h3>
+          <p>Execute Bombardment dice rolls for each bombarding unit.</p>
+
+          <div className={styles.inputGroup}>
+            <label>Bombardment Hits:</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: { ...prev.defender!, queuedHits: hits },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog(`Bombardment rolls complete: ${combatState.defender.queuedHits} hits`);
+                goToStep('P3.5');
+              }}
+              variant="primary"
+            >
+              Continue to Hit Assignment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('SCRAMBLE FREQUENCY - Reroll Bombardment dice');
+              }}
+              variant="secondary"
+            >
+              Play SCRAMBLE FREQUENCY
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('BLITZ Ω - Gives Bombardment 6 to non-fighter ships');
+              }}
+              variant="secondary"
+            >
+              Play BLITZ Ω
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P3.5: Bombardment Hit Assignment
+    if (step === 'P3.5') {
+      const hits = combatState.defender.queuedHits;
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.5 — Bombardment Hit Assignment</h3>
+          <p>Assign Bombardment hits to defender's ground forces on targeted planets.</p>
+
+          <div className={styles.inputGroup}>
+            <label>Defender Ground Forces Destroyed:</label>
+            <input type="number" min="0" max={hits} defaultValue="0" />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Mechs Using Sustain Damage:</label>
+            <input type="number" min="0" max={hits} defaultValue="0" />
+          </div>
+
+          <Button
+            onClick={() => {
+              addLog('Bombardment hits assigned');
+              setCombatState(prev => ({
+                ...prev,
+                defender: { ...prev.defender!, queuedHits: 0 },
+                bombardmentComplete: true,
+              }));
+              goToStep('P3.6');
+            }}
+            variant="primary"
+          >
+            Confirm Hit Assignment
+          </Button>
+        </div>
+      );
+    }
+
+    // P3.6: Invasion Continuation Check
+    if (step === 'P3.6') {
+      const defenderHasGroundForces = true; // Placeholder
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.6 — Invasion Continuation Check</h3>
+          <p>Check if defender has remaining ground forces.</p>
+
+          {!defenderHasGroundForces ? (
+            <div>
+              <p>No defender ground forces remain - Attacker may land unopposed</p>
+              <Button
+                onClick={() => {
+                  addLog('Attacker lands unopposed');
+                  goToPhase(Phase.GROUND_COMBAT, 'P4.6');
+                }}
+                variant="primary"
+              >
+                Establish Control
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <p>Defender has ground forces - Proceed to ground force commitment</p>
+              <Button
+                onClick={() => {
+                  addLog('Proceeding to ground force commitment');
+                  goToStep('P3.7');
+                }}
+                variant="primary"
+              >
+                Commit Ground Forces
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P3.7: Commit Ground Forces
+    if (step === 'P3.7') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.7 — Commit Ground Forces</h3>
+          <p>Attacker commits ground forces (Infantry, Mechs) from space to planets containing enemy ground forces.</p>
+
+          <div className={styles.placeholder}>
+            Ground force selection UI placeholder
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Ground forces committed');
+                goToStep('P3.8');
+              }}
+              variant="primary"
+            >
+              Confirm Commitment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Skip ground force commitment - End invasion');
+                setCombatState(prev => ({
+                  ...prev,
+                  isComplete: true,
+                  winner: 'attacker',
+                  invasionComplete: true,
+                }));
+              }}
+              variant="secondary"
+            >
+              Skip Commitment (End Combat)
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P3.8: Defender Landing Response
+    if (step === 'P3.8') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.8 — Defender Landing Response</h3>
+          <p>After attacker commits ground forces, defender may respond with action cards.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No landing response');
+                goToStep('P3.9');
+              }}
+              variant="primary"
+            >
+              Continue (No Response)
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('PARLEY played - Return committed ground forces to space');
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: {
+                    ...prev.defender!,
+                    actionCardsPlayed: [...prev.defender!.actionCardsPlayed, 'parley'],
+                  },
+                }));
+              }}
+              variant="secondary"
+            >
+              Play PARLEY
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('PAX played - Return ground forces and destroy one');
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: {
+                    ...prev.defender!,
+                    actionCardsPlayed: [...prev.defender!.actionCardsPlayed, 'pax'],
+                  },
+                }));
+              }}
+              variant="secondary"
+            >
+              Play PAX
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('GHOST SQUAD Ω - Move ground forces between planets');
+              }}
+              variant="secondary"
+            >
+              Use GHOST SQUAD Ω
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P3.9: Space Cannon Defense
+    if (step === 'P3.9') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.9 — Space Cannon Defense (SCD)</h3>
+          <p>Defender's PDS units may fire against attacker's committed ground forces.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Defender passes on Space Cannon Defense');
+                goToStep('P3.10');
+              }}
+              variant="primary"
+            >
+              Pass (No SCD)
+            </Button>
+
+            <Button
+              onClick={() => setShowAbilityList(!showAbilityList)}
+              variant="secondary"
+            >
+              {showAbilityList ? 'Hide' : 'Fire'} Space Cannon Defense
+            </Button>
+          </div>
+
+          {showAbilityList && (
+            <div className={styles.nestedAbilities}>
+              <div className={styles.inputGroup}>
+                <label>SCD Hits on Attacker Ground Forces:</label>
+                <input
+                  type="number"
+                  min="0"
+                  defaultValue="0"
+                  onChange={(e) => {
+                    const hits = parseInt(e.target.value) || 0;
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: { ...prev.attacker!, queuedHits: hits },
+                    }));
+                  }}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Ground Forces Destroyed:</label>
+                <input type="number" min="0" defaultValue="0" />
+              </div>
+
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    addLog('Space Cannon Defense complete');
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: { ...prev.attacker!, queuedHits: 0 },
+                    }));
+                    goToStep('P3.10');
+                  }}
+                  variant="primary"
+                >
+                  Confirm SCD Results
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('CRASH LANDING - Place 1 ground force on planet');
+                  }}
+                  variant="secondary"
+                >
+                  Play CRASH LANDING
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P3.10: Ground Combat Trigger Check
+    if (step === 'P3.10') {
+      const attackerHasGroundForces = true; // Placeholder
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P3.10 — Ground Combat Trigger Check</h3>
+          <p>Check if attacker has remaining ground forces on the planet.</p>
+
+          {!attackerHasGroundForces ? (
+            <div>
+              <p>Attacker has no ground forces - Invasion fails</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    winner: 'defender',
+                    invasionComplete: true,
+                  }));
+                }}
+                variant="primary"
+              >
+                End Combat (Invasion Failed)
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <p>Attacker has ground forces - Proceed to Ground Combat</p>
+              <Button
+                onClick={() => {
+                  addLog('Proceeding to Ground Combat');
+                  setCombatState(prev => ({ ...prev, invasionComplete: true }));
+                  goToPhase(Phase.GROUND_COMBAT, 'P4.1');
+                }}
+                variant="primary"
+              >
+                Proceed to Ground Combat
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
   };
 
   // ========================================================================
