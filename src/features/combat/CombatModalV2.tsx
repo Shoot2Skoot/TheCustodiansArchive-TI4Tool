@@ -1871,6 +1871,31 @@ export function CombatModalV2({
 
     // P2.2: Anti-Fighter Barrage (Round 1 Only)
     if (step === 'P2.2') {
+      const attackerAFBUnits = getActiveUnits(attackerCombatUnits).filter(u => u.hasAntiFighterBarrage);
+      const defenderAFBUnits = getActiveUnits(defenderCombatUnits).filter(u => u.hasAntiFighterBarrage);
+
+      const allAFBUnits = [...attackerAFBUnits, ...defenderAFBUnits];
+
+      // If no AFB units on either side, skip this step
+      if (allAFBUnits.length === 0) {
+        return (
+          <div className={styles.stepContent}>
+            <h3>P2.2 — Anti-Fighter Barrage (Round {round} Only)</h3>
+            <p>No units with Anti-Fighter Barrage capability present.</p>
+            <Button
+              onClick={() => {
+                addLog('No AFB units - skipping to Retreats');
+                setCombatState(prev => ({ ...prev, afbFiredThisCombat: true }));
+                goToStep('P2.3');
+              }}
+              variant="primary"
+            >
+              Continue to Retreats
+            </Button>
+          </div>
+        );
+      }
+
       return (
         <div className={styles.stepContent}>
           <h3>P2.2 — Anti-Fighter Barrage (Round {round} Only)</h3>
@@ -1879,28 +1904,38 @@ export function CombatModalV2({
             AFB rolls are NOT affected by combat modifiers. Excess hits are ignored unless specified (e.g., Argent Raid Formation).
           </p>
 
-          <div className={styles.inputGroup}>
-            <label>Attacker AFB Hits on Defender Fighters:</label>
-            <input type="number" min="0" defaultValue="0" />
-          </div>
+          <BatchDiceRoller
+            units={allAFBUnits}
+            targetValueGetter={(unit) => unit.antiFighterBarrageValue || 6}
+            rollsGetter={(unit) => unit.antiFighterBarrageRolls || 1}
+            canReroll={true}
+            onComplete={(rollResults) => {
+              let attackerHits = 0;
+              let defenderHits = 0;
 
-          <div className={styles.inputGroup}>
-            <label>Defender AFB Hits on Attacker Fighters:</label>
-            <input type="number" min="0" defaultValue="0" />
-          </div>
+              rollResults.forEach((unitRolls) => {
+                const unitId = unitRolls[0]?.unitId;
+                const unit = allAFBUnits.find(u => u.id === unitId);
+                if (!unit) return;
 
-          <div className={styles.buttonGroup}>
-            <Button
-              onClick={() => {
-                addLog('Anti-Fighter Barrage complete');
-                setCombatState(prev => ({ ...prev, afbFiredThisCombat: true }));
-                goToStep('P2.3');
-              }}
-              variant="primary"
-            >
-              Continue to Retreats
-            </Button>
+                const hits = unitRolls.filter(r => r.isHit).length;
+                if (unit.owner === 'attacker') {
+                  attackerHits += hits;
+                } else {
+                  defenderHits += hits;
+                }
+              });
 
+              addLog(`AFB complete: Attacker ${attackerHits} hits, Defender ${defenderHits} hits`);
+              setAttackerHits(attackerHits);
+              setDefenderHits(defenderHits);
+              setCombatState(prev => ({ ...prev, afbFiredThisCombat: true }));
+              goToStep('P2.2-assignment');
+            }}
+            title="Anti-Fighter Barrage — Roll Dice"
+          />
+
+          <div className={styles.buttonGroup} style={{ marginTop: '20px' }}>
             <Button
               onClick={() => {
                 addLog('WAYLAY - AFB hits all ships, not just fighters');
@@ -1928,6 +1963,76 @@ export function CombatModalV2({
           </div>
         </div>
       );
+    }
+
+    // P2.2-assignment: AFB Hit Assignment
+    if (step === 'P2.2-assignment') {
+      const attackerAFBHits = attackerHits; // Hits attacker landed on defender
+      const defenderAFBHits = defenderHits; // Hits defender landed on attacker
+
+      // First assign defender's hits to attacker's fighters
+      if (defenderAFBHits > 0) {
+        return (
+          <HitAssignment
+            units={attackerCombatUnits.filter(u => u.type === 'fighter')}
+            hitsToAssign={defenderAFBHits}
+            targetPlayerName={combatState.attacker?.playerName || 'Attacker'}
+            onComplete={(updatedUnits) => {
+              // Update only fighters, keep other units unchanged
+              const updatedAttackerUnits = attackerCombatUnits.map(u => {
+                const updated = updatedUnits.find(uu => uu.id === u.id);
+                return updated || u;
+              });
+              setAttackerCombatUnits(updatedAttackerUnits);
+
+              const destroyedCount = updatedUnits.filter(u => u.state === 'destroyed').length;
+              addLog(`AFB hits assigned to Attacker: ${destroyedCount} fighters destroyed`);
+
+              // Move to assigning attacker's hits to defender
+              goToStep('P2.2-assignment-defender');
+            }}
+            title="Assign AFB Hits to Attacker's Fighters"
+          />
+        );
+      }
+
+      // If defender had no hits, skip to assigning attacker's hits
+      goToStep('P2.2-assignment-defender');
+      return null;
+    }
+
+    // P2.2-assignment-defender: AFB Hit Assignment to Defender
+    if (step === 'P2.2-assignment-defender') {
+      const attackerAFBHits = attackerHits;
+
+      if (attackerAFBHits > 0) {
+        return (
+          <HitAssignment
+            units={defenderCombatUnits.filter(u => u.type === 'fighter')}
+            hitsToAssign={attackerAFBHits}
+            targetPlayerName={combatState.defender?.playerName || 'Defender'}
+            onComplete={(updatedUnits) => {
+              // Update only fighters, keep other units unchanged
+              const updatedDefenderUnits = defenderCombatUnits.map(u => {
+                const updated = updatedUnits.find(uu => uu.id === u.id);
+                return updated || u;
+              });
+              setDefenderCombatUnits(updatedDefenderUnits);
+
+              const destroyedCount = updatedUnits.filter(u => u.state === 'destroyed').length;
+              addLog(`AFB hits assigned to Defender: ${destroyedCount} fighters destroyed`);
+
+              // AFB complete, move to retreats
+              goToStep('P2.3');
+            }}
+            title="Assign AFB Hits to Defender's Fighters"
+          />
+        );
+      }
+
+      // If attacker had no hits either, just proceed
+      goToStep('P2.3');
+      return null;
     }
 
     // P2.3: Announce Retreats
@@ -2017,56 +2122,47 @@ export function CombatModalV2({
 
     // P2.4: Combat Rolls
     if (step === 'P2.4') {
+      const activeAttackerShips = getActiveUnits(attackerCombatUnits).filter(u => u.isShip);
+      const activeDefenderShips = getActiveUnits(defenderCombatUnits).filter(u => u.isShip);
+
+      const allCombatShips = [...activeAttackerShips, ...activeDefenderShips];
+
       return (
         <div className={styles.stepContent}>
           <h3>P2.4 — Combat Rolls (Round {round})</h3>
-          <p>Both players roll dice for all participating ships. Attacker rolls first, then Defender.</p>
+          <p>Both players roll dice for all participating ships.</p>
 
-          <div className={styles.inputGroup}>
-            <label>Attacker Hits:</label>
-            <input
-              type="number"
-              min="0"
-              defaultValue="0"
-              onChange={(e) => {
-                const hits = parseInt(e.target.value) || 0;
-                setCombatState(prev => ({
-                  ...prev,
-                  defender: { ...prev.defender!, queuedHits: hits },
-                  attacker: { ...prev.attacker!, hitsProduced: hits },
-                }));
-              }}
-            />
-          </div>
+          <BatchDiceRoller
+            units={allCombatShips}
+            targetValueGetter={(unit) => unit.combatValue || 8}
+            rollsGetter={(unit) => unit.combatRolls || 1}
+            canReroll={true}
+            onComplete={(rollResults) => {
+              let attackerHits = 0;
+              let defenderHits = 0;
 
-          <div className={styles.inputGroup}>
-            <label>Defender Hits:</label>
-            <input
-              type="number"
-              min="0"
-              defaultValue="0"
-              onChange={(e) => {
-                const hits = parseInt(e.target.value) || 0;
-                setCombatState(prev => ({
-                  ...prev,
-                  attacker: { ...prev.attacker!, queuedHits: hits },
-                  defender: { ...prev.defender!, hitsProduced: hits },
-                }));
-              }}
-            />
-          </div>
+              rollResults.forEach((unitRolls) => {
+                const unitId = unitRolls[0]?.unitId;
+                const unit = allCombatShips.find(u => u.id === unitId);
+                if (!unit) return;
 
-          <div className={styles.buttonGroup}>
-            <Button
-              onClick={() => {
-                addLog(`Combat rolls complete: Attacker ${combatState.attacker.hitsProduced} hits, Defender ${combatState.defender.hitsProduced} hits`);
-                goToStep('P2.5');
-              }}
-              variant="primary"
-            >
-              Continue to Hit Assignment
-            </Button>
+                const hits = unitRolls.filter(r => r.isHit).length;
+                if (unit.owner === 'attacker') {
+                  attackerHits += hits;
+                } else {
+                  defenderHits += hits;
+                }
+              });
 
+              addLog(`Combat rolls complete: Attacker ${attackerHits} hits, Defender ${defenderHits} hits`);
+              setAttackerHits(attackerHits);
+              setDefenderHits(defenderHits);
+              goToStep('P2.5');
+            }}
+            title="Space Combat — Roll Dice"
+          />
+
+          <div className={styles.buttonGroup} style={{ marginTop: '20px' }}>
             <Button
               onClick={() => {
                 addLog('SCRAMBLE FREQUENCY - Reroll opponent dice');
@@ -2089,95 +2185,88 @@ export function CombatModalV2({
       );
     }
 
-    // P2.5: Hit Assignment & Damage Resolution
+    // P2.5: Hit Assignment & Damage Resolution (Attacker receives hits)
     if (step === 'P2.5') {
-      const attackerHits = combatState.attacker.queuedHits;
-      const defenderHits = combatState.defender.queuedHits;
+      const defenderHitsOnAttacker = defenderHits;
 
-      return (
-        <div className={styles.stepContent}>
-          <h3>P2.5 — Hit Assignment & Damage Resolution (Round {round})</h3>
-          <p>Both players assign hits to their opponent's ships simultaneously.</p>
+      // If defender landed hits on attacker, assign them
+      if (defenderHitsOnAttacker > 0) {
+        return (
+          <HitAssignment
+            units={attackerCombatUnits.filter(u => u.isShip)}
+            hitsToAssign={defenderHitsOnAttacker}
+            targetPlayerName={combatState.attacker?.playerName || 'Attacker'}
+            onComplete={(updatedUnits) => {
+              // Update ships, keep non-ships unchanged
+              const updatedAttackerUnits = attackerCombatUnits.map(u => {
+                const updated = updatedUnits.find(uu => uu.id === u.id);
+                return updated || u;
+              });
+              setAttackerCombatUnits(updatedAttackerUnits);
 
-          <div className={styles.hitAssignment}>
-            <div>
-              <h4>Attacker took {attackerHits} hits</h4>
-              <div className={styles.inputGroup}>
-                <label>Ships Destroyed:</label>
-                <input type="number" min="0" max={attackerHits} defaultValue="0" />
-              </div>
-              <div className={styles.inputGroup}>
-                <label>Sustain Damage Used:</label>
-                <input type="number" min="0" max={attackerHits} defaultValue="0" />
-              </div>
-            </div>
+              const destroyedCount = updatedUnits.filter(u => u.state === 'destroyed').length;
+              const damagedCount = updatedUnits.filter(u => u.state === 'sustained').length;
+              addLog(`Round ${round} hits assigned to Attacker: ${destroyedCount} ships destroyed, ${damagedCount} damaged`);
 
-            <div>
-              <h4>Defender took {defenderHits} hits</h4>
-              <div className={styles.inputGroup}>
-                <label>Ships Destroyed:</label>
-                <input type="number" min="0" max={defenderHits} defaultValue="0" />
-              </div>
-              <div className={styles.inputGroup}>
-                <label>Sustain Damage Used:</label>
-                <input type="number" min="0" max={defenderHits} defaultValue="0" />
-              </div>
-            </div>
-          </div>
+              // Move to assigning attacker's hits to defender
+              goToStep('P2.5-defender');
+            }}
+            title={`Assign Combat Hits to Attacker (Round ${round})`}
+          />
+        );
+      }
 
-          <div className={styles.buttonGroup}>
-            <Button
-              onClick={() => {
-                addLog('Hits assigned');
-                setCombatState(prev => ({
-                  ...prev,
-                  attacker: { ...prev.attacker!, queuedHits: 0, hitsProduced: 0 },
-                  defender: { ...prev.defender!, queuedHits: 0, hitsProduced: 0 },
-                }));
-                goToStep('P2.6');
-              }}
-              variant="primary"
-            >
-              Confirm Hit Assignment
-            </Button>
+      // If defender had no hits, skip to assigning attacker's hits
+      goToStep('P2.5-defender');
+      return null;
+    }
 
-            <Button
-              onClick={() => {
-                addLog('DIRECT HIT - Destroy ship that used Sustain Damage');
-              }}
-              variant="secondary"
-            >
-              Play DIRECT HIT
-            </Button>
+    // P2.5-defender: Hit Assignment to Defender
+    if (step === 'P2.5-defender') {
+      const attackerHitsOnDefender = attackerHits;
 
-            <Button
-              onClick={() => {
-                addLog('EMERGENCY REPAIRS - Repair Sustain Damage');
-              }}
-              variant="secondary"
-            >
-              Play EMERGENCY REPAIRS
-            </Button>
+      if (attackerHitsOnDefender > 0) {
+        return (
+          <HitAssignment
+            units={defenderCombatUnits.filter(u => u.isShip)}
+            hitsToAssign={attackerHitsOnDefender}
+            targetPlayerName={combatState.defender?.playerName || 'Defender'}
+            onComplete={(updatedUnits) => {
+              // Update ships, keep non-ships unchanged
+              const updatedDefenderUnits = defenderCombatUnits.map(u => {
+                const updated = updatedUnits.find(uu => uu.id === u.id);
+                return updated || u;
+              });
+              setDefenderCombatUnits(updatedDefenderUnits);
 
-            <Button
-              onClick={() => {
-                addLog('SHIELD HOLDING - Cancel a hit');
-              }}
-              variant="secondary"
-            >
-              Play SHIELD HOLDING
-            </Button>
-          </div>
-        </div>
-      );
+              const destroyedCount = updatedUnits.filter(u => u.state === 'destroyed').length;
+              const damagedCount = updatedUnits.filter(u => u.state === 'sustained').length;
+              addLog(`Round ${round} hits assigned to Defender: ${destroyedCount} ships destroyed, ${damagedCount} damaged`);
+
+              // Combat round hit assignment complete, move to continuation check
+              goToStep('P2.6');
+            }}
+            title={`Assign Combat Hits to Defender (Round ${round})`}
+          />
+        );
+      }
+
+      // If attacker had no hits either, just proceed
+      goToStep('P2.6');
+      return null;
     }
 
     // P2.6: Combat Continuation Check
     if (step === 'P2.6') {
-      // In real implementation, would check actual unit counts
-      const attackerHasShips = true; // Placeholder
-      const defenderHasShips = true; // Placeholder
+      const activeAttackerShips = getActiveUnits(attackerCombatUnits).filter(u => u.isShip);
+      const activeDefenderShips = getActiveUnits(defenderCombatUnits).filter(u => u.isShip);
+
+      const attackerHasShips = activeAttackerShips.length > 0;
+      const defenderHasShips = activeDefenderShips.length > 0;
       const retreatAnnounced = combatState.attacker.hasAnnouncedRetreat || combatState.defender.hasAnnouncedRetreat;
+
+      const attackerShipCount = activeAttackerShips.length;
+      const defenderShipCount = activeDefenderShips.length;
 
       return (
         <div className={styles.stepContent}>
@@ -2185,8 +2274,8 @@ export function CombatModalV2({
           <p>Evaluate whether combat continues, ends, or a retreat is executed.</p>
 
           <div className={styles.combatStatus}>
-            <p>Attacker has ships: {attackerHasShips ? 'Yes' : 'No'}</p>
-            <p>Defender has ships: {defenderHasShips ? 'Yes' : 'No'}</p>
+            <p>Attacker has {attackerShipCount} active ship{attackerShipCount !== 1 ? 's' : ''}</p>
+            <p>Defender has {defenderShipCount} active ship{defenderShipCount !== 1 ? 's' : ''}</p>
             <p>Retreat announced: {retreatAnnounced ? 'Yes' : 'No'}</p>
           </div>
 
@@ -2195,6 +2284,7 @@ export function CombatModalV2({
               <p>All ships destroyed - Combat ends in a draw</p>
               <Button
                 onClick={() => {
+                  addLog('All ships destroyed - Combat ends in draw');
                   setCombatState(prev => ({
                     ...prev,
                     isComplete: true,
@@ -2212,6 +2302,7 @@ export function CombatModalV2({
               <p>Attacker eliminated - Defender wins</p>
               <Button
                 onClick={() => {
+                  addLog('Attacker eliminated - Defender wins');
                   setCombatState(prev => ({
                     ...prev,
                     isComplete: true,
@@ -2229,7 +2320,7 @@ export function CombatModalV2({
               <p>Defender eliminated - Attacker wins space combat</p>
               <Button
                 onClick={() => {
-                  addLog('Attacker wins space combat, proceeding to Invasion');
+                  addLog('Defender eliminated - Attacker wins space combat, proceeding to Invasion');
                   setCombatState(prev => ({ ...prev, spaceCombatComplete: true }));
                   goToPhase(Phase.INVASION, 'P3.1');
                 }}
