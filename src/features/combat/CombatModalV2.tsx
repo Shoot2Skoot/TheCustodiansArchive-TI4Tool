@@ -723,11 +723,11 @@ export function CombatModalV2({
 
       // Done - show summary and continue
       if (unitSelectionStep === 'done') {
-        // Calculate capacity for attacker
+        // Calculate capacity
         const calculateCapacity = (units: UnitCounts, factionId: string) => {
           let capacity = 0;
 
-          // Carriers: 4 capacity (6 with Carrier II upgrade - future enhancement)
+          // Carriers: 4 capacity base (6 with Carrier II upgrade - not tracked yet)
           capacity += units.carrier * 4;
 
           // Dreadnoughts: 1 capacity each
@@ -736,8 +736,41 @@ export function CombatModalV2({
           // War Suns: 6 capacity each
           capacity += units.warSun * 6;
 
-          // Flagship: varies by faction (future enhancement - assuming 0 for now)
-          // TODO: Add faction-specific flagship capacity
+          // Flagship: faction-specific capacity values
+          if (units.flagship > 0) {
+            const flagshipCapacity: Record<string, number> = {
+              // Base Game
+              'arborec': 5,
+              'letnev': 3,
+              'saar': 3,
+              'muaat': 3,
+              'hacan': 3,
+              'sol': 12,
+              'creuss': 3,
+              'l1z1x': 5,
+              'mentak': 3,
+              'naalu': 6,
+              'nekro': 3,
+              'sardakk': 3,
+              'jol-nar': 3,
+              'winnu': 3,
+              'xxcha': 3,
+              'yin': 3,
+              'yssaril': 3,
+              // Prophecy of Kings
+              'argent': 3,
+              'empyrean': 3,
+              'mahact': 3,
+              'naaz-rokha': 4,
+              'nomad': 3, // Base Memoria (6 for Memoria II - future enhancement)
+              'titans': 3,
+              "vuil'raith": 3,
+              // Codex III
+              'keleres': 6,
+            };
+
+            capacity += flagshipCapacity[factionId] || 0;
+          }
 
           return capacity;
         };
@@ -836,9 +869,9 @@ export function CombatModalV2({
             </div>
 
             <div className={styles.infoNote}>
-              <p><strong>Note:</strong> Capacity calculation assumes base unit stats.
-              If you have Carrier II upgrades or faction-specific flagship abilities that modify capacity,
-              you are responsible for ensuring compliance.</p>
+              <p><strong>Note:</strong> Capacity calculation includes faction-specific flagship values.
+              If you have Carrier II upgrades (6 capacity vs base 4) or Nomad Memoria II upgrade (6 capacity vs base 3),
+              you are responsible for accounting for that additional capacity.</p>
             </div>
 
             <div className={styles.buttonGroup}>
