@@ -18,7 +18,26 @@ export type UnitType =
   | 'mech'
   // Structures
   | 'pds'
-  | 'space_dock';
+  | 'space_dock'
+  // Faction-Specific Units (Base Game)
+  | 'letani_warrior' // Arborec Infantry
+  | 'floating_factory' // Saar Space Dock
+  | 'prototype_war_sun' // Muaat War Sun
+  | 'spec_ops' // Sol Infantry
+  | 'advanced_carrier' // Sol Carrier
+  | 'super_dreadnought' // L1Z1X Dreadnought
+  | 'hybrid_crystal_fighter' // Naalu Fighter
+  | 'exotrireme' // Sardakk Dreadnought
+  // Faction-Specific Units (Prophecy of Kings)
+  | 'strike_wing_alpha' // Argent Destroyer
+  | 'crimson_legionnaire' // Mahact Infantry
+  | 'saturn_engine' // Titans Cruiser
+  | 'hel_titan' // Titans PDS
+  | 'dimensional_tear' // Vuil'raith Space Dock
+  // Faction-Specific Units (Thunder's Edge)
+  | 'exile' // Crimson Rebellion Destroyer
+  | 'helios' // Last Bastion Space Dock
+  | 'linkship'; // Ral Nel Destroyer
 
 export interface UnitStats {
   id: UnitType;
@@ -273,6 +292,352 @@ export const BASE_UNITS: Record<UnitType, UnitStats> = {
     isShip: false,
     isStructure: true,
   },
+
+  // ============================================================================
+  // FACTION-SPECIFIC UNITS (Base Game)
+  // ============================================================================
+
+  // Arborec Infantry
+  letani_warrior: {
+    id: 'letani_warrior',
+    name: 'Letani Warrior',
+    displayName: 'Letani Warrior',
+    cost: 0.5,
+    combat: 8, // 7 when upgraded
+    combatRolls: 1,
+    move: 0,
+    capacity: 0,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: true,
+    isShip: false,
+    isStructure: false,
+  },
+
+  // Saar Space Dock
+  floating_factory: {
+    id: 'floating_factory',
+    name: 'Floating Factory',
+    displayName: 'Floating Factory',
+    cost: 4,
+    combat: null,
+    combatRolls: 0,
+    move: 1, // 2 when upgraded
+    capacity: 4, // 5 when upgraded
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true, // Can move like a ship
+    isStructure: true,
+  },
+
+  // Muaat War Sun
+  prototype_war_sun: {
+    id: 'prototype_war_sun',
+    name: 'Prototype War Sun',
+    displayName: 'Prototype War Sun',
+    cost: 12, // 10 when upgraded
+    combat: 3,
+    combatRolls: 3,
+    move: 1, // 3 when upgraded
+    capacity: 6,
+    hasSustainDamage: true,
+    hasAntiFighterBarrage: false,
+    hasBombardment: true,
+    bombardmentValue: 3,
+    bombardmentRolls: 3,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // Sol Infantry
+  spec_ops: {
+    id: 'spec_ops',
+    name: 'Spec Ops',
+    displayName: 'Spec Ops',
+    cost: 0.5,
+    combat: 7, // 6 when upgraded
+    combatRolls: 1,
+    move: 0,
+    capacity: 0,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: true,
+    isShip: false,
+    isStructure: false,
+  },
+
+  // Sol Carrier
+  advanced_carrier: {
+    id: 'advanced_carrier',
+    name: 'Advanced Carrier',
+    displayName: 'Advanced Carrier',
+    cost: 3,
+    combat: 9,
+    combatRolls: 1,
+    move: 1, // 2 when upgraded
+    capacity: 6, // 8 when upgraded
+    hasSustainDamage: false, // true when upgraded
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // L1Z1X Dreadnought
+  super_dreadnought: {
+    id: 'super_dreadnought',
+    name: 'Super-Dreadnought',
+    displayName: 'Super-Dreadnought',
+    cost: 4,
+    combat: 5, // 4 when upgraded
+    combatRolls: 1,
+    move: 1, // 2 when upgraded
+    capacity: 2,
+    hasSustainDamage: true,
+    hasAntiFighterBarrage: false,
+    hasBombardment: true,
+    bombardmentValue: 5, // 4 when upgraded
+    bombardmentRolls: 1,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // Naalu Fighter
+  hybrid_crystal_fighter: {
+    id: 'hybrid_crystal_fighter',
+    name: 'Hybrid Crystal Fighter',
+    displayName: 'Hybrid Crystal Fighter',
+    cost: 0.5,
+    combat: 8, // 7 when upgraded
+    combatRolls: 1,
+    move: 0, // 2 when upgraded (can move independently)
+    capacity: 0,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // Sardakk Dreadnought
+  exotrireme: {
+    id: 'exotrireme',
+    name: 'Exotrireme',
+    displayName: 'Exotrireme',
+    cost: 4,
+    combat: 5,
+    combatRolls: 1,
+    move: 1, // 2 when upgraded
+    capacity: 1,
+    hasSustainDamage: true,
+    hasAntiFighterBarrage: false,
+    hasBombardment: true,
+    bombardmentValue: 4,
+    bombardmentRolls: 2,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // ============================================================================
+  // FACTION-SPECIFIC UNITS (Prophecy of Kings)
+  // ============================================================================
+
+  // Argent Destroyer
+  strike_wing_alpha: {
+    id: 'strike_wing_alpha',
+    name: 'Strike Wing Alpha',
+    displayName: 'Strike Wing Alpha',
+    cost: 1,
+    combat: 8, // 7 when upgraded
+    combatRolls: 1,
+    move: 2,
+    capacity: 1,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: true,
+    afbValue: 9, // 6 when upgraded
+    afbRolls: 2, // 3 when upgraded
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // Mahact Infantry
+  crimson_legionnaire: {
+    id: 'crimson_legionnaire',
+    name: 'Crimson Legionnaire',
+    displayName: 'Crimson Legionnaire',
+    cost: 0.5,
+    combat: 8, // 7 when upgraded
+    combatRolls: 1,
+    move: 0,
+    capacity: 0,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: true,
+    isShip: false,
+    isStructure: false,
+  },
+
+  // Titans Cruiser
+  saturn_engine: {
+    id: 'saturn_engine',
+    name: 'Saturn Engine',
+    displayName: 'Saturn Engine',
+    cost: 2,
+    combat: 7, // 6 when upgraded
+    combatRolls: 1,
+    move: 2, // 3 when upgraded
+    capacity: 1, // 2 when upgraded
+    hasSustainDamage: false, // true when upgraded
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // Titans PDS
+  hel_titan: {
+    id: 'hel_titan',
+    name: 'Hel-Titan',
+    displayName: 'Hel-Titan',
+    cost: 2,
+    combat: 7, // 6 when upgraded
+    combatRolls: 1,
+    move: 0,
+    capacity: 0,
+    hasSustainDamage: true,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: true,
+    spaceCannonValue: 6, // 5 when upgraded
+    spaceCannonRolls: 1,
+    hasPlanetaryShield: true,
+    isGroundForce: true, // Also a ground force!
+    isShip: false,
+    isStructure: true,
+  },
+
+  // Vuil'raith Space Dock
+  dimensional_tear: {
+    id: 'dimensional_tear',
+    name: 'Dimensional Tear',
+    displayName: 'Dimensional Tear',
+    cost: 4,
+    combat: null,
+    combatRolls: 0,
+    move: 0,
+    capacity: 0, // Special: 6 fighters don't count (12 when upgraded)
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: false,
+    isStructure: true,
+  },
+
+  // ============================================================================
+  // FACTION-SPECIFIC UNITS (Thunder's Edge)
+  // ============================================================================
+
+  // Crimson Rebellion Destroyer
+  exile: {
+    id: 'exile',
+    name: 'Exile',
+    displayName: 'Exile',
+    cost: 1,
+    combat: 8, // 7 when upgraded
+    combatRolls: 1,
+    move: 2,
+    capacity: 0,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: true,
+    afbValue: 9, // 6 when upgraded
+    afbRolls: 2, // 3 when upgraded
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
+
+  // Last Bastion Space Dock
+  helios: {
+    id: 'helios',
+    name: '4X4IC "HELIOS"',
+    displayName: '4X4IC "HELIOS"',
+    cost: 4,
+    combat: null,
+    combatRolls: 0,
+    move: 0,
+    capacity: 0, // Special: 3 fighters don't count
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: false,
+    hasBombardment: false,
+    hasSpaceCannon: false,
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: false,
+    isStructure: true,
+  },
+
+  // Ral Nel Destroyer
+  linkship: {
+    id: 'linkship',
+    name: 'Linkship',
+    displayName: 'Linkship',
+    cost: 1,
+    combat: 9, // 8 when upgraded
+    combatRolls: 1,
+    move: 3, // 4 when upgraded
+    capacity: 0,
+    hasSustainDamage: false,
+    hasAntiFighterBarrage: true,
+    afbValue: 9, // 6 when upgraded
+    afbRolls: 2, // 3 when upgraded
+    hasBombardment: false,
+    hasSpaceCannon: false, // Can use structures' space cannon ability
+    hasPlanetaryShield: false,
+    isGroundForce: false,
+    isShip: true,
+    isStructure: false,
+  },
 };
 
 // ============================================================================
@@ -367,6 +732,64 @@ export const FACTION_UNIT_OVERRIDES: Record<string, FactionUnitOverride[]> = {
       },
     },
   ],
+};
+
+// ============================================================================
+// FACTION SPECIAL UNITS MAPPING
+// Maps faction IDs to their special units (replaces base units)
+// ============================================================================
+
+export const FACTION_SPECIAL_UNITS: Record<string, Partial<Record<UnitType, UnitType>>> = {
+  // Base Game
+  arborec: {
+    infantry: 'letani_warrior',
+  },
+  saar: {
+    space_dock: 'floating_factory',
+  },
+  muaat: {
+    war_sun: 'prototype_war_sun',
+  },
+  sol: {
+    infantry: 'spec_ops',
+    carrier: 'advanced_carrier',
+  },
+  l1z1x: {
+    dreadnought: 'super_dreadnought',
+  },
+  naalu: {
+    fighter: 'hybrid_crystal_fighter',
+  },
+  sardakk: {
+    dreadnought: 'exotrireme',
+  },
+
+  // Prophecy of Kings
+  argent: {
+    destroyer: 'strike_wing_alpha',
+  },
+  mahact: {
+    infantry: 'crimson_legionnaire',
+  },
+  titans: {
+    cruiser: 'saturn_engine',
+    pds: 'hel_titan',
+  },
+  "vuil'raith": {
+    space_dock: 'dimensional_tear',
+  },
+
+  // Thunder's Edge
+  // Note: These factions may not be in the base game
+  // 'crimson': {
+  //   destroyer: 'exile',
+  // },
+  // 'last-bastion': {
+  //   space_dock: 'helios',
+  // },
+  // 'ral-nel': {
+  //   destroyer: 'linkship',
+  // },
 };
 
 // ============================================================================
@@ -474,4 +897,34 @@ export function getUnitsWithAbility(ability: 'afb' | 'bombardment' | 'space_cann
   });
 
   return units;
+}
+
+/**
+ * Get the correct unit type for a faction (returns faction-specific unit if available)
+ */
+export function getFactionUnitType(baseUnitType: UnitType, factionId: string): UnitType {
+  const specialUnits = FACTION_SPECIAL_UNITS[factionId];
+  if (specialUnits && specialUnits[baseUnitType]) {
+    return specialUnits[baseUnitType]!;
+  }
+  return baseUnitType;
+}
+
+/**
+ * Get all available unit types for a faction (includes their special units)
+ */
+export function getAvailableUnitsForFaction(factionId: string): UnitType[] {
+  const availableUnits: UnitType[] = [];
+  const specialUnits = FACTION_SPECIAL_UNITS[factionId] || {};
+
+  // Add all base unit types
+  Object.keys(BASE_UNITS).forEach(unitType => {
+    // If this faction has a special version of this unit, use that instead
+    const actualUnitType = getFactionUnitType(unitType as UnitType, factionId);
+    if (!availableUnits.includes(actualUnitType)) {
+      availableUnits.push(actualUnitType);
+    }
+  });
+
+  return availableUnits;
 }
