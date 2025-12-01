@@ -1,0 +1,232 @@
+/* Hit Assignment Container */
+.hitAssignment {
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.hitAssignment h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.5em;
+  color: #e74c3c;
+}
+
+/* Assignment Info */
+.assignmentInfo {
+  background-color: rgba(231, 76, 60, 0.15);
+  border: 2px solid #e74c3c;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 25px;
+}
+
+.playerInfo {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #ecf0f1;
+}
+
+.hitsInfo {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.hitsRemaining {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #e74c3c;
+}
+
+.hitsAssignedCount {
+  font-size: 1em;
+  color: #95a5a6;
+}
+
+/* Units Grid */
+.unitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+/* Unit Card */
+.unitCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.unitSelectable {
+  cursor: pointer;
+  border-color: #3498db;
+}
+
+.unitSelectable:hover {
+  background-color: rgba(52, 152, 219, 0.15);
+  border-color: #2980b9;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+}
+
+.unitUndamaged {
+  border-color: #2ecc71;
+}
+
+.unitSustained {
+  border-color: #f39c12;
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+.unitDestroyed {
+  border-color: #7f8c8d;
+  background-color: rgba(127, 140, 141, 0.1);
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+/* Unit Card Header */
+.unitCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.unitCardName {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #ecf0f1;
+}
+
+/* Sustain Badge */
+.sustainBadge {
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border: 1px solid #2ecc71;
+}
+
+.unitSustained .sustainBadge {
+  background-color: rgba(243, 156, 18, 0.2);
+  color: #f39c12;
+  border-color: #f39c12;
+}
+
+/* State Indicators */
+.damagedIndicator {
+  background-color: rgba(243, 156, 18, 0.2);
+  border: 1px solid #f39c12;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 8px;
+  color: #f39c12;
+  font-size: 0.9em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.destroyedIndicator {
+  background-color: rgba(127, 140, 141, 0.2);
+  border: 1px solid #7f8c8d;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 8px;
+  color: #95a5a6;
+  font-size: 0.9em;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Click Prompt */
+.clickPrompt {
+  margin-top: 10px;
+  padding: 8px;
+  background-color: rgba(52, 152, 219, 0.2);
+  border: 1px dashed #3498db;
+  border-radius: 6px;
+  text-align: center;
+  color: #3498db;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.unitSelectable:hover .clickPrompt {
+  background-color: rgba(52, 152, 219, 0.3);
+  border-style: solid;
+}
+
+/* No Hits State */
+.noHits {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.noHits p {
+  font-size: 1.3em;
+  color: #2ecc71;
+  margin-bottom: 20px;
+}
+
+/* No Units Left State */
+.noUnitsLeft {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 2px solid #e74c3c;
+  border-radius: 8px;
+}
+
+.noUnitsLeft p {
+  font-size: 1.3em;
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Instructions */
+.instructions {
+  background-color: rgba(52, 152, 219, 0.1);
+  border: 1px solid #3498db;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.instructions p {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  color: #3498db;
+}
+
+.instructions ul {
+  margin: 0;
+  padding-left: 25px;
+  color: #ecf0f1;
+}
+
+.instructions li {
+  margin: 8px 0;
+}
+
+.sustainText {
+  color: #2ecc71;
+  font-weight: 600;
+}

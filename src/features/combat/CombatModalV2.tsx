@@ -149,6 +149,12 @@ export function CombatModalV2({
   const [unitSelectionStep, setUnitSelectionStep] = useState<'attacker' | 'defender' | 'third-party-prompt' | 'third-party-select' | 'done'>('attacker');
   const [selectedThirdPartyId, setSelectedThirdPartyId] = useState<string | null>(null);
   const [thirdPartyUnits, setThirdPartyUnits] = useState<UnitCounts>(emptyUnitCounts());
+  const [showAttackerCapacityModal, setShowAttackerCapacityModal] = useState(false);
+  const [showDefenderCapacityModal, setShowDefenderCapacityModal] = useState(false);
+
+  // Space Cannon hits state (for Phase 1)
+  const [defenderHits, setDefenderHits] = useState(0);
+  const [attackerHits, setAttackerHits] = useState(0);
 
   // Save state to localStorage
   useEffect(() => {
@@ -454,15 +460,218 @@ export function CombatModalV2({
               </div>
             </div>
 
+            {/* Capacity Check for Attacker */}
+            {hasSpecialCapacityRules(combatState.attacker?.factionId || '') ? (
+              <div className={styles.capacityOk}>
+                <p>
+                  <strong>Capacity Check:</strong> No capacity required
+                </p>
+                <p style={{ marginTop: '8px', fontSize: '0.95em' }}>
+                  <strong>Naalu Faction Ability:</strong> Your fighters and ground forces can move freely
+                  without requiring capacity.
+                </p>
+              </div>
+            ) : (
+              <div className={
+                calculateNeededCapacity({
+                  war_sun: attackerUnits.warSun,
+                  dreadnought: attackerUnits.dreadnought,
+                  cruiser: attackerUnits.cruiser,
+                  carrier: attackerUnits.carrier,
+                  destroyer: attackerUnits.destroyer,
+                  fighter: attackerUnits.fighter,
+                  flagship: attackerUnits.flagship,
+                  infantry: attackerUnits.infantry,
+                  mech: attackerUnits.mech,
+                  pds: attackerUnits.pds,
+                }) > calculateTotalCapacity({
+                  war_sun: attackerUnits.warSun,
+                  dreadnought: attackerUnits.dreadnought,
+                  cruiser: attackerUnits.cruiser,
+                  carrier: attackerUnits.carrier,
+                  destroyer: attackerUnits.destroyer,
+                  fighter: attackerUnits.fighter,
+                  flagship: attackerUnits.flagship,
+                  infantry: attackerUnits.infantry,
+                  mech: attackerUnits.mech,
+                  pds: attackerUnits.pds,
+                }, combatState.attacker?.factionId || '')
+                  ? styles.capacityError
+                  : styles.capacityOk
+              }>
+                <p>
+                  <strong>Capacity Check:</strong>{' '}
+                  {calculateTotalCapacity({
+                    war_sun: attackerUnits.warSun,
+                    dreadnought: attackerUnits.dreadnought,
+                    cruiser: attackerUnits.cruiser,
+                    carrier: attackerUnits.carrier,
+                    destroyer: attackerUnits.destroyer,
+                    fighter: attackerUnits.fighter,
+                    flagship: attackerUnits.flagship,
+                    infantry: attackerUnits.infantry,
+                    mech: attackerUnits.mech,
+                    pds: attackerUnits.pds,
+                  }, combatState.attacker?.factionId || '')} available,{' '}
+                  {calculateNeededCapacity({
+                    war_sun: attackerUnits.warSun,
+                    dreadnought: attackerUnits.dreadnought,
+                    cruiser: attackerUnits.cruiser,
+                    carrier: attackerUnits.carrier,
+                    destroyer: attackerUnits.destroyer,
+                    fighter: attackerUnits.fighter,
+                    flagship: attackerUnits.flagship,
+                    infantry: attackerUnits.infantry,
+                    mech: attackerUnits.mech,
+                    pds: attackerUnits.pds,
+                  })} needed
+                </p>
+                {calculateNeededCapacity({
+                  war_sun: attackerUnits.warSun,
+                  dreadnought: attackerUnits.dreadnought,
+                  cruiser: attackerUnits.cruiser,
+                  carrier: attackerUnits.carrier,
+                  destroyer: attackerUnits.destroyer,
+                  fighter: attackerUnits.fighter,
+                  flagship: attackerUnits.flagship,
+                  infantry: attackerUnits.infantry,
+                  mech: attackerUnits.mech,
+                  pds: attackerUnits.pds,
+                }) > calculateTotalCapacity({
+                  war_sun: attackerUnits.warSun,
+                  dreadnought: attackerUnits.dreadnought,
+                  cruiser: attackerUnits.cruiser,
+                  carrier: attackerUnits.carrier,
+                  destroyer: attackerUnits.destroyer,
+                  fighter: attackerUnits.fighter,
+                  flagship: attackerUnits.flagship,
+                  infantry: attackerUnits.infantry,
+                  mech: attackerUnits.mech,
+                  pds: attackerUnits.pds,
+                }, combatState.attacker?.factionId || '') && (
+                  <p className={styles.errorText}>
+                    ⚠️ WARNING: Capacity exceeded by{' '}
+                    {calculateNeededCapacity({
+                      war_sun: attackerUnits.warSun,
+                      dreadnought: attackerUnits.dreadnought,
+                      cruiser: attackerUnits.cruiser,
+                      carrier: attackerUnits.carrier,
+                      destroyer: attackerUnits.destroyer,
+                      fighter: attackerUnits.fighter,
+                      flagship: attackerUnits.flagship,
+                      infantry: attackerUnits.infantry,
+                      mech: attackerUnits.mech,
+                      pds: attackerUnits.pds,
+                    }) - calculateTotalCapacity({
+                      war_sun: attackerUnits.warSun,
+                      dreadnought: attackerUnits.dreadnought,
+                      cruiser: attackerUnits.cruiser,
+                      carrier: attackerUnits.carrier,
+                      destroyer: attackerUnits.destroyer,
+                      fighter: attackerUnits.fighter,
+                      flagship: attackerUnits.flagship,
+                      infantry: attackerUnits.infantry,
+                      mech: attackerUnits.mech,
+                      pds: attackerUnits.pds,
+                    }, combatState.attacker?.factionId || '')}!
+                    You must have enough capacity to transport all fighters and ground forces.
+                  </p>
+                )}
+              </div>
+            )}
+
             <Button
               onClick={() => {
-                addLog(`Attacker units confirmed`);
-                setUnitSelectionStep('defender');
+                // Check if capacity is exceeded
+                const attackerFactionId = combatState.attacker?.factionId || '';
+                const attackerConfigUnits = {
+                  war_sun: attackerUnits.warSun,
+                  dreadnought: attackerUnits.dreadnought,
+                  cruiser: attackerUnits.cruiser,
+                  carrier: attackerUnits.carrier,
+                  destroyer: attackerUnits.destroyer,
+                  fighter: attackerUnits.fighter,
+                  flagship: attackerUnits.flagship,
+                  infantry: attackerUnits.infantry,
+                  mech: attackerUnits.mech,
+                  pds: attackerUnits.pds,
+                };
+                const capacity = calculateTotalCapacity(attackerConfigUnits, attackerFactionId);
+                const needed = calculateNeededCapacity(attackerConfigUnits);
+                const hasSpecialRules = hasSpecialCapacityRules(attackerFactionId);
+                const exceeded = needed > capacity;
+
+                if (exceeded && !hasSpecialRules) {
+                  setShowAttackerCapacityModal(true);
+                } else {
+                  addLog(`Attacker units confirmed`);
+                  setUnitSelectionStep('defender');
+                }
               }}
               variant="primary"
             >
               Continue to Defender Units
             </Button>
+
+            {/* Attacker Capacity Warning Modal */}
+            {showAttackerCapacityModal && (() => {
+              const attackerFactionId = combatState.attacker?.factionId || '';
+              const attackerConfigUnits = {
+                war_sun: attackerUnits.warSun,
+                dreadnought: attackerUnits.dreadnought,
+                cruiser: attackerUnits.cruiser,
+                carrier: attackerUnits.carrier,
+                destroyer: attackerUnits.destroyer,
+                fighter: attackerUnits.fighter,
+                flagship: attackerUnits.flagship,
+                infantry: attackerUnits.infantry,
+                mech: attackerUnits.mech,
+                pds: attackerUnits.pds,
+              };
+              const capacity = calculateTotalCapacity(attackerConfigUnits, attackerFactionId);
+              const needed = calculateNeededCapacity(attackerConfigUnits);
+              const exceeded = needed - capacity;
+
+              return (
+                <div className={styles.confirmationModal}>
+                  <div className={styles.confirmationModalContent}>
+                    <h3>
+                      <span className={styles.warningIcon}>⚠️</span>
+                      Capacity Exceeded
+                    </h3>
+                    <p>
+                      <strong>Warning:</strong> Your attacker's capacity is exceeded by <strong>{exceeded}</strong> unit{exceeded !== 1 ? 's' : ''}.
+                    </p>
+                    <p>
+                      Available capacity: <strong>{capacity}</strong>
+                      <br />
+                      Required capacity: <strong>{needed}</strong>
+                    </p>
+                    <p>
+                      This is not a legal move unless you have upgrades (e.g., Carrier II) or special abilities that provide additional capacity.
+                    </p>
+                    <div className={styles.confirmationModalButtons}>
+                      <button
+                        className={styles.cancelButton}
+                        onClick={() => setShowAttackerCapacityModal(false)}
+                      >
+                        Go Back and Fix
+                      </button>
+                      <button
+                        className={styles.confirmButton}
+                        onClick={() => {
+                          setShowAttackerCapacityModal(false);
+                          addLog(`Attacker units confirmed (capacity override)`);
+                          setUnitSelectionStep('defender');
+                        }}
+                      >
+                        Continue Anyway
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         );
       }
@@ -475,6 +684,10 @@ export function CombatModalV2({
             <p>
               <strong>{combatState.defender?.playerName}</strong>, select all units you have in the system:
             </p>
+
+            <div className={styles.infoNote}>
+              <p><strong>Note:</strong> Select units in the space area. Ground forces committed to planets will be selected during the invasion phase.</p>
+            </div>
 
             <div className={styles.unitSelection}>
               <h4>Space Units</h4>
@@ -520,11 +733,154 @@ export function CombatModalV2({
               </div>
             </div>
 
+            {/* Capacity Check for Defender */}
+            {hasSpecialCapacityRules(combatState.defender?.factionId || '') ? (
+              <div className={styles.capacityOk}>
+                <p>
+                  <strong>Capacity Check:</strong> No capacity required
+                </p>
+                <p style={{ marginTop: '8px', fontSize: '0.95em' }}>
+                  <strong>Naalu Faction Ability:</strong> Your fighters and ground forces can move freely
+                  without requiring capacity.
+                </p>
+              </div>
+            ) : (
+              <div className={
+                calculateNeededCapacity({
+                  war_sun: defenderUnits.warSun,
+                  dreadnought: defenderUnits.dreadnought,
+                  cruiser: defenderUnits.cruiser,
+                  carrier: defenderUnits.carrier,
+                  destroyer: defenderUnits.destroyer,
+                  fighter: defenderUnits.fighter,
+                  flagship: defenderUnits.flagship,
+                  infantry: defenderUnits.infantry,
+                  mech: defenderUnits.mech,
+                  pds: defenderUnits.pds,
+                }) > calculateTotalCapacity({
+                  war_sun: defenderUnits.warSun,
+                  dreadnought: defenderUnits.dreadnought,
+                  cruiser: defenderUnits.cruiser,
+                  carrier: defenderUnits.carrier,
+                  destroyer: defenderUnits.destroyer,
+                  fighter: defenderUnits.fighter,
+                  flagship: defenderUnits.flagship,
+                  infantry: defenderUnits.infantry,
+                  mech: defenderUnits.mech,
+                  pds: defenderUnits.pds,
+                }, combatState.defender?.factionId || '')
+                  ? styles.capacityError
+                  : styles.capacityOk
+              }>
+                <p>
+                  <strong>Capacity Check:</strong>{' '}
+                  {calculateTotalCapacity({
+                    war_sun: defenderUnits.warSun,
+                    dreadnought: defenderUnits.dreadnought,
+                    cruiser: defenderUnits.cruiser,
+                    carrier: defenderUnits.carrier,
+                    destroyer: defenderUnits.destroyer,
+                    fighter: defenderUnits.fighter,
+                    flagship: defenderUnits.flagship,
+                    infantry: defenderUnits.infantry,
+                    mech: defenderUnits.mech,
+                    pds: defenderUnits.pds,
+                  }, combatState.defender?.factionId || '')} available,{' '}
+                  {calculateNeededCapacity({
+                    war_sun: defenderUnits.warSun,
+                    dreadnought: defenderUnits.dreadnought,
+                    cruiser: defenderUnits.cruiser,
+                    carrier: defenderUnits.carrier,
+                    destroyer: defenderUnits.destroyer,
+                    fighter: defenderUnits.fighter,
+                    flagship: defenderUnits.flagship,
+                    infantry: defenderUnits.infantry,
+                    mech: defenderUnits.mech,
+                    pds: defenderUnits.pds,
+                  })} needed
+                </p>
+                {calculateNeededCapacity({
+                  war_sun: defenderUnits.warSun,
+                  dreadnought: defenderUnits.dreadnought,
+                  cruiser: defenderUnits.cruiser,
+                  carrier: defenderUnits.carrier,
+                  destroyer: defenderUnits.destroyer,
+                  fighter: defenderUnits.fighter,
+                  flagship: defenderUnits.flagship,
+                  infantry: defenderUnits.infantry,
+                  mech: defenderUnits.mech,
+                  pds: defenderUnits.pds,
+                }) > calculateTotalCapacity({
+                  war_sun: defenderUnits.warSun,
+                  dreadnought: defenderUnits.dreadnought,
+                  cruiser: defenderUnits.cruiser,
+                  carrier: defenderUnits.carrier,
+                  destroyer: defenderUnits.destroyer,
+                  fighter: defenderUnits.fighter,
+                  flagship: defenderUnits.flagship,
+                  infantry: defenderUnits.infantry,
+                  mech: defenderUnits.mech,
+                  pds: defenderUnits.pds,
+                }, combatState.defender?.factionId || '') && (
+                  <p className={styles.errorText}>
+                    ⚠️ WARNING: Capacity exceeded by{' '}
+                    {calculateNeededCapacity({
+                      war_sun: defenderUnits.warSun,
+                      dreadnought: defenderUnits.dreadnought,
+                      cruiser: defenderUnits.cruiser,
+                      carrier: defenderUnits.carrier,
+                      destroyer: defenderUnits.destroyer,
+                      fighter: defenderUnits.fighter,
+                      flagship: defenderUnits.flagship,
+                      infantry: defenderUnits.infantry,
+                      mech: defenderUnits.mech,
+                      pds: defenderUnits.pds,
+                    }) - calculateTotalCapacity({
+                      war_sun: defenderUnits.warSun,
+                      dreadnought: defenderUnits.dreadnought,
+                      cruiser: defenderUnits.cruiser,
+                      carrier: defenderUnits.carrier,
+                      destroyer: defenderUnits.destroyer,
+                      fighter: defenderUnits.fighter,
+                      flagship: defenderUnits.flagship,
+                      infantry: defenderUnits.infantry,
+                      mech: defenderUnits.mech,
+                      pds: defenderUnits.pds,
+                    }, combatState.defender?.factionId || '')}!
+                    Defender's units in space must fit within ship capacity.
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className={styles.buttonGroup}>
               <Button
                 onClick={() => {
-                  addLog(`Defender units confirmed`);
-                  setUnitSelectionStep('third-party-prompt');
+                  // Check if capacity is exceeded
+                  const defenderFactionId = combatState.defender?.factionId || '';
+                  const defenderConfigUnits = {
+                    war_sun: defenderUnits.warSun,
+                    dreadnought: defenderUnits.dreadnought,
+                    cruiser: defenderUnits.cruiser,
+                    carrier: defenderUnits.carrier,
+                    destroyer: defenderUnits.destroyer,
+                    fighter: defenderUnits.fighter,
+                    flagship: defenderUnits.flagship,
+                    infantry: defenderUnits.infantry,
+                    mech: defenderUnits.mech,
+                    pds: defenderUnits.pds,
+                  };
+                  const capacity = calculateTotalCapacity(defenderConfigUnits, defenderFactionId);
+                  const needed = calculateNeededCapacity(defenderConfigUnits);
+                  const hasSpecialRules = hasSpecialCapacityRules(defenderFactionId);
+                  const exceeded = needed > capacity;
+
+                  if (exceeded && !hasSpecialRules) {
+                    setShowDefenderCapacityModal(true);
+                  } else {
+                    addLog(`Defender units confirmed`);
+                    setUnitSelectionStep('third-party-prompt');
+                  }
                 }}
                 variant="primary"
               >
@@ -537,6 +893,66 @@ export function CombatModalV2({
                 Back to Attacker
               </Button>
             </div>
+
+            {/* Defender Capacity Warning Modal */}
+            {showDefenderCapacityModal && (() => {
+              const defenderFactionId = combatState.defender?.factionId || '';
+              const defenderConfigUnits = {
+                war_sun: defenderUnits.warSun,
+                dreadnought: defenderUnits.dreadnought,
+                cruiser: defenderUnits.cruiser,
+                carrier: defenderUnits.carrier,
+                destroyer: defenderUnits.destroyer,
+                fighter: defenderUnits.fighter,
+                flagship: defenderUnits.flagship,
+                infantry: defenderUnits.infantry,
+                mech: defenderUnits.mech,
+                pds: defenderUnits.pds,
+              };
+              const capacity = calculateTotalCapacity(defenderConfigUnits, defenderFactionId);
+              const needed = calculateNeededCapacity(defenderConfigUnits);
+              const exceeded = needed - capacity;
+
+              return (
+                <div className={styles.confirmationModal}>
+                  <div className={styles.confirmationModalContent}>
+                    <h3>
+                      <span className={styles.warningIcon}>⚠️</span>
+                      Capacity Exceeded
+                    </h3>
+                    <p>
+                      <strong>Warning:</strong> Your defender's capacity is exceeded by <strong>{exceeded}</strong> unit{exceeded !== 1 ? 's' : ''}.
+                    </p>
+                    <p>
+                      Available capacity: <strong>{capacity}</strong>
+                      <br />
+                      Required capacity: <strong>{needed}</strong>
+                    </p>
+                    <p>
+                      This is not a legal move unless you have upgrades (e.g., Carrier II) or special abilities that provide additional capacity.
+                    </p>
+                    <div className={styles.confirmationModalButtons}>
+                      <button
+                        className={styles.cancelButton}
+                        onClick={() => setShowDefenderCapacityModal(false)}
+                      >
+                        Go Back and Fix
+                      </button>
+                      <button
+                        className={styles.confirmButton}
+                        onClick={() => {
+                          setShowDefenderCapacityModal(false);
+                          addLog(`Defender units confirmed (capacity override)`);
+                          setUnitSelectionStep('third-party-prompt');
+                        }}
+                      >
+                        Continue Anyway
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         );
       }
@@ -787,8 +1203,11 @@ export function CombatModalV2({
               )}
 
               {attackerHasSpecialRules && (
-                <div className={styles.infoNote}>
+                <div className={styles.capacityOk}>
                   <p>
+                    <strong>Capacity:</strong> No capacity required
+                  </p>
+                  <p style={{ marginTop: '8px', fontSize: '0.95em' }}>
                     <strong>Naalu Faction Ability:</strong> Your fighters and ground forces can move freely
                     without requiring capacity.
                   </p>
@@ -811,6 +1230,43 @@ export function CombatModalV2({
                 {defenderUnits.mech > 0 && <li>{defenderUnits.mech} Mech(s)</li>}
                 {defenderUnits.pds > 0 && <li>{defenderUnits.pds} PDS</li>}
               </ul>
+
+              {/* Capacity Check for Defender */}
+              {(() => {
+                const defenderFactionId = combatState.defender?.factionId || '';
+                const defenderConfigUnits = convertToConfigFormat(defenderUnits);
+                const defenderCapacity = calculateTotalCapacity(defenderConfigUnits, defenderFactionId);
+                const defenderNeeded = calculateNeededCapacity(defenderConfigUnits);
+                const defenderHasSpecialRules = hasSpecialCapacityRules(defenderFactionId);
+                const defenderCapacityExceeded = defenderNeeded > defenderCapacity;
+
+                if (defenderHasSpecialRules) {
+                  return (
+                    <div className={styles.capacityOk}>
+                      <p>
+                        <strong>Capacity:</strong> No capacity required
+                      </p>
+                      <p style={{ marginTop: '8px', fontSize: '0.95em' }}>
+                        <strong>Naalu Faction Ability:</strong> Your fighters and ground forces can move freely
+                        without requiring capacity.
+                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className={defenderCapacityExceeded ? styles.capacityError : styles.capacityOk}>
+                    <p>
+                      <strong>Capacity:</strong> {defenderCapacity} available, {defenderNeeded} needed
+                    </p>
+                    {defenderCapacityExceeded && (
+                      <p className={styles.errorText}>
+                        ⚠️ WARNING: Capacity exceeded by {defenderNeeded - defenderCapacity}!
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               {combatState.thirdPartyParticipants.length > 0 && (
                 <>
@@ -838,17 +1294,48 @@ export function CombatModalV2({
               you are responsible for accounting for that additional capacity.</p>
             </div>
 
+            {/* Fleet Pool Allocation Check */}
+            <div className={styles.fleetPoolCheck}>
+              <h4>Fleet Pool Allocation</h4>
+              {(() => {
+                // Calculate ships that count toward fleet pool (excludes fighters, infantry, mechs, PDS, space docks)
+                const attackerShips =
+                  attackerUnits.warSun +
+                  attackerUnits.dreadnought +
+                  attackerUnits.cruiser +
+                  attackerUnits.carrier +
+                  attackerUnits.destroyer +
+                  attackerUnits.flagship;
+
+                const defenderShips =
+                  defenderUnits.warSun +
+                  defenderUnits.dreadnought +
+                  defenderUnits.cruiser +
+                  defenderUnits.carrier +
+                  defenderUnits.destroyer +
+                  defenderUnits.flagship;
+
+                return (
+                  <>
+                    <p>
+                      <strong>Attacker:</strong> {attackerShips} ship{attackerShips !== 1 ? 's' : ''}
+                      {' '}→ Requires {attackerShips} command token{attackerShips !== 1 ? 's' : ''} in fleet pool
+                    </p>
+                    <p>
+                      <strong>Defender:</strong> {defenderShips} ship{defenderShips !== 1 ? 's' : ''}
+                      {' '}→ Requires {defenderShips} command token{defenderShips !== 1 ? 's' : ''} in fleet pool
+                    </p>
+                    <p className={styles.fleetPoolNote}>
+                      <em>Note: Each non-fighter, non-ground-force ship requires 1 command token allocated to your fleet pool.</em>
+                    </p>
+                  </>
+                );
+              })()}
+            </div>
+
             <div className={styles.buttonGroup}>
               <Button
                 onClick={() => {
-                  if (attackerCapacityExceeded && !attackerHasSpecialRules) {
-                    const confirmed = window.confirm(
-                      `WARNING: Attacker capacity is exceeded by ${attackerNeeded - attackerCapacity} units. ` +
-                      'This is not a legal move unless you have upgrades or abilities that provide additional capacity. ' +
-                      'Do you want to continue anyway?'
-                    );
-                    if (!confirmed) return;
-                  }
                   addLog('Unit inventory confirmed - All units recorded');
                   goToStep('P0.6');
                 }}
@@ -964,8 +1451,6 @@ export function CombatModalV2({
 
   const renderPhase1 = () => {
     const step = combatState.currentStep;
-    const [defenderHits, setDefenderHits] = useState(0);
-    const [attackerHits, setAttackerHits] = useState(0);
 
     // P1.1: Space Cannon Offense Cancellation Window
     if (step === 'P1.1') {

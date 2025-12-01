@@ -43,6 +43,22 @@
   );
 }
 
+/* Remove chamfered edges when noHeader variant is used (in ActionPhase) */
+.noHeader {
+  clip-path: none;
+  border: 3px solid white;
+  background: var(--color-bg-tertiary);
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noHeader::before,
+.noHeader::after {
+  display: none;
+}
+
 /* Active state styling */
 .container.active::before {
   background: var(--color-accent-primary);
@@ -223,16 +239,21 @@
    LAYOUT VARIANTS
    ============================================================================ */
 
-.noHeader {
-  padding: var(--space-4);
-}
-
 .noHeader .header {
   display: none;
 }
 
 .noHeader .times {
   padding: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-1);
+}
+
+.noHeader .timeRow {
+  align-items: center;
+  gap: var(--space-1);
 }
 
 /* ============================================================================
