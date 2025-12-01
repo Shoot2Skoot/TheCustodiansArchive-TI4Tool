@@ -6,19 +6,10 @@
   margin: 20px 0;
 }
 
-/* Header with back button */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.title {
-  margin: 0;
+.batchRoller h3 {
+  margin: 0 0 20px 0;
   font-size: 1.5em;
   color: #f39c12;
-  flex: 1;
 }
 
 /* Roll All Button */
@@ -130,8 +121,8 @@
 }
 
 .dieHit {
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  border-color: #27ae60;
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%); /* Darkened green */
+  border-color: #1e8449;
   color: white;
 }
 
@@ -174,11 +165,11 @@
   font-family: 'Courier New', monospace;
 }
 
-/* Reroll Button */
+/* Reroll Button - Secondary style with border */
 .rerollButton {
-  background-color: #3498db;
-  color: white;
-  border: none;
+  background-color: transparent;
+  color: #3498db;
+  border: 2px solid #3498db;
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 0.95em; /* Increased by 1 size (was 0.85em) */
@@ -189,7 +180,9 @@
 }
 
 .rerollButton:hover {
-  background-color: #2980b9;
+  background-color: rgba(52, 152, 219, 0.1);
+  border-color: #2980b9;
+  color: #2980b9;
   transform: translateY(-1px);
 }
 
@@ -221,6 +214,13 @@
   gap: 20px;
   padding-top: 30px;
   border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Button Group */
+.buttonGroup {
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
 .totalHits {

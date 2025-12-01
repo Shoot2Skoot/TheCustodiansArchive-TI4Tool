@@ -326,14 +326,7 @@ export function BatchDiceRoller({
 
   return (
     <div className={styles.batchRoller}>
-      <div className={styles.header}>
-        {onBack && (
-          <Button onClick={onBack} variant="secondary" size="small">
-            ← Back
-          </Button>
-        )}
-        <h3 className={styles.title}>{title}</h3>
-      </div>
+      <h3>{title}</h3>
 
       {/* Manual Mode Toggle */}
       {!hasRolled && !isRolling && (
@@ -440,9 +433,16 @@ export function BatchDiceRoller({
         )}
 
         {hasRolled && !isRolling && (
-          <Button onClick={handleContinue} variant="primary" size="large">
-            Continue →
-          </Button>
+          <div className={styles.buttonGroup}>
+            {onBack && (
+              <Button onClick={onBack} variant="secondary" size="large">
+                ← Back
+              </Button>
+            )}
+            <Button onClick={handleContinue} variant="primary" size="large">
+              Continue →
+            </Button>
+          </div>
         )}
       </div>
     </div>
