@@ -184,6 +184,33 @@
   text-align: center;
 }
 
+/* Info note */
+.infoNote {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left: 3px solid #3498db;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Hit assignment */
+.hitAssignment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.hitAssignment h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  color: #f39c12;
+}
+
 /* Input groups */
 .inputGroup {
   margin: 15px 0;

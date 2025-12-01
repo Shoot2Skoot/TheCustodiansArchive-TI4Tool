@@ -439,6 +439,8 @@ export function CombatModalV2({
 
   const renderPhase1 = () => {
     const step = combatState.currentStep;
+    const [defenderHits, setDefenderHits] = useState(0);
+    const [attackerHits, setAttackerHits] = useState(0);
 
     // P1.1: Space Cannon Offense Cancellation Window
     if (step === 'P1.1') {
@@ -463,6 +465,10 @@ export function CombatModalV2({
                 addLog('DISABLE played - Space Cannon phase skipped');
                 setCombatState(prev => ({
                   ...prev,
+                  defender: {
+                    ...prev.defender!,
+                    actionCardsPlayed: [...prev.defender!.actionCardsPlayed, 'disable'],
+                  },
                   spaceCannonOffenseComplete: true,
                 }));
                 goToPhase(Phase.SPACE_COMBAT, 'P2.1');
@@ -471,33 +477,243 @@ export function CombatModalV2({
             >
               Play DISABLE (Skip Space Cannon)
             </Button>
+
+            <Button
+              onClick={() => {
+                addLog('SOLAR FLARE Ω played - Ignore Space Cannon');
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: {
+                    ...prev.attacker!,
+                    actionCardsPlayed: [...prev.attacker!.actionCardsPlayed, 'solar_flare'],
+                  },
+                  spaceCannonOffenseComplete: true,
+                }));
+                goToPhase(Phase.SPACE_COMBAT, 'P2.1');
+              }}
+              variant="secondary"
+            >
+              Play SOLAR FLARE Ω (Ignore SC)
+            </Button>
           </div>
         </div>
       );
     }
 
-    // Placeholder for P1.2-P1.4
-    return (
-      <div className={styles.stepContent}>
-        <h3>Space Cannon Offense - {step}</h3>
-        <p className={styles.placeholder}>Implementation in progress...</p>
+    // P1.2: Space Cannon Rolls (Defender fires first)
+    if (step === 'P1.2') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P1.2 — Space Cannon Rolls</h3>
+          <p>Defender fires Space Cannon units at Attacker's ships.</p>
+          <p className={styles.infoNote}>
+            Third-party players with Space Cannon in adjacent systems may also fire (in player order).
+          </p>
 
-        <Button
-          onClick={() => {
-            addLog(`${step} completed`);
-            if (step === 'P1.4' || step === 'P1.3' || step === 'P1.2') {
-              goToPhase(Phase.SPACE_COMBAT, 'P2.1');
-            } else {
-              const nextStep = `P1.${parseInt(step.split('.')[1]) + 1}` as CombatStep;
-              goToStep(nextStep);
-            }
-          }}
-          variant="primary"
-        >
-          Continue
-        </Button>
-      </div>
-    );
+          <div className={styles.inputGroup}>
+            <label>Defender Space Cannon Hits:</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setDefenderHits(hits);
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: {
+                    ...prev.attacker!,
+                    queuedHits: hits,
+                  },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Attacker Space Cannon Hits (if any units have SC):</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setAttackerHits(hits);
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: {
+                    ...prev.defender!,
+                    queuedHits: hits,
+                  },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog(`Space Cannon Rolls: Defender ${defenderHits} hits, Attacker ${attackerHits} hits`);
+                goToStep('P1.3');
+              }}
+              variant="primary"
+            >
+              Continue to Hit Assignment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('SCRAMBLE FREQUENCY played - Reroll opponent SC dice');
+                // In a real implementation, this would trigger a reroll
+              }}
+              variant="secondary"
+            >
+              Play SCRAMBLE FREQUENCY
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Graviton Laser System - Force hits to non-fighter ships');
+              }}
+              variant="secondary"
+            >
+              Use Graviton Laser System
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P1.3: Assign Hits
+    if (step === 'P1.3') {
+      const attackerHits = combatState.attacker.queuedHits;
+      const defenderHits = combatState.defender.queuedHits;
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P1.3 — Assign Hits</h3>
+          <p>Assign Space Cannon hits to ships. Ships with Sustain Damage may absorb hits.</p>
+
+          <div className={styles.hitAssignment}>
+            <div>
+              <h4>Attacker took {attackerHits} hits</h4>
+              <div className={styles.inputGroup}>
+                <label>Ships Destroyed:</label>
+                <input type="number" min="0" max={attackerHits} defaultValue="0" />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Sustain Damage Used:</label>
+                <input type="number" min="0" max={attackerHits} defaultValue="0" />
+              </div>
+            </div>
+
+            <div>
+              <h4>Defender took {defenderHits} hits</h4>
+              <div className={styles.inputGroup}>
+                <label>Ships Destroyed:</label>
+                <input type="number" min="0" max={defenderHits} defaultValue="0" />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Sustain Damage Used:</label>
+                <input type="number" min="0" max={defenderHits} defaultValue="0" />
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Hits assigned, proceeding to combat continuation check');
+                // Reset queued hits
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: { ...prev.attacker!, queuedHits: 0 },
+                  defender: { ...prev.defender!, queuedHits: 0 },
+                }));
+                goToStep('P1.4');
+              }}
+              variant="primary"
+            >
+              Confirm Hit Assignment
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P1.4: Combat Continuation Check
+    if (step === 'P1.4') {
+      // In real implementation, would check actual unit counts
+      const attackerHasShips = true; // Placeholder
+      const defenderHasShips = true; // Placeholder
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P1.4 — Combat Continuation Check</h3>
+          <p>Evaluate whether combat continues based on remaining ships.</p>
+
+          <div className={styles.combatStatus}>
+            <p>Attacker has ships: {attackerHasShips ? 'Yes' : 'No'}</p>
+            <p>Defender has ships: {defenderHasShips ? 'Yes' : 'No'}</p>
+          </div>
+
+          {!attackerHasShips && !defenderHasShips ? (
+            <div>
+              <p>Both sides destroyed - Combat ends in a draw</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({ ...prev, isComplete: true, winner: 'draw' }));
+                }}
+                variant="primary"
+              >
+                End Combat (Draw)
+              </Button>
+            </div>
+          ) : !attackerHasShips ? (
+            <div>
+              <p>Attacker has no ships - Defender wins</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({ ...prev, isComplete: true, winner: 'defender' }));
+                }}
+                variant="primary"
+              >
+                End Combat (Defender Wins)
+              </Button>
+            </div>
+          ) : !defenderHasShips ? (
+            <div>
+              <p>Defender has no ships - Skip to Invasion</p>
+              <Button
+                onClick={() => {
+                  addLog('Defender eliminated, proceeding to Invasion');
+                  goToPhase(Phase.INVASION, 'P3.1');
+                }}
+                variant="primary"
+              >
+                Proceed to Invasion
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <p>Both sides have ships - Proceed to Space Combat</p>
+              <Button
+                onClick={() => {
+                  addLog('Proceeding to Space Combat');
+                  setCombatState(prev => ({ ...prev, spaceCannonOffenseComplete: true }));
+                  goToPhase(Phase.SPACE_COMBAT, 'P2.1');
+                }}
+                variant="primary"
+              >
+                Proceed to Space Combat
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
   };
 
   // ========================================================================
