@@ -428,3 +428,31 @@
   padding: 5px 0;
   font-size: 1rem;
 }
+
+/* Capacity Check */
+.capacityOk {
+  background-color: rgba(46, 204, 113, 0.1);
+  border: 1px solid #2ecc71;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.capacityError {
+  background-color: rgba(231, 76, 60, 0.2);
+  border: 2px solid #e74c3c;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.capacityOk p,
+.capacityError p {
+  margin: 5px 0;
+}
+
+.errorText {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-top: 8px !important;
+}

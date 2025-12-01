@@ -723,6 +723,36 @@ export function CombatModalV2({
 
       // Done - show summary and continue
       if (unitSelectionStep === 'done') {
+        // Calculate capacity for attacker
+        const calculateCapacity = (units: UnitCounts, factionId: string) => {
+          let capacity = 0;
+
+          // Carriers: 4 capacity (6 with Carrier II upgrade - future enhancement)
+          capacity += units.carrier * 4;
+
+          // Dreadnoughts: 1 capacity each
+          capacity += units.dreadnought * 1;
+
+          // War Suns: 6 capacity each
+          capacity += units.warSun * 6;
+
+          // Flagship: varies by faction (future enhancement - assuming 0 for now)
+          // TODO: Add faction-specific flagship capacity
+
+          return capacity;
+        };
+
+        const calculateNeededCapacity = (units: UnitCounts) => {
+          return units.fighter + units.infantry + units.mech;
+        };
+
+        const attackerCapacity = calculateCapacity(attackerUnits, combatState.attacker?.factionId || '');
+        const attackerNeeded = calculateNeededCapacity(attackerUnits);
+        const attackerCapacityExceeded = attackerNeeded > attackerCapacity;
+
+        const attackerFactionId = combatState.attacker?.factionId || '';
+        const attackerIsNaalu = attackerFactionId === 'naalu';
+
         return (
           <div className={styles.stepContent}>
             <h3>P0.5 — Unit Inventory Summary</h3>
@@ -743,6 +773,30 @@ export function CombatModalV2({
                 {attackerUnits.infantry > 0 && <li>{attackerUnits.infantry} Infantry</li>}
                 {attackerUnits.mech > 0 && <li>{attackerUnits.mech} Mech(s)</li>}
               </ul>
+
+              {/* Capacity Check for Attacker */}
+              {!attackerIsNaalu && (
+                <div className={attackerCapacityExceeded ? styles.capacityError : styles.capacityOk}>
+                  <p>
+                    <strong>Capacity:</strong> {attackerCapacity} available, {attackerNeeded} needed
+                  </p>
+                  {attackerCapacityExceeded && (
+                    <p className={styles.errorText}>
+                      ⚠️ WARNING: Capacity exceeded by {attackerNeeded - attackerCapacity}!
+                      You must have enough capacity to transport all fighters and ground forces.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {attackerIsNaalu && (
+                <div className={styles.infoNote}>
+                  <p>
+                    <strong>Naalu Faction Ability:</strong> Your fighters and ground forces can move freely
+                    without requiring capacity.
+                  </p>
+                </div>
+              )}
 
               <h4>
                 Defender: {getFactionById(combatState.defender?.factionId || '')?.name || combatState.defender?.playerName}
@@ -781,9 +835,23 @@ export function CombatModalV2({
               )}
             </div>
 
+            <div className={styles.infoNote}>
+              <p><strong>Note:</strong> Capacity calculation assumes base unit stats.
+              If you have Carrier II upgrades or faction-specific flagship abilities that modify capacity,
+              you are responsible for ensuring compliance.</p>
+            </div>
+
             <div className={styles.buttonGroup}>
               <Button
                 onClick={() => {
+                  if (attackerCapacityExceeded && !attackerIsNaalu) {
+                    const confirmed = window.confirm(
+                      `WARNING: Attacker capacity is exceeded by ${attackerNeeded - attackerCapacity} units. ` +
+                      'This is not a legal move unless you have upgrades or abilities that provide additional capacity. ' +
+                      'Do you want to continue anyway?'
+                    );
+                    if (!confirmed) return;
+                  }
                   addLog('Unit inventory confirmed - All units recorded');
                   goToStep('P0.6');
                 }}
