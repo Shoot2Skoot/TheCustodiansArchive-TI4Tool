@@ -172,9 +172,12 @@ export function createCombatUnit(
 
 /**
  * Roll a single die (1-10)
+ * Returns a random integer from 1 to 10 inclusive
  */
 export function rollDie(): number {
-  return Math.floor(Math.random() * 10) + 1;
+  // Ensure we never return values outside 1-10 range
+  const result = Math.floor(Math.random() * 10) + 1;
+  return Math.min(Math.max(result, 1), 10);
 }
 
 /**

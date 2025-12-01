@@ -164,6 +164,8 @@ export function BatchDiceRoller({
   const [hasRolled, setHasRolled] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [rollingValues, setRollingValues] = useState<Map<string, number[]>>(new Map());
+  const [manualMode, setManualMode] = useState(false);
+  const [manualValues, setManualValues] = useState<Map<string, (number | null)[]>>(new Map());
 
   // Animation settings
   const ANIMATION_DURATION_MS = 1500; // Total duration of animation
@@ -173,34 +175,34 @@ export function BatchDiceRoller({
     setIsRolling(true);
     setHasRolled(false);
 
-    // Pre-calculate final results
-    const finalRolls = new Map<string, DiceRoll[]>();
-    units.forEach(unit => {
-      const targetValue = targetValueGetter(unit);
-      const numRolls = rollsGetter(unit);
-      const unitRolls: DiceRoll[] = [];
-
-      for (let i = 0; i < numRolls; i++) {
-        unitRolls.push(createDiceRoll(unit.id, i + 1, targetValue));
-      }
-
-      finalRolls.set(unit.id, unitRolls);
-    });
-
     // Start animation - cycle through random numbers
     const startTime = Date.now();
     const animationInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
 
       if (elapsed >= ANIMATION_DURATION_MS) {
-        // Animation complete - show final results
+        // Animation complete - NOW calculate final results (roll at the end)
         clearInterval(animationInterval);
+
+        const finalRolls = new Map<string, DiceRoll[]>();
+        units.forEach(unit => {
+          const targetValue = targetValueGetter(unit);
+          const numRolls = rollsGetter(unit);
+          const unitRolls: DiceRoll[] = [];
+
+          for (let i = 0; i < numRolls; i++) {
+            unitRolls.push(createDiceRoll(unit.id, i + 1, targetValue));
+          }
+
+          finalRolls.set(unit.id, unitRolls);
+        });
+
         setIsRolling(false);
         setRolls(finalRolls);
         setHasRolled(true);
         setRollingValues(new Map());
       } else {
-        // Update with random numbers
+        // Update with random numbers (just for animation - not the final results)
         const newRollingValues = new Map<string, number[]>();
         units.forEach(unit => {
           const numRolls = rollsGetter(unit);
@@ -210,6 +212,63 @@ export function BatchDiceRoller({
         setRollingValues(newRollingValues);
       }
     }, ANIMATION_INTERVAL_MS);
+  };
+
+  const handleManualEntry = () => {
+    // Initialize manual values for each unit
+    const initialValues = new Map<string, (number | null)[]>();
+    units.forEach(unit => {
+      const numRolls = rollsGetter(unit);
+      initialValues.set(unit.id, Array(numRolls).fill(null));
+    });
+    setManualValues(initialValues);
+  };
+
+  const handleManualValueChange = (unitId: string, dieIndex: number, value: string) => {
+    const numValue = parseInt(value);
+    if (value === '' || (numValue >= 1 && numValue <= 10)) {
+      const updated = new Map(manualValues);
+      const unitValues = [...(updated.get(unitId) || [])];
+      unitValues[dieIndex] = value === '' ? null : numValue;
+      updated.set(unitId, unitValues);
+      setManualValues(updated);
+    }
+  };
+
+  const handleManualSubmit = () => {
+    // Convert manual values to DiceRoll objects
+    const finalRolls = new Map<string, DiceRoll[]>();
+
+    units.forEach(unit => {
+      const targetValue = targetValueGetter(unit);
+      const values = manualValues.get(unit.id) || [];
+      const unitRolls: DiceRoll[] = [];
+
+      values.forEach((value, index) => {
+        if (value !== null) {
+          // Create a DiceRoll with the manual value
+          const roll = createDiceRoll(unit.id, index + 1, targetValue);
+          roll.result = value;
+          roll.isHit = value >= targetValue;
+          unitRolls.push(roll);
+        }
+      });
+
+      finalRolls.set(unit.id, unitRolls);
+    });
+
+    setRolls(finalRolls);
+    setHasRolled(true);
+  };
+
+  const allManualValuesEntered = () => {
+    for (const unit of units) {
+      const values = manualValues.get(unit.id) || [];
+      if (values.some(v => v === null)) {
+        return false;
+      }
+    }
+    return true;
   };
 
   const handleUnitRollsChange = (unitId: string, newRolls: DiceRoll[]) => {
@@ -237,27 +296,74 @@ export function BatchDiceRoller({
     <div className={styles.batchRoller}>
       <h3>{title}</h3>
 
-      {/* Always show units and dice */}
-      <div className={styles.resultsContainer}>
-        {unitInfo.map(({ unit, targetValue, numDice }) => {
-          const unitRolls = rolls.get(unit.id) || null;
-          const unitRollingValues = rollingValues.get(unit.id) || [];
-
-          return (
-            <UnitRoller
-              key={unit.id}
-              unit={unit}
-              targetValue={targetValue}
-              numDice={numDice}
-              rolls={unitRolls}
-              canReroll={canReroll}
-              onRollsChange={(newRolls) => handleUnitRollsChange(unit.id, newRolls)}
-              isRolling={isRolling}
-              rollingValues={unitRollingValues}
+      {/* Manual Mode Toggle */}
+      {!hasRolled && !isRolling && (
+        <div className={styles.modeToggle}>
+          <label className={styles.toggleLabel}>
+            <input
+              type="checkbox"
+              checked={manualMode}
+              onChange={(e) => {
+                setManualMode(e.target.checked);
+                if (e.target.checked) {
+                  handleManualEntry();
+                }
+              }}
             />
-          );
-        })}
-      </div>
+            <span>Manual Entry (enter physical dice results)</span>
+          </label>
+        </div>
+      )}
+
+      {/* Manual Entry Mode */}
+      {manualMode && !hasRolled ? (
+        <div className={styles.manualEntryContainer}>
+          {unitInfo.map(({ unit, targetValue, numDice }) => (
+            <div key={unit.id} className={styles.manualUnitEntry}>
+              <div className={styles.unitHeader}>
+                <span className={styles.unitName}>{unit.displayName}</span>
+                <span className={styles.targetInfo}>Needs {targetValue}+ to hit</span>
+              </div>
+              <div className={styles.manualDiceInputs}>
+                {Array.from({ length: numDice }).map((_, index) => (
+                  <input
+                    key={`${unit.id}-input-${index}`}
+                    type="number"
+                    min="1"
+                    max="10"
+                    placeholder="1-10"
+                    className={styles.dieInput}
+                    value={manualValues.get(unit.id)?.[index] ?? ''}
+                    onChange={(e) => handleManualValueChange(unit.id, index, e.target.value)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Automatic Mode - Show animated dice */
+        <div className={styles.resultsContainer}>
+          {unitInfo.map(({ unit, targetValue, numDice }) => {
+            const unitRolls = rolls.get(unit.id) || null;
+            const unitRollingValues = rollingValues.get(unit.id) || [];
+
+            return (
+              <UnitRoller
+                key={unit.id}
+                unit={unit}
+                targetValue={targetValue}
+                numDice={numDice}
+                rolls={unitRolls}
+                canReroll={canReroll}
+                onRollsChange={(newRolls) => handleUnitRollsChange(unit.id, newRolls)}
+                isRolling={isRolling}
+                rollingValues={unitRollingValues}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {/* Show roll button or continue button */}
       <div className={styles.summary}>
@@ -267,9 +373,22 @@ export function BatchDiceRoller({
           </div>
         )}
 
-        {!hasRolled && !isRolling && (
+        {/* Automatic mode buttons */}
+        {!manualMode && !hasRolled && !isRolling && (
           <Button onClick={handleRollAll} variant="primary" size="large">
             🎲 Roll All Dice
+          </Button>
+        )}
+
+        {/* Manual mode button */}
+        {manualMode && !hasRolled && (
+          <Button
+            onClick={handleManualSubmit}
+            variant="primary"
+            size="large"
+            disabled={!allManualValuesEntered()}
+          >
+            Submit Dice Results
           </Button>
         )}
 
