@@ -75,9 +75,10 @@ interface UnitRollerProps {
   numDice: number; // How many dice this unit rolls
   rolls: DiceRoll[] | null; // null means not rolled yet
   canReroll: boolean;
-  onRollsChange: (rolls: DiceRoll[]) => void;
+  onReroll: (unitId: string, dieIndex: number) => void;
   isRolling?: boolean;
   rollingValues?: number[];
+  rerollingDieIndex?: number | null; // Which die is currently rerolling
 }
 
 function UnitRoller({
@@ -86,26 +87,13 @@ function UnitRoller({
   numDice,
   rolls,
   canReroll,
-  onRollsChange,
+  onReroll,
   isRolling = false,
-  rollingValues = []
+  rollingValues = [],
+  rerollingDieIndex = null
 }: UnitRollerProps) {
   const hits = rolls ? rolls.filter(r => r.isHit).length : 0;
   const hasRolled = rolls !== null;
-
-  const handleReroll = (rollIndex: number) => {
-    if (!rolls) return;
-    const newRolls = [...rolls];
-    const oldRoll = newRolls[rollIndex];
-    newRolls[rollIndex] = createDiceRoll(
-      unit.id,
-      oldRoll.rollNumber,
-      targetValue,
-      true,
-      'manual_reroll'
-    );
-    onRollsChange(newRolls);
-  };
 
   return (
     <div className={styles.unitRoller}>
@@ -120,15 +108,16 @@ function UnitRoller({
       <div className={styles.diceRow}>
         {Array.from({ length: numDice }).map((_, index) => {
           const roll = rolls ? rolls[index] : null;
-          const rollingValue = isRolling ? rollingValues[index] : undefined;
+          const isDieRolling = isRolling || rerollingDieIndex === index;
+          const rollingValue = isDieRolling ? rollingValues[index] : undefined;
 
           return (
             <Die
               key={`${unit.id}-die-${index}`}
               roll={roll}
-              canReroll={canReroll && hasRolled}
-              onReroll={() => handleReroll(index)}
-              isRolling={isRolling}
+              canReroll={canReroll && hasRolled && rerollingDieIndex === null}
+              onReroll={() => onReroll(unit.id, index)}
+              isRolling={isDieRolling}
               rollingValue={rollingValue}
             />
           );
@@ -149,6 +138,7 @@ interface BatchDiceRollerProps {
   rollsGetter: (unit: CombatUnit) => number; // Function to get # of dice per unit
   canReroll: boolean;
   onComplete: (results: Map<string, DiceRoll[]>) => void;
+  onBack?: () => void; // Optional back button callback
   title: string;
 }
 
@@ -158,6 +148,7 @@ export function BatchDiceRoller({
   rollsGetter,
   canReroll,
   onComplete,
+  onBack,
   title,
 }: BatchDiceRollerProps) {
   const [rolls, setRolls] = useState<Map<string, DiceRoll[]>>(new Map());
@@ -166,9 +157,11 @@ export function BatchDiceRoller({
   const [rollingValues, setRollingValues] = useState<Map<string, number[]>>(new Map());
   const [manualMode, setManualMode] = useState(false);
   const [manualValues, setManualValues] = useState<Map<string, (number | null)[]>>(new Map());
+  const [rerollingDie, setRerollingDie] = useState<{ unitId: string; dieIndex: number } | null>(null);
 
   // Animation settings
   const ANIMATION_DURATION_MS = 1500; // Total duration of animation
+  const REROLL_DURATION_MS = 1000; // Reroll animation is slightly faster
   const ANIMATION_INTERVAL_MS = 80; // How often to update rolling numbers
 
   const handleRollAll = () => {
@@ -209,6 +202,51 @@ export function BatchDiceRoller({
           const randomValues = Array.from({ length: numRolls }, () => rollDie());
           newRollingValues.set(unit.id, randomValues);
         });
+        setRollingValues(newRollingValues);
+      }
+    }, ANIMATION_INTERVAL_MS);
+  };
+
+  const handleReroll = (unitId: string, dieIndex: number) => {
+    setRerollingDie({ unitId, dieIndex });
+
+    const unit = units.find(u => u.id === unitId);
+    if (!unit) return;
+
+    const targetValue = targetValueGetter(unit);
+    const numRolls = rollsGetter(unit);
+
+    // Start animation for just this die
+    const startTime = Date.now();
+    const animationInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+
+      if (elapsed >= REROLL_DURATION_MS) {
+        // Animation complete - NOW calculate final result (roll at the end)
+        clearInterval(animationInterval);
+
+        // Update just this one die
+        const updatedRolls = new Map(rolls);
+        const unitRolls = [...(updatedRolls.get(unitId) || [])];
+        const oldRoll = unitRolls[dieIndex];
+
+        unitRolls[dieIndex] = createDiceRoll(
+          unit.id,
+          oldRoll.rollNumber,
+          targetValue,
+          true,
+          'manual_reroll'
+        );
+
+        updatedRolls.set(unitId, unitRolls);
+        setRolls(updatedRolls);
+        setRerollingDie(null);
+        setRollingValues(new Map());
+      } else {
+        // Update with random numbers for all dice of this unit (just for smooth animation)
+        const newRollingValues = new Map<string, number[]>();
+        const randomValues = Array.from({ length: numRolls }, () => rollDie());
+        newRollingValues.set(unitId, randomValues);
         setRollingValues(newRollingValues);
       }
     }, ANIMATION_INTERVAL_MS);
@@ -271,12 +309,6 @@ export function BatchDiceRoller({
     return true;
   };
 
-  const handleUnitRollsChange = (unitId: string, newRolls: DiceRoll[]) => {
-    const updated = new Map(rolls);
-    updated.set(unitId, newRolls);
-    setRolls(updated);
-  };
-
   const handleContinue = () => {
     onComplete(rolls);
   };
@@ -294,7 +326,14 @@ export function BatchDiceRoller({
 
   return (
     <div className={styles.batchRoller}>
-      <h3>{title}</h3>
+      <div className={styles.header}>
+        {onBack && (
+          <Button onClick={onBack} variant="secondary" size="small">
+            ← Back
+          </Button>
+        )}
+        <h3 className={styles.title}>{title}</h3>
+      </div>
 
       {/* Manual Mode Toggle */}
       {!hasRolled && !isRolling && (
@@ -347,6 +386,7 @@ export function BatchDiceRoller({
           {unitInfo.map(({ unit, targetValue, numDice }) => {
             const unitRolls = rolls.get(unit.id) || null;
             const unitRollingValues = rollingValues.get(unit.id) || [];
+            const rerollingDieIndex = rerollingDie?.unitId === unit.id ? rerollingDie.dieIndex : null;
 
             return (
               <UnitRoller
@@ -356,9 +396,10 @@ export function BatchDiceRoller({
                 numDice={numDice}
                 rolls={unitRolls}
                 canReroll={canReroll}
-                onRollsChange={(newRolls) => handleUnitRollsChange(unit.id, newRolls)}
+                onReroll={handleReroll}
                 isRolling={isRolling}
                 rollingValues={unitRollingValues}
+                rerollingDieIndex={rerollingDieIndex}
               />
             );
           })}
