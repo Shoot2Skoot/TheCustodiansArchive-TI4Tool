@@ -143,7 +143,6 @@ export function CombatModalV2({
   const [unitSelectionStep, setUnitSelectionStep] = useState<'attacker' | 'defender' | 'third-party-prompt' | 'third-party-select' | 'done'>('attacker');
   const [selectedThirdPartyId, setSelectedThirdPartyId] = useState<string | null>(null);
   const [thirdPartyUnits, setThirdPartyUnits] = useState<UnitCounts>(emptyUnitCounts());
-  const [thirdPartyTarget, setThirdPartyTarget] = useState<'attacker' | 'defender'>('attacker');
 
   // Save state to localStorage
   useEffect(() => {
@@ -530,25 +529,46 @@ export function CombatModalV2({
       // Third-party prompt
       if (unitSelectionStep === 'third-party-prompt') {
         const otherPlayers = players.filter(
-          p => p.id !== combatState.attacker?.playerId && p.id !== combatState.defender?.playerId
+          p =>
+            p.id !== combatState.attacker?.playerId &&
+            p.id !== combatState.defender?.playerId &&
+            !combatState.thirdPartyParticipants.some(tp => tp.playerId === p.id)
         );
+
+        const hasThirdParty = combatState.thirdPartyParticipants.length > 0;
 
         return (
           <div className={styles.stepContent}>
             <h3>P0.5 — Space Cannon Defense</h3>
-            <p>Do any other players have PDS or Space Cannon units that can fire into this system?</p>
+            <p>
+              {hasThirdParty
+                ? 'Are there any other players with PDS or Space Cannon units that can fire into this system?'
+                : 'Do any other players have PDS or Space Cannon units that can fire into this system?'
+              }
+            </p>
+
+            {hasThirdParty && (
+              <div className={styles.infoNote}>
+                <p><strong>Already added:</strong></p>
+                <ul>
+                  {combatState.thirdPartyParticipants.map(tp => (
+                    <li key={tp.playerId}>{tp.playerName}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {otherPlayers.length === 0 ? (
               <div>
-                <p className={styles.infoNote}>No other players in the game.</p>
+                <p className={styles.infoNote}>No additional players available.</p>
                 <Button
                   onClick={() => {
-                    addLog('No third-party space cannon - Units confirmed');
+                    addLog('No more third-party space cannon - Proceeding to summary');
                     setUnitSelectionStep('done');
                   }}
                   variant="primary"
                 >
-                  No - Continue
+                  Continue to Summary
                 </Button>
               </div>
             ) : (
@@ -561,16 +581,16 @@ export function CombatModalV2({
                   }}
                   variant="primary"
                 >
-                  Yes - Add Space Cannon Player
+                  Yes - Add Player
                 </Button>
                 <Button
                   onClick={() => {
-                    addLog('No third-party space cannon - Units confirmed');
+                    addLog('No more third-party space cannon - Proceeding to summary');
                     setUnitSelectionStep('done');
                   }}
                   variant="secondary"
                 >
-                  No - Continue
+                  No - Continue to Summary
                 </Button>
               </div>
             )}
@@ -594,6 +614,9 @@ export function CombatModalV2({
             {!selectedThirdPartyId ? (
               <div>
                 <p>Select which player has Space Cannon units:</p>
+                <div className={styles.infoNote}>
+                  <p>Note: Space Cannons can only fire at the active player ({combatState.attacker?.playerName})</p>
+                </div>
                 <div className={styles.playerSelection}>
                   {otherPlayers.map(player => (
                     <Button
@@ -629,21 +652,8 @@ export function CombatModalV2({
                     )}
                   </div>
 
-                  <h4>Target</h4>
-                  <p>Who will these Space Cannons fire at?</p>
-                  <div className={styles.buttonGroup}>
-                    <Button
-                      onClick={() => setThirdPartyTarget('attacker')}
-                      variant={thirdPartyTarget === 'attacker' ? 'primary' : 'secondary'}
-                    >
-                      Fire at Attacker ({combatState.attacker?.playerName})
-                    </Button>
-                    <Button
-                      onClick={() => setThirdPartyTarget('defender')}
-                      variant={thirdPartyTarget === 'defender' ? 'primary' : 'secondary'}
-                    >
-                      Fire at Defender ({combatState.defender?.playerName})
-                    </Button>
+                  <div className={styles.infoNote}>
+                    <p>These PDS will fire at <strong>{combatState.attacker?.playerName}</strong> (the active player)</p>
                   </div>
                 </div>
 
@@ -651,9 +661,9 @@ export function CombatModalV2({
                   <Button
                     onClick={() => {
                       const player = players.find(p => p.id === selectedThirdPartyId);
-                      if (player) {
+                      if (player && thirdPartyUnits.pds > 0) {
                         addLog(
-                          `${player.displayName} added with Space Cannon (firing at ${thirdPartyTarget})`
+                          `${player.displayName} added with ${thirdPartyUnits.pds} PDS (firing at ${combatState.attacker?.playerName})`
                         );
                         setCombatState(prev => ({
                           ...prev,
@@ -664,7 +674,7 @@ export function CombatModalV2({
                               playerName: player.displayName,
                               factionId: player.factionId,
                               spaceCannonUnits: [], // Will populate based on thirdPartyUnits
-                              firingAt: thirdPartyTarget,
+                              firingAt: 'attacker', // Always fires at the active player
                             },
                           ],
                         }));
@@ -674,6 +684,7 @@ export function CombatModalV2({
                       }
                     }}
                     variant="primary"
+                    disabled={thirdPartyUnits.pds === 0}
                   >
                     Add Player
                   </Button>
@@ -729,11 +740,11 @@ export function CombatModalV2({
 
               {combatState.thirdPartyParticipants.length > 0 && (
                 <>
-                  <h4>Third-Party Space Cannon:</h4>
+                  <h4>Third-Party Space Cannon (firing at {combatState.attacker?.playerName}):</h4>
                   <ul>
                     {combatState.thirdPartyParticipants.map(tp => (
                       <li key={tp.playerId}>
-                        {tp.playerName} (firing at {tp.firingAt === 'attacker' ? combatState.attacker?.playerName : combatState.defender?.playerName})
+                        {tp.playerName}
                       </li>
                     ))}
                   </ul>
