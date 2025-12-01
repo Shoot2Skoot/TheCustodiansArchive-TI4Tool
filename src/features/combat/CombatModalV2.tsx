@@ -8,6 +8,11 @@ import type {
 } from '@/types/combat';
 import { CombatPhase as Phase } from '@/types/combat';
 import { getFactionById } from '@/lib/factions';
+import {
+  calculateTotalCapacity,
+  calculateNeededCapacity,
+  hasSpecialCapacityRules,
+} from '@/data/combatConfig';
 import styles from './CombatModal.module.css';
 
 // ============================================================================
@@ -723,68 +728,27 @@ export function CombatModalV2({
 
       // Done - show summary and continue
       if (unitSelectionStep === 'done') {
-        // Calculate capacity
-        const calculateCapacity = (units: UnitCounts, factionId: string) => {
-          let capacity = 0;
-
-          // Carriers: 4 capacity base (6 with Carrier II upgrade - not tracked yet)
-          capacity += units.carrier * 4;
-
-          // Dreadnoughts: 1 capacity each
-          capacity += units.dreadnought * 1;
-
-          // War Suns: 6 capacity each
-          capacity += units.warSun * 6;
-
-          // Flagship: faction-specific capacity values
-          if (units.flagship > 0) {
-            const flagshipCapacity: Record<string, number> = {
-              // Base Game
-              'arborec': 5,
-              'letnev': 3,
-              'saar': 3,
-              'muaat': 3,
-              'hacan': 3,
-              'sol': 12,
-              'creuss': 3,
-              'l1z1x': 5,
-              'mentak': 3,
-              'naalu': 6,
-              'nekro': 3,
-              'sardakk': 3,
-              'jol-nar': 3,
-              'winnu': 3,
-              'xxcha': 3,
-              'yin': 3,
-              'yssaril': 3,
-              // Prophecy of Kings
-              'argent': 3,
-              'empyrean': 3,
-              'mahact': 3,
-              'naaz-rokha': 4,
-              'nomad': 3, // Base Memoria (6 for Memoria II - future enhancement)
-              'titans': 3,
-              "vuil'raith": 3,
-              // Codex III
-              'keleres': 6,
-            };
-
-            capacity += flagshipCapacity[factionId] || 0;
-          }
-
-          return capacity;
-        };
-
-        const calculateNeededCapacity = (units: UnitCounts) => {
-          return units.fighter + units.infantry + units.mech;
-        };
-
-        const attackerCapacity = calculateCapacity(attackerUnits, combatState.attacker?.factionId || '');
-        const attackerNeeded = calculateNeededCapacity(attackerUnits);
-        const attackerCapacityExceeded = attackerNeeded > attackerCapacity;
+        // Convert UnitCounts to the format expected by combatConfig helpers
+        const convertToConfigFormat = (units: UnitCounts) => ({
+          war_sun: units.warSun,
+          dreadnought: units.dreadnought,
+          cruiser: units.cruiser,
+          carrier: units.carrier,
+          destroyer: units.destroyer,
+          fighter: units.fighter,
+          flagship: units.flagship,
+          infantry: units.infantry,
+          mech: units.mech,
+          pds: units.pds,
+        });
 
         const attackerFactionId = combatState.attacker?.factionId || '';
-        const attackerIsNaalu = attackerFactionId === 'naalu';
+        const attackerConfigUnits = convertToConfigFormat(attackerUnits);
+
+        const attackerCapacity = calculateTotalCapacity(attackerConfigUnits, attackerFactionId);
+        const attackerNeeded = calculateNeededCapacity(attackerConfigUnits);
+        const attackerCapacityExceeded = attackerNeeded > attackerCapacity;
+        const attackerHasSpecialRules = hasSpecialCapacityRules(attackerFactionId);
 
         return (
           <div className={styles.stepContent}>
@@ -808,7 +772,7 @@ export function CombatModalV2({
               </ul>
 
               {/* Capacity Check for Attacker */}
-              {!attackerIsNaalu && (
+              {!attackerHasSpecialRules && (
                 <div className={attackerCapacityExceeded ? styles.capacityError : styles.capacityOk}>
                   <p>
                     <strong>Capacity:</strong> {attackerCapacity} available, {attackerNeeded} needed
@@ -822,7 +786,7 @@ export function CombatModalV2({
                 </div>
               )}
 
-              {attackerIsNaalu && (
+              {attackerHasSpecialRules && (
                 <div className={styles.infoNote}>
                   <p>
                     <strong>Naalu Faction Ability:</strong> Your fighters and ground forces can move freely
@@ -877,7 +841,7 @@ export function CombatModalV2({
             <div className={styles.buttonGroup}>
               <Button
                 onClick={() => {
-                  if (attackerCapacityExceeded && !attackerIsNaalu) {
+                  if (attackerCapacityExceeded && !attackerHasSpecialRules) {
                     const confirmed = window.confirm(
                       `WARNING: Attacker capacity is exceeded by ${attackerNeeded - attackerCapacity} units. ` +
                       'This is not a legal move unless you have upgrades or abilities that provide additional capacity. ' +
