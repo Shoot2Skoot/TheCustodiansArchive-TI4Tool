@@ -721,22 +721,526 @@ export function CombatModalV2({
   // ========================================================================
 
   const renderPhase2 = () => {
-    return (
-      <div className={styles.stepContent}>
-        <h3>Phase 2: Space Combat - Round {combatState.spaceCombatRound}</h3>
-        <p className={styles.placeholder}>Space combat implementation in progress...</p>
+    const step = combatState.currentStep;
+    const round = combatState.spaceCombatRound;
 
-        <Button
-          onClick={() => {
-            addLog('Space Combat Complete');
-            goToPhase(Phase.INVASION, 'P3.1');
-          }}
-          variant="primary"
-        >
-          Skip to Invasion
-        </Button>
-      </div>
-    );
+    // P2.1: Start of Combat Effects
+    if (step === 'P2.1') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P2.1 — Start of Combat Effects (Round {round})</h3>
+          <p>Resolve "before combat" and "start of combat" abilities.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No start of combat abilities');
+                // If round 1, go to AFB. Otherwise skip to P2.3
+                if (round === 1 && !combatState.afbFiredThisCombat) {
+                  goToStep('P2.2');
+                } else {
+                  goToStep('P2.3');
+                }
+              }}
+              variant="primary"
+            >
+              Continue (No Abilities)
+            </Button>
+
+            <Button
+              onClick={() => setShowAbilityList(!showAbilityList)}
+              variant="secondary"
+            >
+              {showAbilityList ? 'Hide' : 'Show'} Start of Combat Abilities
+            </Button>
+          </div>
+
+          {showAbilityList && (
+            <div className={styles.nestedAbilities}>
+              <p className={styles.abilityNote}>Available abilities:</p>
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    addLog('Mentak Ambush - Pre-combat effect');
+                    setCombatState(prev => ({
+                      ...prev,
+                      defender: {
+                        ...prev.defender!,
+                        abilitiesUsed: [...prev.defender!.abilitiesUsed, 'mentak_ambush'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Mentak Ambush
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Yin Impulse Core - Destroy 1 Destroyer/Cruiser for 1 hit');
+                    setCombatState(prev => ({
+                      ...prev,
+                      defender: {
+                        ...prev.defender!,
+                        abilitiesUsed: [...prev.defender!.abilitiesUsed, 'yin_impulse_core'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Yin Impulse Core
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Reveal Prototype (Muaat) - Research unit upgrade');
+                    setCombatState(prev => ({
+                      ...prev,
+                      attacker: {
+                        ...prev.attacker!,
+                        actionCardsPlayed: [...prev.attacker!.actionCardsPlayed, 'reveal_prototype'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Reveal Prototype (Muaat)
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('Argent Hero - Place flagship + up to 2 Cruisers/Destroyers');
+                    setCombatState(prev => ({
+                      ...prev,
+                      defender: {
+                        ...prev.defender!,
+                        abilitiesUsed: [...prev.defender!.abilitiesUsed, 'argent_hero'],
+                      },
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Argent Hero (Defender)
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P2.2: Anti-Fighter Barrage (Round 1 Only)
+    if (step === 'P2.2') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P2.2 — Anti-Fighter Barrage (Round {round} Only)</h3>
+          <p>Both players with AFB-capable units may simultaneously roll against enemy fighters.</p>
+          <p className={styles.infoNote}>
+            AFB rolls are NOT affected by combat modifiers. Excess hits are ignored unless specified (e.g., Argent Raid Formation).
+          </p>
+
+          <div className={styles.inputGroup}>
+            <label>Attacker AFB Hits on Defender Fighters:</label>
+            <input type="number" min="0" defaultValue="0" />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Defender AFB Hits on Attacker Fighters:</label>
+            <input type="number" min="0" defaultValue="0" />
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Anti-Fighter Barrage complete');
+                setCombatState(prev => ({ ...prev, afbFiredThisCombat: true }));
+                goToStep('P2.3');
+              }}
+              variant="primary"
+            >
+              Continue to Retreats
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('WAYLAY - AFB hits all ships, not just fighters');
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: {
+                    ...prev.defender!,
+                    actionCardsPlayed: [...prev.defender!.actionCardsPlayed, 'waylay'],
+                  },
+                }));
+              }}
+              variant="secondary"
+            >
+              Play WAYLAY
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Argent Raid Formation - Excess AFB hits to ships with SD');
+              }}
+              variant="secondary"
+            >
+              Use Argent Raid Formation
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P2.3: Announce Retreats
+    if (step === 'P2.3') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P2.3 — Announce Retreats (Round {round})</h3>
+          <p>Defender declares intent to retreat first. If Defender retreats, Attacker cannot.</p>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('No retreats announced');
+                goToStep('P2.4');
+              }}
+              variant="primary"
+            >
+              No Retreats
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Defender announces retreat');
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: { ...prev.defender!, hasAnnouncedRetreat: true },
+                }));
+                goToStep('P2.4');
+              }}
+              variant="secondary"
+              disabled={combatState.defender.hasAnnouncedRetreat}
+            >
+              Defender Announces Retreat
+            </Button>
+
+            {!combatState.defender.hasAnnouncedRetreat && (
+              <Button
+                onClick={() => {
+                  addLog('Attacker announces retreat');
+                  setCombatState(prev => ({
+                    ...prev,
+                    attacker: { ...prev.attacker!, hasAnnouncedRetreat: true },
+                  }));
+                  goToStep('P2.4');
+                }}
+                variant="secondary"
+                disabled={combatState.attacker.hasAnnouncedRetreat}
+              >
+                Attacker Announces Retreat
+              </Button>
+            )}
+          </div>
+
+          {(combatState.defender.hasAnnouncedRetreat || combatState.attacker.hasAnnouncedRetreat) && (
+            <div className={styles.nestedAbilities}>
+              <p className={styles.abilityNote}>Post-retreat action cards:</p>
+              <div className={styles.buttonGroup}>
+                <Button
+                  onClick={() => {
+                    addLog('INTERCEPT - Cancel retreat');
+                    setCombatState(prev => ({
+                      ...prev,
+                      defender: { ...prev.defender!, hasAnnouncedRetreat: false },
+                      attacker: { ...prev.attacker!, hasAnnouncedRetreat: false },
+                      actionCardsPlayed: [...prev.defender!.actionCardsPlayed, 'intercept'],
+                    }));
+                  }}
+                  variant="secondary"
+                >
+                  Play INTERCEPT
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    addLog('ROUT - Response to retreat');
+                  }}
+                  variant="secondary"
+                >
+                  Play ROUT
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // P2.4: Combat Rolls
+    if (step === 'P2.4') {
+      return (
+        <div className={styles.stepContent}>
+          <h3>P2.4 — Combat Rolls (Round {round})</h3>
+          <p>Both players roll dice for all participating ships. Attacker rolls first, then Defender.</p>
+
+          <div className={styles.inputGroup}>
+            <label>Attacker Hits:</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setCombatState(prev => ({
+                  ...prev,
+                  defender: { ...prev.defender!, queuedHits: hits },
+                  attacker: { ...prev.attacker!, hitsProduced: hits },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Defender Hits:</label>
+            <input
+              type="number"
+              min="0"
+              defaultValue="0"
+              onChange={(e) => {
+                const hits = parseInt(e.target.value) || 0;
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: { ...prev.attacker!, queuedHits: hits },
+                  defender: { ...prev.defender!, hitsProduced: hits },
+                }));
+              }}
+            />
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog(`Combat rolls complete: Attacker ${combatState.attacker.hitsProduced} hits, Defender ${combatState.defender.hitsProduced} hits`);
+                goToStep('P2.5');
+              }}
+              variant="primary"
+            >
+              Continue to Hit Assignment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('SCRAMBLE FREQUENCY - Reroll opponent dice');
+              }}
+              variant="secondary"
+            >
+              Play SCRAMBLE FREQUENCY
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('Jol-Nar Modifier: -1 to all combat rolls');
+              }}
+              variant="secondary"
+            >
+              Apply Jol-Nar Modifier
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P2.5: Hit Assignment & Damage Resolution
+    if (step === 'P2.5') {
+      const attackerHits = combatState.attacker.queuedHits;
+      const defenderHits = combatState.defender.queuedHits;
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P2.5 — Hit Assignment & Damage Resolution (Round {round})</h3>
+          <p>Both players assign hits to their opponent's ships simultaneously.</p>
+
+          <div className={styles.hitAssignment}>
+            <div>
+              <h4>Attacker took {attackerHits} hits</h4>
+              <div className={styles.inputGroup}>
+                <label>Ships Destroyed:</label>
+                <input type="number" min="0" max={attackerHits} defaultValue="0" />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Sustain Damage Used:</label>
+                <input type="number" min="0" max={attackerHits} defaultValue="0" />
+              </div>
+            </div>
+
+            <div>
+              <h4>Defender took {defenderHits} hits</h4>
+              <div className={styles.inputGroup}>
+                <label>Ships Destroyed:</label>
+                <input type="number" min="0" max={defenderHits} defaultValue="0" />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Sustain Damage Used:</label>
+                <input type="number" min="0" max={defenderHits} defaultValue="0" />
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <Button
+              onClick={() => {
+                addLog('Hits assigned');
+                setCombatState(prev => ({
+                  ...prev,
+                  attacker: { ...prev.attacker!, queuedHits: 0, hitsProduced: 0 },
+                  defender: { ...prev.defender!, queuedHits: 0, hitsProduced: 0 },
+                }));
+                goToStep('P2.6');
+              }}
+              variant="primary"
+            >
+              Confirm Hit Assignment
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('DIRECT HIT - Destroy ship that used Sustain Damage');
+              }}
+              variant="secondary"
+            >
+              Play DIRECT HIT
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('EMERGENCY REPAIRS - Repair Sustain Damage');
+              }}
+              variant="secondary"
+            >
+              Play EMERGENCY REPAIRS
+            </Button>
+
+            <Button
+              onClick={() => {
+                addLog('SHIELD HOLDING - Cancel a hit');
+              }}
+              variant="secondary"
+            >
+              Play SHIELD HOLDING
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // P2.6: Combat Continuation Check
+    if (step === 'P2.6') {
+      // In real implementation, would check actual unit counts
+      const attackerHasShips = true; // Placeholder
+      const defenderHasShips = true; // Placeholder
+      const retreatAnnounced = combatState.attacker.hasAnnouncedRetreat || combatState.defender.hasAnnouncedRetreat;
+
+      return (
+        <div className={styles.stepContent}>
+          <h3>P2.6 — Combat Continuation Check (Round {round})</h3>
+          <p>Evaluate whether combat continues, ends, or a retreat is executed.</p>
+
+          <div className={styles.combatStatus}>
+            <p>Attacker has ships: {attackerHasShips ? 'Yes' : 'No'}</p>
+            <p>Defender has ships: {defenderHasShips ? 'Yes' : 'No'}</p>
+            <p>Retreat announced: {retreatAnnounced ? 'Yes' : 'No'}</p>
+          </div>
+
+          {!attackerHasShips && !defenderHasShips ? (
+            <div>
+              <p>All ships destroyed - Combat ends in a draw</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    winner: 'draw',
+                    spaceCombatComplete: true,
+                  }));
+                }}
+                variant="primary"
+              >
+                End Combat (Draw)
+              </Button>
+            </div>
+          ) : !attackerHasShips ? (
+            <div>
+              <p>Attacker eliminated - Defender wins</p>
+              <Button
+                onClick={() => {
+                  setCombatState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    winner: 'defender',
+                    spaceCombatComplete: true,
+                  }));
+                }}
+                variant="primary"
+              >
+                End Combat (Defender Wins)
+              </Button>
+            </div>
+          ) : !defenderHasShips ? (
+            <div>
+              <p>Defender eliminated - Attacker wins space combat</p>
+              <Button
+                onClick={() => {
+                  addLog('Attacker wins space combat, proceeding to Invasion');
+                  setCombatState(prev => ({ ...prev, spaceCombatComplete: true }));
+                  goToPhase(Phase.INVASION, 'P3.1');
+                }}
+                variant="primary"
+              >
+                Proceed to Invasion
+              </Button>
+            </div>
+          ) : retreatAnnounced ? (
+            <div>
+              <p>{combatState.defender.hasAnnouncedRetreat ? 'Defender' : 'Attacker'} retreats to adjacent system</p>
+              <Button
+                onClick={() => {
+                  addLog(`${combatState.defender.hasAnnouncedRetreat ? 'Defender' : 'Attacker'} retreated - Combat ends`);
+                  setCombatState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    winner: combatState.defender.hasAnnouncedRetreat ? 'attacker' : 'defender',
+                    spaceCombatComplete: true,
+                  }));
+                }}
+                variant="primary"
+              >
+                Execute Retreat (Combat Ends)
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <p>Both sides have ships - Continue to next round</p>
+              <Button
+                onClick={() => {
+                  addLog(`Space Combat Round ${round} complete - Starting Round ${round + 1}`);
+                  setCombatState(prev => ({
+                    ...prev,
+                    spaceCombatRound: prev.spaceCombatRound + 1,
+                    currentStep: 'P2.1',
+                    attacker: { ...prev.attacker!, hasAnnouncedRetreat: false },
+                    defender: { ...prev.defender!, hasAnnouncedRetreat: false },
+                  }));
+                }}
+                variant="primary"
+              >
+                Next Combat Round (Round {round + 1})
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
   };
 
   // ========================================================================

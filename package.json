@@ -6,6 +6,7 @@
   "description": "A multiplayer dashboard application for Twilight Imperium 4 that enables seamless game state tracking across multiple devices with real-time synchronization.",
   "scripts": {
     "dev": "doppler run -- vite",
+    "dev:host": "doppler run -- vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
