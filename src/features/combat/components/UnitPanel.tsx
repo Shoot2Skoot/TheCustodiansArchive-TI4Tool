@@ -11,9 +11,11 @@ interface UnitPanelProps {
   units: CombatUnit[];
   playerName: string;
   factionId: string;
+  onRollDice?: () => void;
+  canRoll?: boolean;
 }
 
-export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps) {
+export function UnitPanel({ side, units, playerName, factionId, onRollDice, canRoll = false }: UnitPanelProps) {
   const faction = getFactionById(factionId);
   const factionName = faction?.name || playerName;
 
@@ -91,22 +93,40 @@ export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps
               const allDestroyed = group.destroyed === group.total;
               const statusClass = allDestroyed ? styles.destroyed : '';
 
+              const combatValue = BASE_UNITS[group.type]?.combat ?? null;
+              const combatRolls = BASE_UNITS[group.type]?.combatRolls ?? 1;
+              const activeCount = group.active;
+
               return (
                 <div key={`group-${group.type}`} className={`${styles.unitItem} ${styles.groupedUnit} ${statusClass}`}>
                   <img src={group.imageUrl} alt={group.displayName} className={styles.unitImage} />
                   <div className={styles.unitName}>{group.displayName}</div>
-                  <div className={styles.unitQuantity}>x{group.total}</div>
-                  {group.destroyed > 0 && !allDestroyed && (
+                  <div className={styles.unitQuantity}>x{activeCount}</div>
+
+                  {/* Target number indicator */}
+                  {combatValue !== null && (
+                    <div className={styles.targetNumber}>
+                      <div className={styles.targetDiamond}>
+                        <span>{combatValue}+</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dice display */}
+                  {combatValue !== null && (
+                    <div className={styles.diceContainer}>
+                      {Array.from({ length: activeCount * combatRolls }).map((_, diceIdx) => (
+                        <div key={diceIdx} className={styles.die}>
+                          <div className={styles.dieUnrolled}>?</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {group.destroyed > 0 && (
                     <div className={styles.unitStatus}>
                       <span className={`${styles.statusBadge} ${styles.destroyed}`}>
                         {group.destroyed} 💀
-                      </span>
-                    </div>
-                  )}
-                  {allDestroyed && (
-                    <div className={styles.unitStatus}>
-                      <span className={`${styles.statusBadge} ${styles.destroyed}`}>
-                        💀 DESTROYED
                       </span>
                     </div>
                   )}
@@ -120,11 +140,34 @@ export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps
                 '';
 
               const imageUrl = getUnitImage(unit.type);
+              const combatValue = unit.combat;
+              const combatRolls = unit.combatRolls;
 
               return (
                 <div key={unit.id} className={`${styles.unitItem} ${statusClass}`}>
                   <img src={imageUrl} alt={unit.displayName} className={styles.unitImage} />
                   <div className={styles.unitName}>{unit.displayName}</div>
+
+                  {/* Target number indicator */}
+                  {combatValue !== null && unit.state !== 'destroyed' && (
+                    <div className={styles.targetNumber}>
+                      <div className={styles.targetDiamond}>
+                        <span>{combatValue}+</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dice display */}
+                  {combatValue !== null && unit.state !== 'destroyed' && (
+                    <div className={styles.diceContainer}>
+                      {Array.from({ length: combatRolls }).map((_, diceIdx) => (
+                        <div key={diceIdx} className={styles.die}>
+                          <div className={styles.dieUnrolled}>?</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <div className={styles.unitStatus}>
                     {unit.state !== 'destroyed' && unit.hasSustainDamage && (
                       <span className={`${styles.statusBadge} ${styles.active}`}>
@@ -154,12 +197,21 @@ export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps
   return (
     <div className={side === 'attacker' ? styles.attackerPanel : styles.defenderPanel}>
       <div className={styles.panelHeader}>
-        <h2 className={styles.panelTitle}>
-          {side === 'attacker' ? '⚔️ Attacker' : '🛡️ Defender'}
-        </h2>
-        <div className={styles.panelSubtitle}>
-          {factionName}
-          {playerName !== factionName && <span> ({playerName})</span>}
+        <div className={styles.panelTitleRow}>
+          <div>
+            <h2 className={styles.panelTitle}>
+              {side === 'attacker' ? '⚔️ Attacker' : '🛡️ Defender'}
+            </h2>
+            <div className={styles.panelSubtitle}>
+              {factionName}
+              {playerName !== factionName && <span> ({playerName})</span>}
+            </div>
+          </div>
+          {canRoll && onRollDice && (
+            <button className={styles.rollDiceButton} onClick={onRollDice}>
+              🎲 Roll Dice
+            </button>
+          )}
         </div>
       </div>
 

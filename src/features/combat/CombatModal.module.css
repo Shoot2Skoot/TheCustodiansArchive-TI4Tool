@@ -1032,6 +1032,46 @@
   margin: 0;
 }
 
+.panelTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.rollDiceButton {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border: 2px solid #2471a3;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: var(--font-bold);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.rollDiceButton:hover {
+  background: linear-gradient(135deg, #5dade2 0%, #3498db 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+}
+
+.rollDiceButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+}
+
+.rollDiceButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .unitsDisplay {
   display: flex;
   flex-direction: column;
@@ -1155,4 +1195,108 @@
   background-color: rgba(127, 140, 141, 0.2);
   border: 1px solid #7f8c8d;
   color: #7f8c8d;
+}
+
+/* Target number indicator */
+.targetNumber {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.targetDiamond {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #d68910;
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+  flex-shrink: 0;
+  font-weight: var(--font-bold);
+  font-size: var(--font-size-sm);
+  color: #1a1a1a;
+}
+
+.targetDiamond > * {
+  transform: rotate(-45deg);
+}
+
+/* Dice container and dice */
+.diceContainer {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-left: 8px;
+  align-items: center;
+}
+
+.die {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.dieUnrolled {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-bold);
+  font-size: var(--font-size-lg);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dieUnrolled:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.dieRolled {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border: 2px solid #2471a3;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-bold);
+  font-size: var(--font-size-lg);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.4);
+  animation: diceRoll 0.3s ease-out;
+}
+
+.dieRolled.hit {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  border-color: #229954;
+  box-shadow: 0 2px 6px rgba(46, 204, 113, 0.6);
+}
+
+.dieRolled.miss {
+  background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+  border-color: #5d6d7e;
+  box-shadow: 0 2px 6px rgba(127, 140, 141, 0.4);
+}
+
+@keyframes diceRoll {
+  0% {
+    transform: rotate(0deg) scale(0.8);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
