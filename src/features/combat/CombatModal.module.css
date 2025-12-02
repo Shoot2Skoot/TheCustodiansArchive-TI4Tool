@@ -1208,7 +1208,7 @@
   width: 36px;
   height: 36px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-  transform: rotate(45deg);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1218,10 +1218,6 @@
   font-weight: var(--font-bold);
   font-size: var(--font-size-sm);
   color: #1a1a1a;
-}
-
-.targetDiamond > * {
-  transform: rotate(-45deg);
 }
 
 /* Dice container and dice */
