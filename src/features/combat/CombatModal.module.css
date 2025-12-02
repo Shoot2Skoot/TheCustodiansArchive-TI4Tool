@@ -1209,16 +1209,16 @@
 .targetDiamond {
   width: 32px;
   height: 32px;
-  background-color: rgba(243, 156, 18, 0.2);
+  background-color: rgba(155, 89, 182, 0.2);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #f39c12;
+  border: 2px solid #9b59b6;
   flex-shrink: 0;
   font-weight: var(--font-bold);
   font-size: var(--font-size-2xl);
-  color: #f39c12;
+  color: #9b59b6;
 }
 
 .die {
