@@ -66,7 +66,11 @@ export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps
         <div className={styles.unitsList}>
           {/* Render grouped units (no sustained damage) - sorted by cost (highest to lowest) */}
           {Array.from(grouped.values())
-            .sort((a, b) => BASE_UNITS[b.type].cost - BASE_UNITS[a.type].cost)
+            .sort((a, b) => {
+              const costA = BASE_UNITS[a.type]?.cost ?? 0;
+              const costB = BASE_UNITS[b.type]?.cost ?? 0;
+              return costB - costA;
+            })
             .map(group => {
             const allDestroyed = group.destroyed === group.total;
             const statusClass = allDestroyed ? styles.destroyed : '';
@@ -96,7 +100,12 @@ export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps
 
           {/* Render individual units (with sustained damage) - sorted by cost (highest to lowest) */}
           {unitsWithSustain
-            .sort((a, b) => BASE_UNITS[b.type].cost - BASE_UNITS[a.type].cost)
+            .slice()
+            .sort((a, b) => {
+              const costA = BASE_UNITS[a.type]?.cost ?? 0;
+              const costB = BASE_UNITS[b.type]?.cost ?? 0;
+              return costB - costA;
+            })
             .map(unit => {
             const statusClass =
               unit.state === 'destroyed' ? styles.destroyed :
