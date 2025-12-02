@@ -60,83 +60,91 @@ export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps
       }
     });
 
+    // Create a combined sorted list of all units
+    type RenderItem =
+      | { type: 'group'; data: GroupedUnit; cost: number }
+      | { type: 'individual'; data: CombatUnit; cost: number };
+
+    const allItems: RenderItem[] = [
+      ...Array.from(grouped.values()).map(group => ({
+        type: 'group' as const,
+        data: group,
+        cost: BASE_UNITS[group.type]?.cost ?? 0,
+      })),
+      ...unitsWithSustain.map(unit => ({
+        type: 'individual' as const,
+        data: unit,
+        cost: BASE_UNITS[unit.type]?.cost ?? 0,
+      })),
+    ];
+
+    // Sort all items by cost (highest to lowest)
+    allItems.sort((a, b) => b.cost - a.cost);
+
     return (
       <div className={styles.unitCategory}>
         <div className={styles.categoryHeader}>{categoryName}</div>
         <div className={styles.unitsList}>
-          {/* Render grouped units (no sustained damage) - sorted by cost (highest to lowest) */}
-          {Array.from(grouped.values())
-            .sort((a, b) => {
-              const costA = BASE_UNITS[a.type]?.cost ?? 0;
-              const costB = BASE_UNITS[b.type]?.cost ?? 0;
-              return costB - costA;
-            })
-            .map(group => {
-            const allDestroyed = group.destroyed === group.total;
-            const statusClass = allDestroyed ? styles.destroyed : '';
+          {allItems.map((item, idx) => {
+            if (item.type === 'group') {
+              const group = item.data;
+              const allDestroyed = group.destroyed === group.total;
+              const statusClass = allDestroyed ? styles.destroyed : '';
 
-            return (
-              <div key={group.type} className={`${styles.unitItem} ${styles.groupedUnit} ${statusClass}`}>
-                <img src={group.imageUrl} alt={group.displayName} className={styles.unitImage} />
-                <div className={styles.unitName}>{group.displayName}</div>
-                <div className={styles.unitQuantity}>x{group.total}</div>
-                {group.destroyed > 0 && !allDestroyed && (
-                  <div className={styles.unitStatus}>
-                    <span className={`${styles.statusBadge} ${styles.destroyed}`}>
-                      {group.destroyed} 💀
-                    </span>
-                  </div>
-                )}
-                {allDestroyed && (
-                  <div className={styles.unitStatus}>
-                    <span className={`${styles.statusBadge} ${styles.destroyed}`}>
-                      💀 DESTROYED
-                    </span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {/* Render individual units (with sustained damage) - sorted by cost (highest to lowest) */}
-          {unitsWithSustain
-            .slice()
-            .sort((a, b) => {
-              const costA = BASE_UNITS[a.type]?.cost ?? 0;
-              const costB = BASE_UNITS[b.type]?.cost ?? 0;
-              return costB - costA;
-            })
-            .map(unit => {
-            const statusClass =
-              unit.state === 'destroyed' ? styles.destroyed :
-              unit.state === 'sustained' ? styles.sustained :
-              '';
-
-            const imageUrl = getUnitImage(unit.type);
-
-            return (
-              <div key={unit.id} className={`${styles.unitItem} ${statusClass}`}>
-                <img src={imageUrl} alt={unit.displayName} className={styles.unitImage} />
-                <div className={styles.unitName}>{unit.displayName}</div>
-                <div className={styles.unitStatus}>
-                  {unit.state !== 'destroyed' && unit.hasSustainDamage && (
-                    <span className={`${styles.statusBadge} ${styles.active}`}>
-                      🛡️ SUSTAIN
-                    </span>
+              return (
+                <div key={`group-${group.type}`} className={`${styles.unitItem} ${styles.groupedUnit} ${statusClass}`}>
+                  <img src={group.imageUrl} alt={group.displayName} className={styles.unitImage} />
+                  <div className={styles.unitName}>{group.displayName}</div>
+                  <div className={styles.unitQuantity}>x{group.total}</div>
+                  {group.destroyed > 0 && !allDestroyed && (
+                    <div className={styles.unitStatus}>
+                      <span className={`${styles.statusBadge} ${styles.destroyed}`}>
+                        {group.destroyed} 💀
+                      </span>
+                    </div>
                   )}
-                  {unit.state === 'sustained' && (
-                    <span className={`${styles.statusBadge} ${styles.sustained}`}>
-                      ⚠️ DAMAGED
-                    </span>
-                  )}
-                  {unit.state === 'destroyed' && (
-                    <span className={`${styles.statusBadge} ${styles.destroyed}`}>
-                      💀 DESTROYED
-                    </span>
+                  {allDestroyed && (
+                    <div className={styles.unitStatus}>
+                      <span className={`${styles.statusBadge} ${styles.destroyed}`}>
+                        💀 DESTROYED
+                      </span>
+                    </div>
                   )}
                 </div>
-              </div>
-            );
+              );
+            } else {
+              const unit = item.data;
+              const statusClass =
+                unit.state === 'destroyed' ? styles.destroyed :
+                unit.state === 'sustained' ? styles.sustained :
+                '';
+
+              const imageUrl = getUnitImage(unit.type);
+
+              return (
+                <div key={unit.id} className={`${styles.unitItem} ${statusClass}`}>
+                  <img src={imageUrl} alt={unit.displayName} className={styles.unitImage} />
+                  <div className={styles.unitName}>{unit.displayName}</div>
+                  <div className={styles.unitStatus}>
+                    {unit.state !== 'destroyed' && unit.hasSustainDamage && (
+                      <span className={`${styles.statusBadge} ${styles.active}`}>
+                        🛡️ SUSTAIN
+                      </span>
+                    )}
+                    {unit.state === 'sustained' && (
+                      <span className={`${styles.statusBadge} ${styles.sustained}`}>
+                        ⚠️ DAMAGED
+                      </span>
+                    )}
+                    {unit.state === 'destroyed' && (
+                      <span className={`${styles.statusBadge} ${styles.destroyed}`}>
+                        💀 DESTROYED
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            }
           })}
         </div>
       </div>
