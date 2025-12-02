@@ -1,0 +1,156 @@
+import type { CombatUnit } from '@/types/combatUnits';
+import type { UnitType } from '@/data/combatConfig';
+import { BASE_UNITS } from '@/data/combatConfig';
+import { getActiveUnits } from '@/types/combatUnits';
+import { getFactionById } from '@/lib/factions';
+import { getUnitImage } from '@/data/shipImages';
+import styles from '../CombatModal.module.css';
+
+interface UnitPanelProps {
+  side: 'attacker' | 'defender';
+  units: CombatUnit[];
+  playerName: string;
+  factionId: string;
+}
+
+export function UnitPanel({ side, units, playerName, factionId }: UnitPanelProps) {
+  const faction = getFactionById(factionId);
+  const factionName = faction?.name || playerName;
+
+  // Group units by category
+  const ships = units.filter(u => u.isShip);
+  const groundForces = units.filter(u => u.isGroundForce);
+  const structures = units.filter(u => !u.isShip && !u.isGroundForce);
+
+  const renderUnitCategory = (categoryName: string, categoryUnits: CombatUnit[]) => {
+    if (categoryUnits.length === 0) return null;
+
+    // Separate units with sustained damage (show individually) from those without (group by type)
+    const unitsWithSustain = categoryUnits.filter(u => u.hasSustainDamage);
+    const unitsWithoutSustain = categoryUnits.filter(u => !u.hasSustainDamage);
+
+    // Group units without sustain by type
+    interface GroupedUnit {
+      type: UnitType;
+      displayName: string;
+      total: number;
+      active: number;
+      destroyed: number;
+      imageUrl: string;
+    }
+
+    const grouped = new Map<UnitType, GroupedUnit>();
+    unitsWithoutSustain.forEach(unit => {
+      if (!grouped.has(unit.type)) {
+        grouped.set(unit.type, {
+          type: unit.type,
+          displayName: unit.displayName,
+          total: 0,
+          active: 0,
+          destroyed: 0,
+          imageUrl: getUnitImage(unit.type),
+        });
+      }
+      const group = grouped.get(unit.type)!;
+      group.total++;
+      if (unit.state === 'destroyed') {
+        group.destroyed++;
+      } else {
+        group.active++;
+      }
+    });
+
+    return (
+      <div className={styles.unitCategory}>
+        <div className={styles.categoryHeader}>{categoryName}</div>
+        <div className={styles.unitsList}>
+          {/* Render grouped units (no sustained damage) - sorted by cost (highest to lowest) */}
+          {Array.from(grouped.values())
+            .sort((a, b) => BASE_UNITS[b.type].cost - BASE_UNITS[a.type].cost)
+            .map(group => {
+            const allDestroyed = group.destroyed === group.total;
+            const statusClass = allDestroyed ? styles.destroyed : '';
+
+            return (
+              <div key={group.type} className={`${styles.unitItem} ${styles.groupedUnit} ${statusClass}`}>
+                <img src={group.imageUrl} alt={group.displayName} className={styles.unitImage} />
+                <div className={styles.unitName}>{group.displayName}</div>
+                <div className={styles.unitQuantity}>x{group.total}</div>
+                {group.destroyed > 0 && !allDestroyed && (
+                  <div className={styles.unitStatus}>
+                    <span className={`${styles.statusBadge} ${styles.destroyed}`}>
+                      {group.destroyed} 💀
+                    </span>
+                  </div>
+                )}
+                {allDestroyed && (
+                  <div className={styles.unitStatus}>
+                    <span className={`${styles.statusBadge} ${styles.destroyed}`}>
+                      💀 DESTROYED
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Render individual units (with sustained damage) - sorted by cost (highest to lowest) */}
+          {unitsWithSustain
+            .sort((a, b) => BASE_UNITS[b.type].cost - BASE_UNITS[a.type].cost)
+            .map(unit => {
+            const statusClass =
+              unit.state === 'destroyed' ? styles.destroyed :
+              unit.state === 'sustained' ? styles.sustained :
+              '';
+
+            const imageUrl = getUnitImage(unit.type);
+
+            return (
+              <div key={unit.id} className={`${styles.unitItem} ${statusClass}`}>
+                <img src={imageUrl} alt={unit.displayName} className={styles.unitImage} />
+                <div className={styles.unitName}>{unit.displayName}</div>
+                <div className={styles.unitStatus}>
+                  {unit.state !== 'destroyed' && unit.hasSustainDamage && (
+                    <span className={`${styles.statusBadge} ${styles.active}`}>
+                      🛡️ SUSTAIN
+                    </span>
+                  )}
+                  {unit.state === 'sustained' && (
+                    <span className={`${styles.statusBadge} ${styles.sustained}`}>
+                      ⚠️ DAMAGED
+                    </span>
+                  )}
+                  {unit.state === 'destroyed' && (
+                    <span className={`${styles.statusBadge} ${styles.destroyed}`}>
+                      💀 DESTROYED
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className={side === 'attacker' ? styles.attackerPanel : styles.defenderPanel}>
+      <div className={styles.panelHeader}>
+        <h2 className={styles.panelTitle}>
+          {side === 'attacker' ? '⚔️ Attacker' : '🛡️ Defender'}
+        </h2>
+        <div className={styles.panelSubtitle}>
+          {factionName}
+          {playerName !== factionName && <span> ({playerName})</span>}
+        </div>
+      </div>
+
+      <div className={styles.unitsDisplay}>
+        {renderUnitCategory('Ships', ships)}
+        {renderUnitCategory('Ground Forces', groundForces)}
+        {renderUnitCategory('Structures', structures)}
+      </div>
+    </div>
+  );
+}

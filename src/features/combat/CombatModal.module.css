@@ -1,23 +1,115 @@
-/* Modal overlay */
+/* Modal overlay - Full screen */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.95);
   z-index: 1000;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .modalContent {
   width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Main layout - 4 panels */
+.combatLayout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Top timeline banner */
+.timelineBanner {
+  width: 100%;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2c3e50 100%);
+  border-bottom: 3px solid #3498db;
+  padding: 15px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Bottom 3-panel split */
+.mainContent {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  gap: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Left panel - Attacker units */
+.attackerPanel {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(192, 57, 43, 0.1) 100%);
+  border-right: 2px solid rgba(231, 76, 60, 0.5);
   overflow-y: auto;
+  padding: 20px;
+}
+
+/* Red scrollbar for attacker panel */
+.attackerPanel::-webkit-scrollbar {
+  width: 12px;
+}
+
+.attackerPanel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+.attackerPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.attackerPanel::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff6b5a 0%, #e74c3c 100%);
+}
+
+/* Center panel - Step UI */
+.centerPanel {
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.3) 0%, rgba(52, 73, 94, 0.2) 100%);
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Right panel - Defender units */
+.defenderPanel {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.15) 0%, rgba(41, 128, 185, 0.1) 100%);
+  border-left: 2px solid rgba(52, 152, 219, 0.5);
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Blue scrollbar for defender panel */
+.defenderPanel::-webkit-scrollbar {
+  width: 12px;
+}
+
+.defenderPanel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+.defenderPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.defenderPanel::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #5dade2 0%, #3498db 100%);
 }
 
 .combatPanel {
@@ -599,4 +691,468 @@
   background-color: #5d6d7e;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(127, 140, 141, 0.4);
+}
+
+/* ============================================================================
+   TIMELINE COMPONENT
+   ============================================================================ */
+
+/* Row containers */
+.timelineRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.substepsRow {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 5px 0;
+}
+
+/* Main phase timeline */
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.timelinePhase {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: fit-content;
+}
+
+.phaseNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.phaseCircle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1em;
+  border: 3px solid;
+  transition: all 0.3s ease;
+}
+
+.phaseCircle.completed {
+  background-color: #2ecc71;
+  border-color: #27ae60;
+  color: white;
+}
+
+.phaseCircle.active {
+  background-color: #3498db;
+  border-color: #2980b9;
+  color: white;
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
+  animation: pulse 2s infinite;
+}
+
+.phaseCircle.upcoming {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #7f8c8d;
+  color: #95a5a6;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(52, 152, 219, 0.9);
+  }
+}
+
+.phaseLabel {
+  font-size: 0.75em;
+  text-align: center;
+  color: #ecf0f1;
+  font-weight: 600;
+  max-width: 100px;
+  line-height: 1.2;
+}
+
+.phaseConnector {
+  width: 40px;
+  height: 3px;
+  background-color: #7f8c8d;
+  transition: background-color 0.3s ease;
+}
+
+.phaseConnector.completed {
+  background-color: #2ecc71;
+}
+
+/* Substeps display */
+.allSubsteps {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.phaseSubstepsGroup {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+/* Inline substeps (shown in main timeline row) */
+.inlineSubsteps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.substepWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.substepBubble {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 2px solid;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.substepBubble.activePhase {
+  border-width: 2px;
+}
+
+.substepId {
+  font-size: 0.65em;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.substepLabel {
+  font-size: 0.6em;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.substepBubble.completed {
+  background-color: rgba(46, 204, 113, 0.2);
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+.substepBubble.active {
+  background-color: rgba(52, 152, 219, 0.3);
+  border-color: #3498db;
+  color: #3498db;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+}
+
+.substepBubble.upcoming {
+  background-color: rgba(127, 140, 141, 0.1);
+  border-color: #7f8c8d;
+  color: #95a5a6;
+}
+
+.substepConnector {
+  width: 15px;
+  height: 2px;
+  background-color: #7f8c8d;
+  transition: background-color 0.3s ease;
+}
+
+.substepConnector.completed {
+  background-color: #2ecc71;
+}
+
+/* Player turn order circles */
+.playerTurnCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.playerTurnCircle.completed {
+  border-color: #2ecc71;
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
+.playerTurnCircle.active {
+  border-color: #3498db;
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+}
+
+.playerTurnCircle.upcoming {
+  border-color: #7f8c8d;
+  opacity: 0.6;
+}
+
+.playerTurnIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Turn order display */
+.turnOrderContainer {
+  margin-top: 12px;
+  padding: 10px 15px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+}
+
+.turnOrderLabel {
+  font-size: 0.85em;
+  font-weight: 700;
+  color: #3498db;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.turnOrderList {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.turnOrderPlayer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: rgba(127, 140, 141, 0.2);
+  border: 2px solid #7f8c8d;
+  transition: all 0.2s ease;
+  font-size: 0.8em;
+}
+
+.turnOrderPlayer.completedTurn {
+  background-color: rgba(46, 204, 113, 0.2);
+  border-color: #2ecc71;
+  opacity: 0.7;
+}
+
+.turnOrderPlayer.activeTurn {
+  background-color: rgba(52, 152, 219, 0.3);
+  border-color: #3498db;
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+  font-weight: 700;
+}
+
+.turnNumber {
+  font-weight: 700;
+  color: #ecf0f1;
+}
+
+.turnPlayerName {
+  color: #ecf0f1;
+}
+
+.turnRole {
+  font-size: 1.1em;
+}
+
+/* ============================================================================
+   UNIT PANELS
+   ============================================================================ */
+
+.panelHeader {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid;
+}
+
+.attackerPanel .panelHeader {
+  border-bottom-color: #e74c3c;
+}
+
+.defenderPanel .panelHeader {
+  border-bottom-color: #3498db;
+}
+
+.panelTitle {
+  font-size: 1.4em;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.attackerPanel .panelTitle {
+  color: #e74c3c;
+}
+
+.defenderPanel .panelTitle {
+  color: #3498db;
+}
+
+.panelSubtitle {
+  font-size: 0.9em;
+  color: #95a5a6;
+  margin: 0;
+}
+
+.unitsDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.unitCategory {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.categoryHeader {
+  font-size: 1em;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #f39c12;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.unitsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unitItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.unitItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.unitItem.destroyed {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.unitItem.sustained {
+  border-color: #f39c12;
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+.unitItem .unitImage {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  flex-shrink: 0;
+}
+
+.unitItem.destroyed .unitImage {
+  filter: grayscale(100%) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.unitName {
+  font-weight: var(--font-semibold);
+  color: #ecf0f1;
+  flex: 1;
+  font-size: var(--font-size-xl);
+}
+
+.unitItem.destroyed .unitName {
+  text-decoration: line-through;
+}
+
+.unitQuantity {
+  font-size: 2em;
+  font-weight: 800;
+  color: #3498db;
+  margin-left: auto;
+  margin-right: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+}
+
+.unitItem.destroyed .unitQuantity {
+  color: #7f8c8d;
+  text-decoration: line-through;
+}
+
+.unitStatus {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.85em;
+}
+
+.statusBadge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: var(--font-semibold);
+  font-size: var(--font-size-sm);
+}
+
+.statusBadge.active {
+  background-color: rgba(46, 204, 113, 0.2);
+  border: 1px solid #2ecc71;
+  color: #2ecc71;
+  font-size: var(--font-size-base);
+}
+
+.statusBadge.sustained {
+  background-color: rgba(243, 156, 18, 0.2);
+  border: 1px solid #f39c12;
+  color: #f39c12;
+}
+
+.statusBadge.destroyed {
+  background-color: rgba(127, 140, 141, 0.2);
+  border: 1px solid #7f8c8d;
+  color: #7f8c8d;
 }

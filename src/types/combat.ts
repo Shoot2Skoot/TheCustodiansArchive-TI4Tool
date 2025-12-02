@@ -18,7 +18,12 @@ export enum CombatPhase {
 export type CombatStep =
   | `P0.${1 | 2 | 3 | 4 | 5 | 6}`
   | `P1.${1 | 2 | 3 | 4}`
+  | 'P1.1a'  // Player transition screen
+  | 'P1.3a'  // Capacity trimming
   | `P2.${1 | 2 | 3 | 4 | 5 | 6}`
+  | 'P2.2-assignment'  // Attacker hit assignment
+  | 'P2.2-assignment-defender'  // Defender hit assignment
+  | 'P2.5-defender'  // Defender retreat
   | `P3.${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10}`
   | `P4.${1 | 2 | 3 | 4 | 5 | 6}`
   | `PC.${1 | 2 | 3}`;

@@ -1,0 +1,150 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+}
+
+.title {
+  font-size: 2em;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  color: #ecf0f1;
+  margin-bottom: 16px;
+}
+
+.capacityInfo {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px 16px;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.capacityLabel {
+  font-size: 0.95em;
+  color: #95a5a6;
+  text-align: right;
+}
+
+.capacityValue {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #3498db;
+}
+
+.capacityValueExcess {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #e74c3c;
+}
+
+.instructions {
+  text-align: center;
+  background: rgba(231, 76, 60, 0.2);
+  border: 2px solid #e74c3c;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.instructions p {
+  margin: 4px 0;
+  font-size: 1.05em;
+}
+
+.progress {
+  font-weight: 700;
+  color: #3498db;
+  font-size: 1.15em !important;
+  margin-top: 8px !important;
+}
+
+.unitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.unitCard {
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  border: 3px solid #7f8c8d;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  position: relative;
+}
+
+.unitSelectable:hover {
+  transform: translateY(-4px);
+  border-color: #3498db;
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3);
+}
+
+.unitSelected {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-color: #e74c3c;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.unitDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.unitName {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #ecf0f1;
+  margin-bottom: 8px;
+}
+
+.sustainedBadge {
+  background: #f39c12;
+  color: #2c3e50;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.selectedBadge {
+  background: #ecf0f1;
+  color: #e74c3c;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 1em;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.confirmHint {
+  color: #e67e22;
+  font-size: 0.95em;
+  font-weight: 600;
+}

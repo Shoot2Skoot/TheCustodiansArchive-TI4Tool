@@ -219,6 +219,43 @@ export function getSustainedUnits(units: CombatUnit[]): CombatUnit[] {
   return units.filter(u => u.state === 'sustained');
 }
 
+/**
+ * Capacity management functions
+ */
+
+export function calculateTotalCapacity(units: CombatUnit[]): number {
+  return getActiveUnits(units)
+    .filter(u => u.isShip)
+    .reduce((total, ship) => total + ship.capacity, 0);
+}
+
+export function calculateCarriedUnits(units: CombatUnit[]): number {
+  return getActiveUnits(units)
+    .filter(u => u.isGroundForce || u.type === 'fighter')  // Fighters also need capacity
+    .length;
+}
+
+export interface CapacityStatus {
+  totalCapacity: number;
+  carriedUnits: number;
+  isOverCapacity: boolean;
+  excessUnits: number;
+}
+
+export function checkCapacity(units: CombatUnit[]): CapacityStatus {
+  const totalCapacity = calculateTotalCapacity(units);
+  const carriedUnits = calculateCarriedUnits(units);
+  const isOverCapacity = carriedUnits > totalCapacity;
+  const excessUnits = Math.max(0, carriedUnits - totalCapacity);
+
+  return {
+    totalCapacity,
+    carriedUnits,
+    isOverCapacity,
+    excessUnits,
+  };
+}
+
 export function getDestroyedUnits(units: CombatUnit[]): CombatUnit[] {
   return units.filter(u => u.state === 'destroyed');
 }

@@ -246,5 +246,6 @@ export const getFactionById = (id: string): Faction | undefined => {
 };
 
 export const getFactionImage = (factionId: string, style: 'color' | 'black' | 'white' = 'color'): string => {
-  return `/src/assets/factions/${style}/${factionId}.png`;
+  // Use dynamic import with new URL for Vite
+  return new URL(`../assets/factions/${style}/${factionId}.png`, import.meta.url).href;
 };

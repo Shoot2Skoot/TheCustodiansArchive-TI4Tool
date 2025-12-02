@@ -12,9 +12,11 @@ interface UnitCardProps {
   unit: CombatUnit;
   onClick: () => void;
   isSelectable: boolean;
+  justSustained: boolean; // Did this unit just use sustain damage?
+  onDirectHit?: () => void; // Callback for Direct Hit card
 }
 
-function UnitCard({ unit, onClick, isSelectable }: UnitCardProps) {
+function UnitCard({ unit, onClick, isSelectable, justSustained, onDirectHit }: UnitCardProps) {
   const stateClass =
     unit.state === 'sustained' ? styles.unitSustained :
     unit.state === 'destroyed' ? styles.unitDestroyed :
@@ -53,6 +55,15 @@ function UnitCard({ unit, onClick, isSelectable }: UnitCardProps) {
           Click to assign hit
         </div>
       )}
+
+      {justSustained && onDirectHit && (
+        <button className={styles.directHitButton} onClick={(e) => {
+          e.stopPropagation(); // Prevent triggering unit click
+          onDirectHit();
+        }}>
+          💥 Direct Hit
+        </button>
+      )}
     </div>
   );
 }
@@ -67,6 +78,7 @@ interface HitAssignmentProps {
   targetPlayerName: string;
   onComplete: (updatedUnits: CombatUnit[]) => void;
   title: string;
+  targetSide?: 'attacker' | 'defender'; // Visual indicator for which side is taking hits
 }
 
 export function HitAssignment({
@@ -75,9 +87,11 @@ export function HitAssignment({
   targetPlayerName,
   onComplete,
   title,
+  targetSide,
 }: HitAssignmentProps) {
   const [currentUnits, setCurrentUnits] = useState<CombatUnit[]>(units);
   const [hitsAssigned, setHitsAssigned] = useState(0);
+  const [lastSustainedUnitId, setLastSustainedUnitId] = useState<string | null>(null);
 
   const handleUnitClick = (unitId: string) => {
     if (hitsAssigned >= hitsToAssign) {
@@ -87,7 +101,14 @@ export function HitAssignment({
     // Find and update the unit
     const updatedUnits = currentUnits.map(unit => {
       if (unit.id === unitId) {
-        return assignHitToUnit(unit);
+        const updatedUnit = assignHitToUnit(unit);
+
+        // Track if this unit just went from undamaged to sustained
+        if (unit.state === 'undamaged' && updatedUnit.state === 'sustained') {
+          setLastSustainedUnitId(unit.id);
+        }
+
+        return updatedUnit;
       }
       return unit;
     });
@@ -96,12 +117,26 @@ export function HitAssignment({
     setHitsAssigned(hitsAssigned + 1);
   };
 
+  const handleDirectHit = (unitId: string) => {
+    // Direct Hit destroys the unit immediately
+    const updatedUnits = currentUnits.map(unit => {
+      if (unit.id === unitId) {
+        return { ...unit, state: 'destroyed' as const };
+      }
+      return unit;
+    });
+
+    setCurrentUnits(updatedUnits);
+    setLastSustainedUnitId(null); // Clear after using Direct Hit
+  };
+
   const handleUndo = () => {
     if (hitsAssigned === 0) return;
 
     // Reset to initial state
     setCurrentUnits(units);
     setHitsAssigned(0);
+    setLastSustainedUnitId(null); // Clear Direct Hit tracking
   };
 
   const handleConfirm = () => {
@@ -115,6 +150,14 @@ export function HitAssignment({
   return (
     <div className={styles.hitAssignment}>
       <h3>{title}</h3>
+
+      {targetSide && (
+        <div className={targetSide === 'attacker' ? styles.attackerBanner : styles.defenderBanner}>
+          <span className={styles.bannerLabel}>
+            {targetSide === 'attacker' ? '⚔️ ATTACKER UNITS' : '🛡️ DEFENDER UNITS'}
+          </span>
+        </div>
+      )}
 
       <div className={styles.assignmentInfo}>
         <div className={styles.playerInfo}>
@@ -140,14 +183,21 @@ export function HitAssignment({
       ) : (
         <>
           <div className={styles.unitsGrid}>
-            {activeUnits.map(unit => (
-              <UnitCard
-                key={unit.id}
-                unit={unit}
-                onClick={() => handleUnitClick(unit.id)}
-                isSelectable={!allHitsAssigned}
-              />
-            ))}
+            {currentUnits.map(unit => {
+              const isDestroyed = unit.state === 'destroyed';
+              const isSelectable = !allHitsAssigned && !isDestroyed;
+
+              return (
+                <UnitCard
+                  key={unit.id}
+                  unit={unit}
+                  onClick={() => handleUnitClick(unit.id)}
+                  isSelectable={isSelectable}
+                  justSustained={unit.id === lastSustainedUnitId}
+                  onDirectHit={() => handleDirectHit(unit.id)}
+                />
+              );
+            })}
           </div>
 
           {activeUnits.length === 0 && (

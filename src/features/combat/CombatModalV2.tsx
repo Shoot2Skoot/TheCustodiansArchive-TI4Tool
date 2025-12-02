@@ -16,9 +16,13 @@ import {
   type UnitType,
 } from '@/data/combatConfig';
 import type { CombatUnit, DiceRoll } from '@/types/combatUnits';
-import { createCombatUnit, getActiveUnits, canCombatContinue } from '@/types/combatUnits';
+import { createCombatUnit, getActiveUnits, canCombatContinue, checkCapacity } from '@/types/combatUnits';
 import { BatchDiceRoller } from './components/DiceRoller';
 import { HitAssignment } from './components/HitAssignment';
+import { CapacityTrimming } from './components/CapacityTrimming';
+import { CombatTimeline } from './components/CombatTimeline';
+import { UnitPanel } from './components/UnitPanel';
+import { UnitImageSelector } from './components/UnitImageSelector';
 import styles from './CombatModal.module.css';
 
 // ============================================================================
@@ -150,11 +154,51 @@ export function CombatModalV2({
     pds: 0,
   });
 
-  const [attackerUnits, setAttackerUnits] = useState<UnitCounts>(emptyUnitCounts());
-  const [defenderUnits, setDefenderUnits] = useState<UnitCounts>(emptyUnitCounts());
+  // Default unit counts for testing
+  const defaultAttackerUnits = (): UnitCounts => ({
+    warSun: 0,
+    dreadnought: 0,
+    cruiser: 0,
+    carrier: 2,
+    destroyer: 0,
+    fighter: 6,
+    flagship: 0,
+    infantry: 2,
+    mech: 0,
+    pds: 0,
+  });
+
+  const defaultDefenderUnits = (): UnitCounts => ({
+    warSun: 0,
+    dreadnought: 1,
+    cruiser: 0,
+    carrier: 2,
+    destroyer: 0,
+    fighter: 4,
+    flagship: 0,
+    infantry: 4,
+    mech: 0,
+    pds: 2,
+  });
+
+  const defaultThirdPartyUnits = (): UnitCounts => ({
+    warSun: 0,
+    dreadnought: 0,
+    cruiser: 0,
+    carrier: 0,
+    destroyer: 0,
+    fighter: 0,
+    flagship: 0,
+    infantry: 0,
+    mech: 0,
+    pds: 1,
+  });
+
+  const [attackerUnits, setAttackerUnits] = useState<UnitCounts>(defaultAttackerUnits());
+  const [defenderUnits, setDefenderUnits] = useState<UnitCounts>(defaultDefenderUnits());
   const [unitSelectionStep, setUnitSelectionStep] = useState<'attacker' | 'defender' | 'third-party-prompt' | 'third-party-select' | 'done'>('attacker');
   const [selectedThirdPartyId, setSelectedThirdPartyId] = useState<string | null>(null);
-  const [thirdPartyUnits, setThirdPartyUnits] = useState<UnitCounts>(emptyUnitCounts());
+  const [thirdPartyUnits, setThirdPartyUnits] = useState<UnitCounts>(defaultThirdPartyUnits());
   const [showAttackerCapacityModal, setShowAttackerCapacityModal] = useState(false);
   const [showDefenderCapacityModal, setShowDefenderCapacityModal] = useState(false);
 
@@ -166,6 +210,26 @@ export function CombatModalV2({
   const [attackerCombatUnits, setAttackerCombatUnits] = useState<CombatUnit[]>([]);
   const [defenderCombatUnits, setDefenderCombatUnits] = useState<CombatUnit[]>([]);
   const [thirdPartyCombatUnits, setThirdPartyCombatUnits] = useState<CombatUnit[]>([]);
+
+  // Space Cannon player tracking (for looping through players)
+  const [spaceCannonPlayers, setSpaceCannonPlayers] = useState<Array<{
+    side: 'attacker' | 'defender' | 'third_party';
+    playerId: string;
+    playerName: string;
+    factionId: string;
+    hasSpaceCannonUnits: boolean;
+    firesAt: 'attacker' | 'defender'; // Who this player targets
+  }>>([]);
+  const [currentSpaceCannonPlayerIndex, setCurrentSpaceCannonPlayerIndex] = useState(0);
+  const [showPlayerTransition, setShowPlayerTransition] = useState(false);
+
+  // Capacity trimming state
+  const [capacityTrimmingUnits, setCapacityTrimmingUnits] = useState<CombatUnit[] | null>(null);
+  const [capacityTrimmingExcess, setCapacityTrimmingExcess] = useState(0);
+  const [capacityTrimmingSide, setCapacityTrimmingSide] = useState<'attacker' | 'defender' | null>(null);
+
+  // Track completed phases for timeline
+  const [completedPhases, setCompletedPhases] = useState<Set<CombatPhase>>(new Set());
 
   // Save state to localStorage
   useEffect(() => {
@@ -199,11 +263,18 @@ export function CombatModalV2({
 
   // Helper: Advance to next phase
   const goToPhase = (phase: CombatPhase, firstStep: CombatStep) => {
-    setCombatState(prev => ({
-      ...prev,
-      currentPhase: phase,
-      currentStep: firstStep,
-    }));
+    setCombatState(prev => {
+      // Mark the previous phase as completed
+      if (prev.currentPhase !== phase) {
+        setCompletedPhases(completed => new Set(completed).add(prev.currentPhase));
+      }
+
+      return {
+        ...prev,
+        currentPhase: phase,
+        currentStep: firstStep,
+      };
+    });
     addLog(`Advanced to Phase ${phase}`);
   };
 
@@ -392,37 +463,20 @@ export function CombatModalV2({
 
     // P0.5: Unit Inventory Confirmation
     if (step === 'P0.5') {
-      const renderUnitCounter = (
+      const renderUnitSelector = (
+        unitType: UnitType,
         label: string,
         value: number,
-        onChange: (newValue: number) => void
+        onChange: (newValue: number) => void,
+        maxCount?: number
       ) => (
-        <div className={styles.unitCounter}>
-          <label>{label}</label>
-          <div className={styles.counterControls}>
-            <button
-              onClick={() => onChange(Math.max(0, value - 1))}
-              disabled={value === 0}
-              className={styles.counterButton}
-            >
-              −
-            </button>
-            <input
-              type="number"
-              min="0"
-              max="99"
-              value={value}
-              onChange={(e) => onChange(Math.max(0, parseInt(e.target.value) || 0))}
-              className={styles.counterInput}
-            />
-            <button
-              onClick={() => onChange(value + 1)}
-              className={styles.counterButton}
-            >
-              +
-            </button>
-          </div>
-        </div>
+        <UnitImageSelector
+          unitType={unitType}
+          unitName={label}
+          count={value}
+          onChange={onChange}
+          maxCount={maxCount}
+        />
       );
 
       // Attacker unit selection
@@ -437,35 +491,35 @@ export function CombatModalV2({
             <div className={styles.unitSelection}>
               <h4>Space Units</h4>
               <div className={styles.unitGrid}>
-                {renderUnitCounter('War Suns', attackerUnits.warSun, (v) =>
+                {renderUnitSelector('war_sun', 'War Sun', attackerUnits.warSun, (v) =>
                   setAttackerUnits({ ...attackerUnits, warSun: v })
                 )}
-                {renderUnitCounter('Dreadnoughts', attackerUnits.dreadnought, (v) =>
+                {renderUnitSelector('dreadnought', 'Dreadnought', attackerUnits.dreadnought, (v) =>
                   setAttackerUnits({ ...attackerUnits, dreadnought: v })
                 )}
-                {renderUnitCounter('Cruisers', attackerUnits.cruiser, (v) =>
+                {renderUnitSelector('cruiser', 'Cruiser', attackerUnits.cruiser, (v) =>
                   setAttackerUnits({ ...attackerUnits, cruiser: v })
                 )}
-                {renderUnitCounter('Carriers', attackerUnits.carrier, (v) =>
+                {renderUnitSelector('carrier', 'Carrier', attackerUnits.carrier, (v) =>
                   setAttackerUnits({ ...attackerUnits, carrier: v })
                 )}
-                {renderUnitCounter('Destroyers', attackerUnits.destroyer, (v) =>
+                {renderUnitSelector('destroyer', 'Destroyer', attackerUnits.destroyer, (v) =>
                   setAttackerUnits({ ...attackerUnits, destroyer: v })
                 )}
-                {renderUnitCounter('Fighters', attackerUnits.fighter, (v) =>
+                {renderUnitSelector('fighter', 'Fighter', attackerUnits.fighter, (v) =>
                   setAttackerUnits({ ...attackerUnits, fighter: v })
                 )}
-                {renderUnitCounter('Flagship', attackerUnits.flagship, (v) =>
+                {renderUnitSelector('flagship', 'Flagship', attackerUnits.flagship, (v) =>
                   setAttackerUnits({ ...attackerUnits, flagship: Math.min(1, v) })
-                )}
+                , 1)}
               </div>
 
               <h4>Ground Units</h4>
               <div className={styles.unitGrid}>
-                {renderUnitCounter('Infantry', attackerUnits.infantry, (v) =>
+                {renderUnitSelector('infantry', 'Infantry', attackerUnits.infantry, (v) =>
                   setAttackerUnits({ ...attackerUnits, infantry: v })
                 )}
-                {renderUnitCounter('Mechs', attackerUnits.mech, (v) =>
+                {renderUnitSelector('mech', 'Mech', attackerUnits.mech, (v) =>
                   setAttackerUnits({ ...attackerUnits, mech: v })
                 )}
               </div>
@@ -703,42 +757,42 @@ export function CombatModalV2({
             <div className={styles.unitSelection}>
               <h4>Space Units</h4>
               <div className={styles.unitGrid}>
-                {renderUnitCounter('War Suns', defenderUnits.warSun, (v) =>
+                {renderUnitSelector('war_sun', 'War Sun', defenderUnits.warSun, (v) =>
                   setDefenderUnits({ ...defenderUnits, warSun: v })
                 )}
-                {renderUnitCounter('Dreadnoughts', defenderUnits.dreadnought, (v) =>
+                {renderUnitSelector('dreadnought', 'Dreadnought', defenderUnits.dreadnought, (v) =>
                   setDefenderUnits({ ...defenderUnits, dreadnought: v })
                 )}
-                {renderUnitCounter('Cruisers', defenderUnits.cruiser, (v) =>
+                {renderUnitSelector('cruiser', 'Cruiser', defenderUnits.cruiser, (v) =>
                   setDefenderUnits({ ...defenderUnits, cruiser: v })
                 )}
-                {renderUnitCounter('Carriers', defenderUnits.carrier, (v) =>
+                {renderUnitSelector('carrier', 'Carrier', defenderUnits.carrier, (v) =>
                   setDefenderUnits({ ...defenderUnits, carrier: v })
                 )}
-                {renderUnitCounter('Destroyers', defenderUnits.destroyer, (v) =>
+                {renderUnitSelector('destroyer', 'Destroyer', defenderUnits.destroyer, (v) =>
                   setDefenderUnits({ ...defenderUnits, destroyer: v })
                 )}
-                {renderUnitCounter('Fighters', defenderUnits.fighter, (v) =>
+                {renderUnitSelector('fighter', 'Fighter', defenderUnits.fighter, (v) =>
                   setDefenderUnits({ ...defenderUnits, fighter: v })
                 )}
-                {renderUnitCounter('Flagship', defenderUnits.flagship, (v) =>
+                {renderUnitSelector('flagship', 'Flagship', defenderUnits.flagship, (v) =>
                   setDefenderUnits({ ...defenderUnits, flagship: Math.min(1, v) })
-                )}
+                , 1)}
               </div>
 
               <h4>Ground Units</h4>
               <div className={styles.unitGrid}>
-                {renderUnitCounter('Infantry', defenderUnits.infantry, (v) =>
+                {renderUnitSelector('infantry', 'Infantry', defenderUnits.infantry, (v) =>
                   setDefenderUnits({ ...defenderUnits, infantry: v })
                 )}
-                {renderUnitCounter('Mechs', defenderUnits.mech, (v) =>
+                {renderUnitSelector('mech', 'Mech', defenderUnits.mech, (v) =>
                   setDefenderUnits({ ...defenderUnits, mech: v })
                 )}
               </div>
 
               <h4>Structures</h4>
               <div className={styles.unitGrid}>
-                {renderUnitCounter('PDS', defenderUnits.pds, (v) =>
+                {renderUnitSelector('pds', 'PDS', defenderUnits.pds, (v) =>
                   setDefenderUnits({ ...defenderUnits, pds: v })
                 )}
               </div>
@@ -1019,7 +1073,7 @@ export function CombatModalV2({
                   onClick={() => {
                     setUnitSelectionStep('third-party-select');
                     setSelectedThirdPartyId(null);
-                    setThirdPartyUnits(emptyUnitCounts());
+                    setThirdPartyUnits(defaultThirdPartyUnits());
                   }}
                   variant="primary"
                 >
@@ -1096,7 +1150,7 @@ export function CombatModalV2({
                 <div className={styles.unitSelection}>
                   <h4>Space Cannon Units</h4>
                   <div className={styles.unitGrid}>
-                    {renderUnitCounter('PDS', thirdPartyUnits.pds, (v) =>
+                    {renderUnitSelector('pds', 'PDS', thirdPartyUnits.pds, (v) =>
                       setThirdPartyUnits({ ...thirdPartyUnits, pds: v })
                     )}
                   </div>
@@ -1114,6 +1168,23 @@ export function CombatModalV2({
                         addLog(
                           `${player.displayName} added with ${thirdPartyUnits.pds} PDS (firing at ${combatState.attacker?.playerName})`
                         );
+
+                        // Create CombatUnit instances for third-party PDS
+                        const pdsUnits: CombatUnit[] = [];
+                        for (let i = 0; i < thirdPartyUnits.pds; i++) {
+                          const stats = getUnitStats('pds', player.factionId);
+                          const pdsUnit = createCombatUnit(
+                            'pds',
+                            stats,
+                            'third_party',
+                            player.id,
+                            player.displayName,
+                            player.factionId,
+                            i + 1
+                          );
+                          pdsUnits.push(pdsUnit);
+                        }
+
                         setCombatState(prev => ({
                           ...prev,
                           thirdPartyParticipants: [
@@ -1122,13 +1193,13 @@ export function CombatModalV2({
                               playerId: player.id,
                               playerName: player.displayName,
                               factionId: player.factionId,
-                              spaceCannonUnits: [], // Will populate based on thirdPartyUnits
+                              spaceCannonUnits: pdsUnits,
                               firingAt: 'attacker', // Always fires at the active player
                             },
                           ],
                         }));
                         setSelectedThirdPartyId(null);
-                        setThirdPartyUnits(emptyUnitCounts());
+                        setThirdPartyUnits(defaultThirdPartyUnits());
                         setUnitSelectionStep('third-party-prompt');
                       }
                     }}
@@ -1140,7 +1211,7 @@ export function CombatModalV2({
                   <Button
                     onClick={() => {
                       setSelectedThirdPartyId(null);
-                      setThirdPartyUnits(emptyUnitCounts());
+                      setThirdPartyUnits(defaultThirdPartyUnits());
                     }}
                     variant="secondary"
                   >
@@ -1405,10 +1476,14 @@ export function CombatModalV2({
                   );
                   setDefenderCombatUnits(defenderCombatUnitsArray);
 
-                  // TODO: Convert third-party units (for now, empty)
-                  setThirdPartyCombatUnits([]);
+                  // Collect third-party units (already created when adding participants)
+                  const thirdPartyCombatUnitsArray: CombatUnit[] = [];
+                  combatState.thirdPartyParticipants.forEach(tp => {
+                    thirdPartyCombatUnitsArray.push(...tp.spaceCannonUnits);
+                  });
+                  setThirdPartyCombatUnits(thirdPartyCombatUnitsArray);
 
-                  addLog(`Unit inventory confirmed - ${attackerCombatUnitsArray.length} attacker units, ${defenderCombatUnitsArray.length} defender units`);
+                  addLog(`Unit inventory confirmed - ${attackerCombatUnitsArray.length} attacker units, ${defenderCombatUnitsArray.length} defender units, ${thirdPartyCombatUnitsArray.length} third-party units`);
                   goToStep('P0.6');
                 }}
                 variant="primary"
@@ -1439,6 +1514,65 @@ export function CombatModalV2({
           <div className={styles.buttonGroup}>
             <Button
               onClick={() => {
+                // Build Space Cannon firing order in player order
+                const scPlayersList: Array<{
+                  side: 'attacker' | 'defender' | 'third_party';
+                  playerId: string;
+                  playerName: string;
+                  factionId: string;
+                  hasSpaceCannonUnits: boolean;
+                  firesAt: 'attacker' | 'defender';
+                }> = [];
+
+                const attackerSCUnits = attackerCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
+                const defenderSCUnits = defenderCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
+
+                // ALWAYS add attacker first (even if no SC units)
+                if (combatState.attacker) {
+                  scPlayersList.push({
+                    side: 'attacker',
+                    playerId: combatState.attacker.playerId,
+                    playerName: combatState.attacker.playerName,
+                    factionId: combatState.attacker.factionId,
+                    hasSpaceCannonUnits: attackerSCUnits.length > 0,
+                    firesAt: 'defender', // Attacker fires at defender
+                  });
+                }
+
+                // Add other players in player order (third parties + defender)
+                // Go through players array in order, add any that are involved (except attacker)
+                players.forEach(player => {
+                  if (player.id === combatState.attacker?.playerId) {
+                    return; // Skip attacker (already added)
+                  }
+
+                  if (player.id === combatState.defender?.playerId && combatState.defender) {
+                    // Add defender
+                    scPlayersList.push({
+                      side: 'defender',
+                      playerId: combatState.defender.playerId,
+                      playerName: combatState.defender.playerName,
+                      factionId: combatState.defender.factionId,
+                      hasSpaceCannonUnits: defenderSCUnits.length > 0,
+                      firesAt: 'attacker', // Defender fires at attacker
+                    });
+                  } else if (combatState.thirdPartyParticipants.some(tp => tp.playerId === player.id)) {
+                    // Add third party
+                    const thirdParty = combatState.thirdPartyParticipants.find(tp => tp.playerId === player.id)!;
+                    scPlayersList.push({
+                      side: 'third_party',
+                      playerId: thirdParty.playerId,
+                      playerName: thirdParty.playerName,
+                      factionId: thirdParty.factionId,
+                      hasSpaceCannonUnits: thirdParty.spaceCannonUnits.length > 0,
+                      firesAt: 'attacker', // Third parties fire at attacker
+                    });
+                  }
+                });
+
+                setSpaceCannonPlayers(scPlayersList);
+                setCurrentSpaceCannonPlayerIndex(0);
+
                 addLog('Proceeding to Space Cannon Offense');
                 setCombatState(prev => ({ ...prev, activationComplete: true }));
                 goToPhase(Phase.SPACE_CANNON_OFFENSE, 'P1.1');
@@ -1582,17 +1716,42 @@ export function CombatModalV2({
       );
     }
 
-    // P1.2: Space Cannon Rolls (NEW - uses dice rolling system)
+    // P1.1a: Player Transition Screen (Shows briefly when changing players)
+    if (step === 'P1.1a') {
+      const currentPlayer = spaceCannonPlayers[currentSpaceCannonPlayerIndex];
+      if (!currentPlayer) {
+        goToStep('P1.2');
+        return null;
+      }
+
+      const faction = getFactionById(currentPlayer.factionId);
+      const factionName = faction?.name || currentPlayer.playerName;
+      const roleLabel =
+        currentPlayer.side === 'attacker' ? '(Attacker)' :
+        currentPlayer.side === 'defender' ? '(Defender)' :
+        '(Third Party)';
+
+      // Auto-advance after short delay
+      setTimeout(() => {
+        setShowPlayerTransition(false);
+        goToStep('P1.2');
+      }, 800);
+
+      return (
+        <div className={styles.stepContent}>
+          <h2 className={styles.playerTransition}>
+            {factionName} {roleLabel}
+          </h2>
+          <p>Preparing Space Cannon...</p>
+        </div>
+      );
+    }
+
+    // P1.2: Space Cannon Rolls (NEW - Player-by-player in turn order)
     if (step === 'P1.2') {
-      // Get all units with Space Cannon capability
-      const defenderSpaceCannonUnits = defenderCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
-      const attackerSpaceCannonUnits = attackerCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
-      // TODO: Add third-party space cannon units
-
-      const allSpaceCannonUnits = [...defenderSpaceCannonUnits, ...attackerSpaceCannonUnits];
-
-      if (allSpaceCannonUnits.length === 0) {
-        // No space cannon units - skip to next phase
+      // Check if there are any players with Space Cannon
+      if (spaceCannonPlayers.length === 0) {
+        // No Space Cannon players at all - skip to Space Combat
         return (
           <div className={styles.stepContent}>
             <h3>P1.2 — Space Cannon Rolls</h3>
@@ -1610,67 +1769,245 @@ export function CombatModalV2({
         );
       }
 
+      // Get the current player
+      const currentPlayer = spaceCannonPlayers[currentSpaceCannonPlayerIndex];
+      if (!currentPlayer) {
+        // Safety check - shouldn't happen
+        goToStep('P1.4');
+        return null;
+      }
+
+      // Helper to get display name with role
+      const getPlayerDisplay = () => {
+        const faction = getFactionById(currentPlayer.factionId);
+        const factionName = faction?.name || currentPlayer.playerName;
+        const roleLabel =
+          currentPlayer.side === 'attacker' ? '(Attacker)' :
+          currentPlayer.side === 'defender' ? '(Defender)' :
+          '(Third Party)';
+        return `${factionName} ${roleLabel}`;
+      };
+
+      // If player has no SC units, show "no units" screen
+      if (!currentPlayer.hasSpaceCannonUnits) {
+        const playerDisplay = getPlayerDisplay();
+
+        return (
+          <div className={styles.stepContent}>
+            <h3>P1.2 — Space Cannon Rolls — {playerDisplay}</h3>
+            <p>{playerDisplay} has no Space Cannon units.</p>
+            <Button
+              onClick={() => {
+                const faction = getFactionById(currentPlayer.factionId);
+                const factionName = faction?.name || currentPlayer.playerName;
+                addLog(`${factionName} has no Space Cannon units - skipping`);
+                // Skip P1.4 - go to next player or end
+                if (currentSpaceCannonPlayerIndex + 1 < spaceCannonPlayers.length) {
+                  setCurrentSpaceCannonPlayerIndex(currentSpaceCannonPlayerIndex + 1);
+                  setShowPlayerTransition(true);
+                  goToStep('P1.1a'); // Show transition screen
+                } else {
+                  // All players done - proceed to Space Combat
+                  addLog('All Space Cannon complete - Proceeding to Space Combat');
+                  setCombatState(prev => ({ ...prev, spaceCannonOffenseComplete: true }));
+                  goToPhase(Phase.SPACE_COMBAT, 'P2.1');
+                }
+              }}
+              variant="primary"
+            >
+              Continue →
+            </Button>
+          </div>
+        );
+      }
+
+      // Get Space Cannon units for the current player
+      let currentPlayerUnits: CombatUnit[] = [];
+      if (currentPlayer.side === 'attacker') {
+        currentPlayerUnits = attackerCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
+      } else if (currentPlayer.side === 'defender') {
+        currentPlayerUnits = defenderCombatUnits.filter(u => u.hasSpaceCannon && u.state !== 'destroyed');
+      } else {
+        // Third party
+        console.log('Third party player:', currentPlayer);
+        console.log('All third party units:', thirdPartyCombatUnits);
+        currentPlayerUnits = thirdPartyCombatUnits.filter(
+          u => u.playerId === currentPlayer.playerId && u.hasSpaceCannon && u.state !== 'destroyed'
+        );
+        console.log('Filtered third party units:', currentPlayerUnits);
+      }
+
+      console.log(`${currentPlayer.playerName} Space Cannon units:`, currentPlayerUnits);
+
+      const playerDisplay = getPlayerDisplay();
+
       return (
-        <div className={styles.stepContent}>
-          <h3>P1.2 — Space Cannon Rolls</h3>
-          <p className={styles.infoNote}>
-            Space Cannon units fire at the attacker's fleet. Defender fires first, then attacker (if they have SC units), then third parties (in player order).
-          </p>
+        <BatchDiceRoller
+          units={currentPlayerUnits}
+          targetValueGetter={(unit) => unit.spaceCannonValue || 6}
+          rollsGetter={(unit) => unit.spaceCannonRolls || 1}
+          canReroll={true}
+          onComplete={(rollResults) => {
+            // Calculate total hits from this player's rolls
+            let totalHits = 0;
+            rollResults.forEach((unitRolls) => {
+              const hits = unitRolls.filter(r => r.isHit).length;
+              totalHits += hits;
+            });
 
-          <BatchDiceRoller
-            units={allSpaceCannonUnits}
-            targetValueGetter={(unit) => unit.spaceCannonValue || 6}
-            rollsGetter={(unit) => unit.spaceCannonRolls || 1}
-            canReroll={true}
-            onComplete={(rollResults) => {
-              // Calculate total hits from all rolls
-              let totalHits = 0;
-              rollResults.forEach((unitRolls) => {
-                const hits = unitRolls.filter(r => r.isHit).length;
-                totalHits += hits;
-              });
+            const faction = getFactionById(currentPlayer.factionId);
+            const factionName = faction?.name || currentPlayer.playerName;
+            addLog(`${factionName} Space Cannon: ${totalHits} hit${totalHits !== 1 ? 's' : ''} scored`);
 
-              addLog(`Space Cannon: ${totalHits} hit${totalHits !== 1 ? 's' : ''} scored`);
+            // Store hits for P1.3 assignment
+            setDefenderHits(totalHits);
 
-              // Store hits for P1.3 assignment
-              setDefenderHits(totalHits); // Temp storage - will remove this later
-
-              goToStep('P1.3');
-            }}
-            title="Space Cannon Offense — Roll Dice"
-          />
-        </div>
+            goToStep('P1.3');
+          }}
+          title={`Space Cannon Offense — ${playerDisplay}`}
+        />
       );
     }
 
-    // P1.3: Assign Hits (NEW - uses interactive UI)
+    // P1.3: Assign Hits (NEW - Player-by-player)
     if (step === 'P1.3') {
-      const hitsToAssign = defenderHits; // Temp: using old state variable for now
+      const hitsToAssign = defenderHits;
+      const currentPlayer = spaceCannonPlayers[currentSpaceCannonPlayerIndex];
+
+      if (!currentPlayer) {
+        // Safety check
+        goToStep('P1.4');
+        return null;
+      }
+
+      // Determine who gets hit based on firesAt property
+      // Space Cannon can ONLY target ships (not ground forces)
+      const allTargetUnits = currentPlayer.firesAt === 'attacker' ? attackerCombatUnits : defenderCombatUnits;
+      const targetUnits = allTargetUnits.filter(u => u.isShip);
+
+      const targetFactionId = currentPlayer.firesAt === 'attacker'
+        ? combatState.attacker?.factionId
+        : combatState.defender?.factionId;
+      const targetFaction = getFactionById(targetFactionId || '');
+      const targetPlayerName = targetFaction?.name ||
+        (currentPlayer.firesAt === 'attacker' ? combatState.attacker?.playerName : combatState.defender?.playerName) ||
+        (currentPlayer.firesAt === 'attacker' ? 'Attacker' : 'Defender');
+
+      // Skip hit assignment if no hits - go to next player or end
+      if (hitsToAssign === 0) {
+        if (currentSpaceCannonPlayerIndex + 1 < spaceCannonPlayers.length) {
+          setCurrentSpaceCannonPlayerIndex(currentSpaceCannonPlayerIndex + 1);
+          setShowPlayerTransition(true);
+          goToStep('P1.1a'); // Show transition screen
+        } else {
+          // All players done - proceed to Space Combat
+          addLog('All Space Cannon complete - Proceeding to Space Combat');
+          setCombatState(prev => ({ ...prev, spaceCannonOffenseComplete: true }));
+          goToPhase(Phase.SPACE_COMBAT, 'P2.1');
+        }
+        return null;
+      }
+
+      const currentFaction = getFactionById(currentPlayer.factionId);
+      const currentFactionName = currentFaction?.name || currentPlayer.playerName;
 
       return (
-        <div className={styles.stepContent}>
-          <h3>P1.3 — Space Cannon Hit Assignment</h3>
-          <p className={styles.infoNote}>
-            The attacker must assign {hitsToAssign} hit{hitsToAssign !== 1 ? 's' : ''} from Space Cannon fire to their ships.
-          </p>
+        <HitAssignment
+          key={`P1.3-${currentSpaceCannonPlayerIndex}`}
+          units={targetUnits}
+          hitsToAssign={hitsToAssign}
+          targetPlayerName={targetPlayerName}
+          targetSide={currentPlayer.firesAt}
+          title={`Assign ${currentFactionName}'s Space Cannon Hits to ${targetPlayerName}`}
+          onComplete={(updatedShips) => {
+            // Merge updated ships back into full unit list (preserving ground forces)
+            const updatedShipIds = new Set(updatedShips.map(s => s.id));
+            const fullUpdatedUnits = allTargetUnits.map(unit => {
+              if (updatedShipIds.has(unit.id)) {
+                return updatedShips.find(s => s.id === unit.id)!;
+              }
+              return unit; // Keep ground forces unchanged
+            });
 
-          <HitAssignment
-            units={attackerCombatUnits}
-            hitsToAssign={hitsToAssign}
-            targetPlayerName={combatState.attacker?.playerName || 'Attacker'}
-            onComplete={(updatedUnits) => {
-              // Update attacker units with damage/destruction
-              setAttackerCombatUnits(updatedUnits);
+            // Update the correct side's units based on who was hit
+            if (currentPlayer.firesAt === 'attacker') {
+              setAttackerCombatUnits(fullUpdatedUnits);
+            } else {
+              setDefenderCombatUnits(fullUpdatedUnits);
+            }
 
-              const destroyedCount = updatedUnits.filter(u => u.state === 'destroyed').length;
-              const damagedCount = updatedUnits.filter(u => u.state === 'sustained').length;
+            const destroyedCount = updatedShips.filter(u => u.state === 'destroyed').length;
+            const damagedCount = updatedShips.filter(u => u.state === 'sustained').length;
 
-              addLog(`Space Cannon hits assigned: ${destroyedCount} ships destroyed, ${damagedCount} damaged`);
+            addLog(
+              `${currentPlayer.playerName} Space Cannon hits assigned to ${targetPlayerName}: ${destroyedCount} ships destroyed, ${damagedCount} damaged`
+            );
+
+            // Check capacity after Space Cannon (still in movement step)
+            const capacityStatus = checkCapacity(fullUpdatedUnits);
+            console.log('Capacity check after SC:', capacityStatus);
+            console.log('Full updated units:', fullUpdatedUnits);
+
+            if (capacityStatus.isOverCapacity) {
+              // Over capacity - need to trim ground forces
+              console.log('OVER CAPACITY - triggering P1.3a');
+              setCapacityTrimmingUnits(fullUpdatedUnits);
+              setCapacityTrimmingExcess(capacityStatus.excessUnits);
+              setCapacityTrimmingSide(currentPlayer.firesAt); // Who was hit needs to trim
+              goToStep('P1.3a'); // Capacity trimming step
+            } else {
+              // Capacity OK - proceed to continuation check after this player
+              console.log('Capacity OK - proceeding to P1.4');
               goToStep('P1.4');
-            }}
-            title="Assign Space Cannon Hits to Attacker"
-          />
-        </div>
+            }
+          }}
+        />
+      );
+    }
+
+    // P1.3a: Capacity Trimming (if ships destroyed exceeded capacity)
+    if (step === 'P1.3a') {
+      if (!capacityTrimmingUnits || !capacityTrimmingSide) {
+        // Safety check - shouldn't happen
+        goToStep('P1.4');
+        return null;
+      }
+
+      const currentPlayer = spaceCannonPlayers[currentSpaceCannonPlayerIndex];
+      const targetPlayerName = capacityTrimmingSide === 'attacker'
+        ? combatState.attacker?.playerName || 'Attacker'
+        : combatState.defender?.playerName || 'Defender';
+
+      const capacityStatus = checkCapacity(capacityTrimmingUnits);
+
+      return (
+        <CapacityTrimming
+          units={capacityTrimmingUnits}
+          excessUnits={capacityTrimmingExcess}
+          totalCapacity={capacityStatus.totalCapacity}
+          playerName={targetPlayerName}
+          onComplete={(updatedUnits) => {
+            // Update the correct side's units after trimming
+            if (capacityTrimmingSide === 'attacker') {
+              setAttackerCombatUnits(updatedUnits);
+            } else {
+              setDefenderCombatUnits(updatedUnits);
+            }
+
+            const removedCount = capacityTrimmingExcess;
+            addLog(
+              `${targetPlayerName} removed ${removedCount} ground force${removedCount !== 1 ? 's' : ''} due to capacity limits`
+            );
+
+            // Clear capacity trimming state
+            setCapacityTrimmingUnits(null);
+            setCapacityTrimmingExcess(0);
+            setCapacityTrimmingSide(null);
+
+            // Always proceed to continuation check after capacity trimming
+            goToStep('P1.4');
+          }}
+        />
       );
     }
 
@@ -1736,17 +2073,30 @@ export function CombatModalV2({
             </div>
           ) : (
             <div>
-              <p>Both sides have ships - Proceed to Space Combat</p>
-              <Button
-                onClick={() => {
-                  addLog('Proceeding to Space Combat');
-                  setCombatState(prev => ({ ...prev, spaceCannonOffenseComplete: true }));
-                  goToPhase(Phase.SPACE_COMBAT, 'P2.1');
-                }}
-                variant="primary"
-              >
-                Proceed to Space Combat
-              </Button>
+              <p>Both sides have ships - Combat continues</p>
+              {currentSpaceCannonPlayerIndex + 1 < spaceCannonPlayers.length ? (
+                <Button
+                  onClick={() => {
+                    addLog(`Combat continues - ${spaceCannonPlayers[currentSpaceCannonPlayerIndex + 1].playerName} fires Space Cannon next`);
+                    setCurrentSpaceCannonPlayerIndex(currentSpaceCannonPlayerIndex + 1);
+                    goToStep('P1.2');
+                  }}
+                  variant="primary"
+                >
+                  Continue to Next Player ({spaceCannonPlayers[currentSpaceCannonPlayerIndex + 1]?.playerName})
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    addLog('All Space Cannon complete - Proceeding to Space Combat');
+                    setCombatState(prev => ({ ...prev, spaceCannonOffenseComplete: true }));
+                    goToPhase(Phase.SPACE_COMBAT, 'P2.1');
+                  }}
+                  variant="primary"
+                >
+                  Proceed to Space Combat
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -1974,9 +2324,11 @@ export function CombatModalV2({
       if (defenderAFBHits > 0) {
         return (
           <HitAssignment
+            key="P2.2-assignment-attacker"
             units={attackerCombatUnits.filter(u => u.type === 'fighter')}
             hitsToAssign={defenderAFBHits}
             targetPlayerName={combatState.attacker?.playerName || 'Attacker'}
+            targetSide="attacker"
             onComplete={(updatedUnits) => {
               // Update only fighters, keep other units unchanged
               const updatedAttackerUnits = attackerCombatUnits.map(u => {
@@ -2008,9 +2360,11 @@ export function CombatModalV2({
       if (attackerAFBHits > 0) {
         return (
           <HitAssignment
+            key="P2.2-assignment-defender"
             units={defenderCombatUnits.filter(u => u.type === 'fighter')}
             hitsToAssign={attackerAFBHits}
             targetPlayerName={combatState.defender?.playerName || 'Defender'}
+            targetSide="defender"
             onComplete={(updatedUnits) => {
               // Update only fighters, keep other units unchanged
               const updatedDefenderUnits = defenderCombatUnits.map(u => {
@@ -2193,9 +2547,11 @@ export function CombatModalV2({
       if (defenderHitsOnAttacker > 0) {
         return (
           <HitAssignment
+            key={`P2.5-round-${round}`}
             units={attackerCombatUnits.filter(u => u.isShip)}
             hitsToAssign={defenderHitsOnAttacker}
             targetPlayerName={combatState.attacker?.playerName || 'Attacker'}
+            targetSide="attacker"
             onComplete={(updatedUnits) => {
               // Update ships, keep non-ships unchanged
               const updatedAttackerUnits = attackerCombatUnits.map(u => {
@@ -2228,9 +2584,11 @@ export function CombatModalV2({
       if (attackerHitsOnDefender > 0) {
         return (
           <HitAssignment
+            key={`P2.5-defender-round-${round}`}
             units={defenderCombatUnits.filter(u => u.isShip)}
             hitsToAssign={attackerHitsOnDefender}
             targetPlayerName={combatState.defender?.playerName || 'Defender'}
+            targetSide="defender"
             onComplete={(updatedUnits) => {
               // Update ships, keep non-ships unchanged
               const updatedDefenderUnits = defenderCombatUnits.map(u => {
@@ -3568,52 +3926,53 @@ export function CombatModalV2({
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <Panel className={styles.combatPanel}>
-          {/* Header */}
-          <div className={styles.header}>
-            <h1>Activate Enemy System</h1>
-            {combatState.attacker && combatState.defender && (
-              <div className={styles.participants}>
-                <span className={styles.attacker}>
-                  Attacker: {getFactionById(combatState.attacker.factionId)?.name || combatState.attacker.playerName}
-                </span>
-                <span className={styles.vs}>vs</span>
-                <span className={styles.defender}>
-                  Defender: {getFactionById(combatState.defender.factionId)?.name || combatState.defender.playerName}
-                </span>
+        <div className={styles.combatLayout}>
+          {/* Top Timeline Banner */}
+          <CombatTimeline
+            currentPhase={combatState.currentPhase}
+            currentStep={combatState.currentStep}
+            completedPhases={completedPhases}
+            spaceCannonPlayers={spaceCannonPlayers}
+            currentSpaceCannonPlayerIndex={currentSpaceCannonPlayerIndex}
+          />
+
+          {/* Main 3-Panel Content */}
+          <div className={styles.mainContent}>
+            {/* Left Panel - Attacker Units */}
+            <UnitPanel
+              side="attacker"
+              units={attackerCombatUnits}
+              playerName={combatState.attacker?.playerName || 'Selecting...'}
+              factionId={combatState.attacker?.factionId || ''}
+            />
+
+            {/* Center Panel - Step UI */}
+            <div className={styles.centerPanel}>
+              {/* Phase content */}
+              {combatState.currentPhase === Phase.ACTIVATION && renderPhase0()}
+              {combatState.currentPhase === Phase.SPACE_CANNON_OFFENSE && renderPhase1()}
+              {combatState.currentPhase === Phase.SPACE_COMBAT && renderPhase2()}
+              {combatState.currentPhase === Phase.INVASION && renderPhase3()}
+              {combatState.currentPhase === Phase.GROUND_COMBAT && renderPhase4()}
+              {combatState.currentPhase === Phase.POST_COMBAT && renderPhase5()}
+
+              {/* Footer */}
+              <div className={styles.footer} style={{ marginTop: 'auto' }}>
+                <Button onClick={onClose} variant="secondary">
+                  Save & Exit
+                </Button>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Static Reminders */}
-          <div className={styles.staticReminders}>
-            <p>The active player may make transactions at any point during their turn, once per neighbor.</p>
+            {/* Right Panel - Defender Units */}
+            <UnitPanel
+              side="defender"
+              units={defenderCombatUnits}
+              playerName={combatState.defender?.playerName || 'Selecting...'}
+              factionId={combatState.defender?.factionId || ''}
+            />
           </div>
-
-          {/* Phase indicator */}
-          <div className={styles.phaseIndicator}>
-            Phase {combatState.currentPhase} — {combatState.currentStep}
-            {combatState.currentPhase === Phase.SPACE_COMBAT && ` (Round ${combatState.spaceCombatRound})`}
-            {combatState.currentPhase === Phase.GROUND_COMBAT && ` (Round ${combatState.groundCombatRound})`}
-          </div>
-
-          {/* Phase content */}
-          <div className={styles.phaseContent}>
-            {combatState.currentPhase === Phase.ACTIVATION && renderPhase0()}
-            {combatState.currentPhase === Phase.SPACE_CANNON_OFFENSE && renderPhase1()}
-            {combatState.currentPhase === Phase.SPACE_COMBAT && renderPhase2()}
-            {combatState.currentPhase === Phase.INVASION && renderPhase3()}
-            {combatState.currentPhase === Phase.GROUND_COMBAT && renderPhase4()}
-            {combatState.currentPhase === Phase.POST_COMBAT && renderPhase5()}
-          </div>
-
-          {/* Footer */}
-          <div className={styles.footer}>
-            <Button onClick={onClose} variant="secondary">
-              Save & Exit
-            </Button>
-          </div>
-        </Panel>
+        </div>
       </div>
     </div>
   );
