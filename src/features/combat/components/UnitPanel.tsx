@@ -103,18 +103,12 @@ export function UnitPanel({ side, units, playerName, factionId, onRollDice, canR
                   <div className={styles.unitName}>{group.displayName}</div>
                   <div className={styles.unitQuantity}>x{activeCount}</div>
 
-                  {/* Target number indicator */}
+                  {/* Target number and dice */}
                   {combatValue !== null && (
-                    <div className={styles.targetNumber}>
+                    <div className={styles.combatRow}>
                       <div className={styles.targetDiamond}>
                         {combatValue}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Dice display */}
-                  {combatValue !== null && (
-                    <div className={styles.diceContainer}>
                       {Array.from({ length: activeCount * combatRolls }).map((_, diceIdx) => (
                         <div key={diceIdx} className={styles.die}>
                           <div className={styles.dieUnrolled}>?</div>
@@ -148,18 +142,12 @@ export function UnitPanel({ side, units, playerName, factionId, onRollDice, canR
                   <img src={imageUrl} alt={unit.displayName} className={styles.unitImage} />
                   <div className={styles.unitName}>{unit.displayName}</div>
 
-                  {/* Target number indicator */}
+                  {/* Target number and dice */}
                   {combatValue !== null && unit.state !== 'destroyed' && (
-                    <div className={styles.targetNumber}>
+                    <div className={styles.combatRow}>
                       <div className={styles.targetDiamond}>
                         {combatValue}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Dice display */}
-                  {combatValue !== null && unit.state !== 'destroyed' && (
-                    <div className={styles.diceContainer}>
                       {Array.from({ length: combatRolls }).map((_, diceIdx) => (
                         <div key={diceIdx} className={styles.die}>
                           <div className={styles.dieUnrolled}>?</div>

@@ -1197,12 +1197,15 @@
   color: #7f8c8d;
 }
 
-/* Target number indicator */
-.targetNumber {
+/* Combat row - target number and dice together */
+.combatRow {
   display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
   align-items: center;
 }
 
+/* Target number indicator */
 .targetDiamond {
   width: 32px;
   height: 32px;
@@ -1216,15 +1219,6 @@
   font-weight: var(--font-bold);
   font-size: var(--font-size-2xl);
   color: #f39c12;
-}
-
-/* Dice container and dice */
-.diceContainer {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-left: 8px;
-  align-items: center;
 }
 
 .die {
