@@ -1205,19 +1205,19 @@
 }
 
 .targetDiamond {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-  border-radius: 50%;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid #d68910;
-  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+  box-shadow: 0 2px 6px rgba(243, 156, 18, 0.4);
   flex-shrink: 0;
   font-weight: var(--font-bold);
   font-size: var(--font-size-2xl);
-  color: #1a1a1a;
+  color: #fff;
 }
 
 /* Dice container and dice */
