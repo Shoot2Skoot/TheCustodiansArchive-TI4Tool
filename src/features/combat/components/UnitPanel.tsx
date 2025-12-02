@@ -107,7 +107,7 @@ export function UnitPanel({ side, units, playerName, factionId, onRollDice, canR
                   {combatValue !== null && (
                     <div className={styles.targetNumber}>
                       <div className={styles.targetDiamond}>
-                        {combatValue}+
+                        {combatValue}
                       </div>
                     </div>
                   )}
@@ -152,7 +152,7 @@ export function UnitPanel({ side, units, playerName, factionId, onRollDice, canR
                   {combatValue !== null && unit.state !== 'destroyed' && (
                     <div className={styles.targetNumber}>
                       <div className={styles.targetDiamond}>
-                        {combatValue}+
+                        {combatValue}
                       </div>
                     </div>
                   )}
