@@ -1201,23 +1201,21 @@
 .targetNumber {
   display: flex;
   align-items: center;
-  margin-left: 8px;
 }
 
 .targetDiamond {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  background-color: rgba(243, 156, 18, 0.2);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #d68910;
-  box-shadow: 0 2px 6px rgba(243, 156, 18, 0.4);
+  border: 2px solid #f39c12;
   flex-shrink: 0;
   font-weight: var(--font-bold);
   font-size: var(--font-size-2xl);
-  color: #fff;
+  color: #f39c12;
 }
 
 /* Dice container and dice */
